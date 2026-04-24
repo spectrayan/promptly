@@ -1,0 +1,209 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Promptly Material Overrides
+// ═══════════════════════════════════════════════════════════════════════
+// Global overrides for Angular Material components to match our
+// modern design language. These leverage --mat-sys-* tokens plus
+// our custom tokens from _tokens.scss.
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── Form Fields (Outline) — rounded, modern ─────────────────────────
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: var(--radius-md);
+  --mdc-outlined-text-field-outline-width: 1.5px;
+  --mdc-outlined-text-field-focus-outline-width: 2px;
+  --mdc-outlined-text-field-hover-outline-color: var(--mat-sys-primary);
+
+  &.mat-focused {
+    --mdc-outlined-text-field-focus-outline-color: var(--mat-sys-primary);
+  }
+}
+
+// ── Buttons — rounded, smooth transitions, aligned icon+label ───────
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button {
+  --mdc-text-button-container-shape: var(--radius-sm);
+  --mdc-filled-button-container-shape: var(--radius-sm);
+  --mdc-outlined-button-container-shape: var(--radius-sm);
+  --mdc-protected-button-container-shape: var(--radius-sm);
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-base) !important;
+  font-weight: var(--weight-semibold) !important;
+  letter-spacing: var(--tracking-wide);
+
+  // ── Fix icon + label alignment inside buttons ──────────────────
+  .mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-right: var(--space-2);
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  // When button has both icon and text, ensure internal flex alignment
+  .mdc-button__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  // Spinner inside buttons — keep it aligned too
+  .mat-mdc-progress-spinner {
+    display: inline-flex;
+    margin-right: var(--space-2);
+    vertical-align: middle;
+  }
+}
+
+.mat-mdc-unelevated-button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.mat-mdc-icon-button {
+  transition: all var(--transition-base) !important;
+  border-radius: var(--radius-sm) !important;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+}
+
+// ── Cards — rounded, subtle border, smooth hover ────────────────────
+.mat-mdc-card {
+  --mdc-elevated-card-container-shape: var(--radius-lg);
+  --mdc-outlined-card-container-shape: var(--radius-lg);
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container) !important;
+  box-shadow: none !important;
+  transition: all var(--transition-base);
+  overflow: hidden;
+}
+
+.mat-mdc-card-header {
+  padding: var(--space-5) var(--space-5) var(--space-3) !important;
+}
+
+.mat-mdc-card-content {
+  padding: var(--space-3) var(--space-5) var(--space-5) !important;
+
+  &:first-child {
+    padding-top: var(--space-5) !important;
+  }
+}
+
+.mat-mdc-card-actions {
+  padding: var(--space-3) var(--space-5) var(--space-5) !important;
+}
+
+// ── Tables — modern, clean, no borders ──────────────────────────────
+.mat-mdc-table {
+  background: transparent !important;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  .mat-mdc-header-row {
+    background: var(--mat-sys-surface-container-high);
+    height: 48px;
+  }
+
+  .mat-mdc-header-cell {
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom: none !important;
+  }
+
+  .mat-mdc-row {
+    transition: background var(--transition-fast);
+    height: 56px;
+
+    &:hover {
+      background: var(--mat-sys-surface-container-high);
+    }
+  }
+
+  .mat-mdc-cell {
+    border-bottom-color: var(--mat-sys-outline-variant) !important;
+    font-size: var(--text-base);
+  }
+}
+
+// ── Chips — pill-shaped ─────────────────────────────────────────────
+.mat-mdc-chip {
+  --mdc-chip-container-shape-radius: var(--radius-full) !important;
+  border-radius: var(--radius-full) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: var(--weight-medium) !important;
+}
+
+// ── Dialog — rounded, modern ────────────────────────────────────────
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: var(--radius-xl) !important;
+
+  .mdc-dialog__surface {
+    border-radius: var(--radius-xl) !important;
+  }
+}
+
+// ── Menu — rounded ──────────────────────────────────────────────────
+.mat-mdc-menu-panel {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--mat-sys-outline-variant);
+  box-shadow: var(--shadow-xl) !important;
+}
+
+// ── Tabs — modern ink bar ───────────────────────────────────────────
+.mat-mdc-tab-group {
+  .mat-mdc-tab {
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    transition: all var(--transition-base);
+  }
+}
+
+// ── Select — rounded ────────────────────────────────────────────────
+.mat-mdc-select-panel {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+// ── Snackbar — rounded, themed ──────────────────────────────────────
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--mat-sys-inverse-surface);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-inverse-on-surface);
+  border-radius: var(--radius-md) !important;
+}
+
+// ── Divider — subtle ────────────────────────────────────────────────
+.mat-divider {
+  border-color: var(--mat-sys-outline-variant) !important;
+  opacity: 0.5;
+}
+
+// ── Tooltip — modern ────────────────────────────────────────────────
+.mat-mdc-tooltip {
+  --mdc-plain-tooltip-container-shape: var(--radius-sm);
+  font-size: var(--text-xs) !important;
+}
+
+// ── Spinner — brand color ───────────────────────────────────────────
+.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: var(--mat-sys-primary);
+}
+
+// ── Nav List — tighter, modern ──────────────────────────────────────
+.mat-mdc-nav-list {
+  .mat-mdc-list-item {
+    border-radius: var(--radius-sm) !important;
+    margin: 2px var(--space-2);
+    transition: all var(--transition-base);
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "name": "promptly",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/frontend/web/promptly/src",
+  "prefix": "promptly",
+  "tags": ["scope:frontend", "type:app"],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "options": {
+        "browser": "apps/frontend/web/promptly/src/main.ts",
+        "tsConfig": "apps/frontend/web/promptly/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/frontend/web/promptly/public"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/monaco-editor/min",
+            "output": "/assets/monaco-editor/min"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/monaco-editor/min-maps",
+            "output": "/assets/monaco-editor/min-maps"
+          }
+        ],
+        "styles": [
+          "apps/frontend/web/promptly/src/styles.scss"
+        ],
+        "polyfills": [
+          "zone.js"
+        ],
+        "preserveSymlinks": true
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "750kB",
+              "maximumError": "1.5MB"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kB",
+              "maximumError": "12kB"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "promptly:build:production"
+        },
+        "development": {
+          "buildTarget": "promptly:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:unit-test"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
