@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: promptly
+
+  profiles:
+    active: dev
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: promptly
+      auto-index-creation: false
+
+  # Spring AI — Google Gemini via Vertex AI
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID:spectrayan-ai}
+          location: ${GCP_REGION:us-central1}
+          chat:
+            options:
+              model: gemini-2.5-flash
+              temperature: 0.3
+          transport: REST
+
+  modulith:
+    events:
+      republish-outstanding-events-on-restart: false
+
+# ── Promptly Auth Configuration ──
+promptly:
+  auth:
+    provider: local                    # local | oidc
+    jwt:
+      secret: promptly-dev-secret-key-change-in-production-min-32-chars
+      expiration-ms: 3600000           # 1 hour
+      refresh-expiration-ms: 604800000 # 7 days
+
+  # ── Deployment Mode ──
+  deployment:
+    mode: self-hosted                  # self-hosted | saas
+
+  # ── LLM Configuration (platform defaults) ──
+  llm:
+    provider: gemini                   # default provider
+    model: gemini-2.5-flash            # default model
+    temperature: 0.3
+    max-tokens: 4096
+    api-key: ${PROMPTLY_LLM_API_KEY:}  # from env var — never commit real keys
+    # credential-encryption-key: ${PROMPTLY_LLM_CREDENTIAL_ENCRYPTION_KEY:}  # enable for SaaS mode
+    scanner:
+      model: gemini-2.5-flash          # cheaper/faster model for bulk scanning
+    improver:
+      model: gemini-2.5-flash
+    embedding:
+      provider: gemini
+      model: text-embedding-004
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,modulith
+  endpoint:
+    health:
+      show-details: when-authorized
+
+logging:
+  level:
+    com.promptly: DEBUG
+    org.springframework.modulith: DEBUG
+    org.springframework.data.mongodb: DEBUG

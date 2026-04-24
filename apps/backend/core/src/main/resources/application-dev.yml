@@ -1,0 +1,17 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Dev mode: no real JWT validation needed
+          # Security config permits all in dev profile
+          issuer-uri: https://dev.promptly.local
+
+logging:
+  level:
+    com.promptly: DEBUG
+    org.springframework.data.mongodb: INFO

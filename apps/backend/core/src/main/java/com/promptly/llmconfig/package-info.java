@@ -1,0 +1,4 @@
+@org.springframework.modulith.ApplicationModule(
+        allowedDependencies = {"shared", "shared::config"}
+)
+package com.promptly.llmconfig;
