@@ -1,0 +1,11 @@
+type: object
+properties:
+  promptId:
+    type: string
+  originalContent:
+    type: string
+  improvedContent:
+    type: string
+  summary:
+    type: string
+    description: Explanation of what was improved

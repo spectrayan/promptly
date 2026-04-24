@@ -1,0 +1,28 @@
+description: The request was invalid or malformed (validation errors, missing required fields, etc.)
+headers:
+  X-Request-Id:
+    description: Unique request identifier for tracing
+    schema:
+      type: string
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+content:
+  application/problem+json:
+    schema:
+      $ref: '../schemas/common/ProblemDetails.yaml'
+    example:
+      type: "https://api.promptly.dev/problems/validation-error"
+      title: "Validation Error"
+      status: 400
+      detail: "One or more validation errors occurred"
+      instance: "/api/v1/prompts"
+      timestamp: "2026-04-23T12:00:00.000Z"
+      traceId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      errors:
+        - field: "name"
+          message: "must not be blank"
+          rejectedValue: ""
+          code: "REQUIRED_FIELD"
+        - field: "content"
+          message: "must not be blank"
+          rejectedValue: null
+          code: "REQUIRED_FIELD"

@@ -1,0 +1,44 @@
+post:
+  operationId: createPrompt
+  summary: Create a new prompt
+  description: Creates a new prompt with version 1. Emits `PromptCreated` event which triggers auto-scan and embedding generation.
+  tags: [Prompts]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/prompt/CreatePromptRequest.yaml'
+  responses:
+    '201':
+      description: Prompt created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/prompt/PromptResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '500':
+      $ref: '../../components/responses/InternalServerError.yaml'
+
+get:
+  operationId: listPrompts
+  summary: List all prompts
+  description: Returns a list of prompt summaries. Optionally filter by project ID.
+  tags: [Prompts]
+  parameters:
+    - name: projectId
+      in: query
+      required: false
+      description: Filter prompts by project ID
+      schema:
+        type: string
+  responses:
+    '200':
+      description: List of prompt summaries
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/prompt/PromptSummaryResponse.yaml'

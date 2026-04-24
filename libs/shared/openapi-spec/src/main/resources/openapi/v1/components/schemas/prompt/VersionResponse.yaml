@@ -1,0 +1,13 @@
+type: object
+properties:
+  versionNumber:
+    type: integer
+  content:
+    type: string
+  changeMessage:
+    type: string
+  createdBy:
+    type: string
+  createdAt:
+    type: string
+    format: date-time

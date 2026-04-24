@@ -1,0 +1,28 @@
+get:
+  operationId: listWorkflows
+  summary: List workflows
+  description: Returns workflows, optionally filtered by prompt ID or pending status.
+  tags: [Workflows]
+  parameters:
+    - name: promptId
+      in: query
+      required: false
+      description: Filter by prompt ID
+      schema:
+        type: string
+    - name: pendingOnly
+      in: query
+      required: false
+      description: Only return pending workflows
+      schema:
+        type: boolean
+        default: false
+  responses:
+    '200':
+      description: List of workflows
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/workflow/WorkflowResponse.yaml'

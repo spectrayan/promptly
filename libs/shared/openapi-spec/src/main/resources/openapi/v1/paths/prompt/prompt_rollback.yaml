@@ -1,0 +1,28 @@
+post:
+  operationId: rollbackPrompt
+  summary: Rollback to a previous version
+  description: Restores prompt content from a previous version and creates a new version with that content. Emits `PromptRolledBack` event.
+  tags: [Prompts]
+  parameters:
+    - $ref: '../../components/parameters/PromptId.yaml'
+    - name: targetVersion
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    - name: author
+      in: query
+      required: false
+      schema:
+        type: string
+        default: system
+  responses:
+    '200':
+      description: Prompt rolled back
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/prompt/PromptResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

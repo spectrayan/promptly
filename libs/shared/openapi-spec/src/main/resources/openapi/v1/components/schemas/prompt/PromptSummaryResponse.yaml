@@ -1,0 +1,17 @@
+type: object
+properties:
+  id:
+    type: string
+  name:
+    type: string
+  description:
+    type: string
+  projectId:
+    type: string
+  currentVersion:
+    type: integer
+  activeEnvironment:
+    type: string
+  updatedAt:
+    type: string
+    format: date-time

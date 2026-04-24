@@ -1,0 +1,18 @@
+type: object
+required: [email, password, displayName]
+properties:
+  email:
+    type: string
+    format: email
+    description: User's email address (used as login identifier)
+    example: alice@promptly.ai
+  password:
+    type: string
+    format: password
+    minLength: 8
+    description: Password (min 8 characters)
+    example: P@ssw0rd123
+  displayName:
+    type: string
+    description: User's display name
+    example: Alice Johnson

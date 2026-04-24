@@ -1,0 +1,18 @@
+get:
+  operationId: getVersionHistory
+  summary: Get version history
+  description: Returns all versions of a prompt, ordered by version number.
+  tags: [Prompts]
+  parameters:
+    - $ref: '../../components/parameters/PromptId.yaml'
+  responses:
+    '200':
+      description: Version history
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/prompt/VersionResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

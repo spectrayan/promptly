@@ -1,0 +1,6 @@
+name: promptId
+in: path
+required: true
+description: Prompt identifier
+schema:
+  type: string

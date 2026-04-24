@@ -1,0 +1,22 @@
+post:
+  operationId: login
+  summary: Login with email and password
+  description: |
+    Authenticates a user with email/password and returns JWT tokens.
+    Disabled when auth provider is set to OIDC.
+  tags: [Auth]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/LoginRequest.yaml'
+  responses:
+    '200':
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/AuthResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

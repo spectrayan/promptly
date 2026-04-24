@@ -1,0 +1,21 @@
+get:
+  operationId: searchPrompts
+  summary: Semantic search for prompts
+  description: Uses embedding-based vector search to find prompts similar to the query text.
+  tags: [Search]
+  parameters:
+    - name: q
+      in: query
+      required: true
+      description: Search query text
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Search results with relevance scores
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/search/SearchResponse.yaml'

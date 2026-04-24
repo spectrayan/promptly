@@ -1,0 +1,23 @@
+type: object
+properties:
+  id:
+    type: string
+  action:
+    type: string
+    description: "Event type (e.g., prompt.created, workflow.approved, scan.completed)"
+  resourceType:
+    type: string
+    description: "Resource category (prompt, workflow, scan)"
+  resourceId:
+    type: string
+  resourceVersion:
+    type: integer
+  actorUserId:
+    type: string
+  details:
+    type: object
+    additionalProperties: true
+    description: Contextual event details
+  timestamp:
+    type: string
+    format: date-time

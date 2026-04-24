@@ -1,0 +1,31 @@
+type: object
+properties:
+  id:
+    type: string
+    description: Unique prompt ID (MongoDB ObjectId)
+  name:
+    type: string
+  description:
+    type: string
+  projectId:
+    type: string
+  contentFormat:
+    $ref: '../common/enums/ContentFormat.yaml'
+  currentVersion:
+    type: integer
+    description: Latest version number
+  activeEnvironment:
+    $ref: '../common/enums/Environment.yaml'
+  latestContent:
+    type: string
+    description: Content of the latest version
+  tags:
+    type: array
+    items:
+      type: string
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time

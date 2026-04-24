@@ -1,0 +1,8 @@
+type: string
+description: Current status of a workflow
+enum:
+  - PENDING
+  - IN_REVIEW
+  - APPROVED
+  - REJECTED
+  - CANCELLED

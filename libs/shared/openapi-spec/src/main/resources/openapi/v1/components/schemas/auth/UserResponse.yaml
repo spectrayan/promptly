@@ -1,0 +1,30 @@
+type: object
+required: [id, email, displayName, orgRole, status]
+properties:
+  id:
+    type: string
+    description: User's unique identifier
+    example: usr-001
+  email:
+    type: string
+    format: email
+    description: User's email address
+    example: alice@promptly.ai
+  displayName:
+    type: string
+    description: User's display name
+    example: Alice Johnson
+  avatarUrl:
+    type: string
+    nullable: true
+    description: URL to user's avatar image
+    example: null
+  orgRole:
+    $ref: '../common/enums/OrgRole.yaml'
+  status:
+    $ref: '../common/enums/UserStatus.yaml'
+  createdAt:
+    type: string
+    format: date-time
+    description: Account creation timestamp
+    example: "2025-11-01T08:00:00Z"

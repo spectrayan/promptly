@@ -1,0 +1,36 @@
+type: object
+required: [id, name, createdBy, createdAt]
+properties:
+  id:
+    type: string
+    example: proj-001
+  name:
+    type: string
+    example: customer-ops
+  description:
+    type: string
+    example: Customer operations AI prompts
+  tags:
+    type: array
+    items:
+      type: string
+    example: ["support", "nlp"]
+  memberCount:
+    type: integer
+    description: Number of members in this project
+    example: 3
+  promptCount:
+    type: integer
+    description: Number of prompts in this project
+    example: 2
+  createdBy:
+    type: string
+    example: usr-001
+  createdAt:
+    type: string
+    format: date-time
+    example: "2025-06-01T08:00:00Z"
+  updatedAt:
+    type: string
+    format: date-time
+    example: "2026-04-01T10:00:00Z"

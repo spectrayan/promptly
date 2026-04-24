@@ -1,0 +1,16 @@
+get:
+  operationId: getWorkflow
+  summary: Get workflow details
+  description: Returns full workflow details including approval steps.
+  tags: [Workflows]
+  parameters:
+    - $ref: '../../components/parameters/WorkflowId.yaml'
+  responses:
+    '200':
+      description: Workflow details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/workflow/WorkflowResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

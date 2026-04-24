@@ -1,0 +1,13 @@
+type: object
+required: [email, password]
+properties:
+  email:
+    type: string
+    format: email
+    description: User's email address
+    example: alice@promptly.ai
+  password:
+    type: string
+    format: password
+    description: User's password
+    example: P@ssw0rd123

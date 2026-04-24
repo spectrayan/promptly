@@ -1,0 +1,5 @@
+type: string
+enum:
+  - ACTIVE
+  - INACTIVE
+description: User account status

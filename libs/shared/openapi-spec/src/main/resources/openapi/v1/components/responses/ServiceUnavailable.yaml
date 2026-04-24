@@ -1,0 +1,24 @@
+description: A downstream service (LLM provider, database) is temporarily unavailable
+headers:
+  X-Request-Id:
+    description: Unique request identifier for tracing
+    schema:
+      type: string
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  Retry-After:
+    description: Suggested number of seconds before retrying
+    schema:
+      type: integer
+      example: 30
+content:
+  application/problem+json:
+    schema:
+      $ref: '../schemas/common/ProblemDetails.yaml'
+    example:
+      type: "https://api.promptly.dev/problems/service-unavailable"
+      title: "Service Unavailable"
+      status: 503
+      detail: "The LLM provider (OpenAI) is temporarily unavailable. Scan will be retried automatically."
+      instance: "/api/v1/prompts/69e980f848a38508fe0a1324/scan"
+      timestamp: "2026-04-23T12:00:00.000Z"
+      traceId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"

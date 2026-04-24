@@ -1,0 +1,31 @@
+type: object
+properties:
+  id:
+    type: string
+  promptId:
+    type: string
+  promptVersion:
+    type: integer
+  type:
+    type: string
+    description: "Workflow type (e.g., approval, promotion)"
+  status:
+    $ref: '../common/enums/WorkflowStatus.yaml'
+  currentStep:
+    type: integer
+  sourceEnvironment:
+    $ref: '../common/enums/Environment.yaml'
+  targetEnvironment:
+    $ref: '../common/enums/Environment.yaml'
+  requestedBy:
+    type: string
+  steps:
+    type: array
+    items:
+      $ref: '../workflow/WorkflowStepResponse.yaml'
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time

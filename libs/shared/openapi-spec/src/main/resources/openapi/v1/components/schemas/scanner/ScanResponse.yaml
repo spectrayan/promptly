@@ -1,0 +1,25 @@
+type: object
+properties:
+  id:
+    type: string
+  promptId:
+    type: string
+  promptVersion:
+    type: integer
+  overallScore:
+    type: number
+    format: double
+    description: "Severity score (0.0 = safe, 10.0 = critical)"
+  status:
+    $ref: '../common/enums/ScanStatus.yaml'
+  findings:
+    type: array
+    items:
+      $ref: '../scanner/FindingResponse.yaml'
+  llmProvider:
+    type: string
+  llmModel:
+    type: string
+  scannedAt:
+    type: string
+    format: date-time

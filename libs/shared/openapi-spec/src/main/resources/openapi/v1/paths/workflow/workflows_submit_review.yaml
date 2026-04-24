@@ -1,0 +1,20 @@
+post:
+  operationId: submitForReview
+  summary: Submit a prompt for review
+  description: Creates a new multi-step approval workflow. Emits `ReviewSubmitted` event.
+  tags: [Workflows]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/workflow/SubmitReviewRequest.yaml'
+  responses:
+    '201':
+      description: Workflow created
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/workflow/WorkflowResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'

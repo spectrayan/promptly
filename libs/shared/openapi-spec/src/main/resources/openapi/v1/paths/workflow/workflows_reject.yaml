@@ -1,0 +1,22 @@
+post:
+  operationId: rejectWorkflow
+  summary: Reject workflow
+  description: Rejects the workflow with a reason. Emits `WorkflowRejected` event.
+  tags: [Workflows]
+  parameters:
+    - $ref: '../../components/parameters/WorkflowId.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/workflow/ApproveRejectRequest.yaml'
+  responses:
+    '200':
+      description: Workflow rejected
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/workflow/WorkflowResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

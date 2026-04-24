@@ -1,0 +1,13 @@
+type: object
+properties:
+  type:
+    $ref: '../common/enums/FindingType.yaml'
+  severity:
+    $ref: '../common/enums/Severity.yaml'
+  title:
+    type: string
+  description:
+    type: string
+  remediation:
+    type: string
+    description: Suggested fix

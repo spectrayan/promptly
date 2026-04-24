@@ -1,0 +1,22 @@
+post:
+  operationId: approveWorkflow
+  summary: Approve current workflow step
+  description: Approves the current step. If all steps are approved, workflow moves to `APPROVED` and emits `WorkflowApproved` event.
+  tags: [Workflows]
+  parameters:
+    - $ref: '../../components/parameters/WorkflowId.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/workflow/ApproveRejectRequest.yaml'
+  responses:
+    '200':
+      description: Workflow step approved
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/workflow/WorkflowResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

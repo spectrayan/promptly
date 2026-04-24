@@ -1,0 +1,14 @@
+post:
+  operationId: checkDuplicates
+  summary: Check for duplicate prompts
+  description: "Identifies potential duplicates based on content similarity (threshold \u2265 0.9)."
+  tags: [Search]
+  parameters:
+    - $ref: '../../components/parameters/PromptIdPath.yaml'
+  responses:
+    '200':
+      description: Duplicate check result
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/search/DuplicateCheckResponse.yaml'

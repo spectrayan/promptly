@@ -1,0 +1,15 @@
+type: object
+properties:
+  promptId:
+    type: string
+  name:
+    type: string
+  content:
+    type: string
+    description: The full prompt content for runtime use
+  version:
+    type: integer
+  environment:
+    type: string
+  contentFormat:
+    type: string

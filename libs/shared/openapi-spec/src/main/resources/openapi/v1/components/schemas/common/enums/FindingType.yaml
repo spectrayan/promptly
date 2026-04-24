@@ -1,0 +1,8 @@
+type: string
+description: Category of vulnerability finding
+enum:
+  - phi_exposure
+  - injection_risk
+  - missing_guardrail
+  - hallucination_prone
+  - weak_tool_calling

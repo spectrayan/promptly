@@ -1,0 +1,9 @@
+type: object
+required: [userId, role]
+properties:
+  userId:
+    type: string
+    description: User ID to add as member
+    example: usr-002
+  role:
+    $ref: '../common/enums/ProjectRole.yaml'

@@ -1,0 +1,24 @@
+description: The HTTP method is not allowed for this resource
+headers:
+  X-Request-Id:
+    description: Unique request identifier for tracing
+    schema:
+      type: string
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  Allow:
+    description: List of allowed HTTP methods for this resource
+    schema:
+      type: string
+      example: "GET, POST"
+content:
+  application/problem+json:
+    schema:
+      $ref: '../schemas/common/ProblemDetails.yaml'
+    example:
+      type: "https://api.promptly.dev/problems/method-not-allowed"
+      title: "Method Not Allowed"
+      status: 405
+      detail: "PATCH is not supported for this resource. Use PUT to update prompt content."
+      instance: "/api/v1/prompts/69e980f848a38508fe0a1324"
+      timestamp: "2026-04-23T12:00:00.000Z"
+      traceId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"

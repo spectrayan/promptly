@@ -1,0 +1,25 @@
+post:
+  operationId: register
+  summary: Register a new user
+  description: |
+    Creates a new user account with the LOCAL auth provider.
+    The first registered user automatically becomes ORG_ADMIN.
+    Disabled when auth provider is set to OIDC.
+  tags: [Auth]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/RegisterRequest.yaml'
+  responses:
+    '201':
+      description: User registered successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/AuthResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '409':
+      $ref: '../../components/responses/Conflict.yaml'

@@ -1,0 +1,52 @@
+get:
+  operationId: getPrompt
+  summary: Get prompt details
+  description: Returns full prompt details including latest content, tags, and timestamps.
+  tags: [Prompts]
+  parameters:
+    - $ref: '../../components/parameters/PromptId.yaml'
+  responses:
+    '200':
+      description: Prompt details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/prompt/PromptResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'
+
+put:
+  operationId: updatePrompt
+  summary: Update prompt content
+  description: Creates a new version of the prompt with updated content. Emits `PromptUpdated` event which triggers auto-scan and embedding refresh.
+  tags: [Prompts]
+  parameters:
+    - $ref: '../../components/parameters/PromptId.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/prompt/UpdatePromptRequest.yaml'
+  responses:
+    '200':
+      description: Prompt updated with new version
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/prompt/PromptResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'
+
+delete:
+  operationId: deletePrompt
+  summary: Delete a prompt
+  description: Permanently deletes a prompt and all its versions.
+  tags: [Prompts]
+  parameters:
+    - $ref: '../../components/parameters/PromptId.yaml'
+  responses:
+    '204':
+      description: Prompt deleted
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

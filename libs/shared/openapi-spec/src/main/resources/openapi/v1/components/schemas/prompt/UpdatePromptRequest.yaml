@@ -1,0 +1,13 @@
+type: object
+required: [content, author]
+properties:
+  content:
+    type: string
+    description: Updated prompt content
+  changeMessage:
+    type: string
+    description: Description of what changed
+    example: Added safety guardrails
+  author:
+    type: string
+    description: User making the update

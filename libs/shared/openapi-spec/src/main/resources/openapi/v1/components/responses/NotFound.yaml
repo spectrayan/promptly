@@ -1,0 +1,19 @@
+description: The requested resource was not found
+headers:
+  X-Request-Id:
+    description: Unique request identifier for tracing
+    schema:
+      type: string
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+content:
+  application/problem+json:
+    schema:
+      $ref: '../schemas/common/ProblemDetails.yaml'
+    example:
+      type: "https://api.promptly.dev/problems/not-found"
+      title: "Not Found"
+      status: 404
+      detail: "Prompt with ID '69e980f848a38508fe0a1324' was not found"
+      instance: "/api/v1/prompts/69e980f848a38508fe0a1324"
+      timestamp: "2026-04-23T12:00:00.000Z"
+      traceId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"

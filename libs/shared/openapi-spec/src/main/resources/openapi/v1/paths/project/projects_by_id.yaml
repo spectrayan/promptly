@@ -1,0 +1,21 @@
+get:
+  operationId: getProject
+  summary: Get project by ID
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Project details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/project/ProjectResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

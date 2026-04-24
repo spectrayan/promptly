@@ -1,0 +1,51 @@
+get:
+  operationId: listProjectMembers
+  summary: List project members
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: List of project members
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/project/ProjectMemberResponse.yaml'
+
+post:
+  operationId: addProjectMember
+  summary: Add a member to a project
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/project/AddMemberRequest.yaml'
+  responses:
+    '201':
+      description: Member added
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/project/ProjectMemberResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '409':
+      $ref: '../../components/responses/Conflict.yaml'

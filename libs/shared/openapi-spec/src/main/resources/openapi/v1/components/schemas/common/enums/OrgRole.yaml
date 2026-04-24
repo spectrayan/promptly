@@ -1,0 +1,5 @@
+type: string
+enum:
+  - ORG_ADMIN
+  - ORG_USER
+description: Organization-level role

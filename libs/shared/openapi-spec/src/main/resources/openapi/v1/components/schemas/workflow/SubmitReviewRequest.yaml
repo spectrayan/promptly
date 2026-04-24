@@ -1,0 +1,11 @@
+type: object
+required: [promptId, promptVersion, requestedBy, targetEnvironment]
+properties:
+  promptId:
+    type: string
+  promptVersion:
+    type: integer
+  requestedBy:
+    type: string
+  targetEnvironment:
+    $ref: '../common/enums/Environment.yaml'

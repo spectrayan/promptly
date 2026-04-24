@@ -1,0 +1,20 @@
+post:
+  operationId: refreshToken
+  summary: Refresh access token
+  description: Exchanges a valid refresh token for a new access token pair.
+  tags: [Auth]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/RefreshTokenRequest.yaml'
+  responses:
+    '200':
+      description: Token refreshed successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/AuthResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

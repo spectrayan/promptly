@@ -1,0 +1,24 @@
+description: Authentication is required and has failed or has not been provided
+headers:
+  WWW-Authenticate:
+    description: Authentication scheme and realm
+    schema:
+      type: string
+      example: "Bearer realm=\"Promptly API\""
+  X-Request-Id:
+    description: Unique request identifier for tracing
+    schema:
+      type: string
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+content:
+  application/problem+json:
+    schema:
+      $ref: '../schemas/common/ProblemDetails.yaml'
+    example:
+      type: "https://api.promptly.dev/problems/unauthorized"
+      title: "Unauthorized"
+      status: 401
+      detail: "Authentication credentials are missing or invalid"
+      instance: "/api/v1/prompts"
+      timestamp: "2026-04-23T12:00:00.000Z"
+      traceId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"

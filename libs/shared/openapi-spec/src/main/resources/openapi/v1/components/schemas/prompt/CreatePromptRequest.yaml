@@ -1,0 +1,25 @@
+type: object
+required: [name, projectId, content, author]
+properties:
+  name:
+    type: string
+    description: Human-readable prompt name
+    example: Care Plan Summary
+  description:
+    type: string
+    description: Brief description of the prompt's purpose
+    example: Generates patient care plan summaries
+  projectId:
+    type: string
+    description: Project/application this prompt belongs to
+    example: healthcare
+  contentFormat:
+    $ref: '../common/enums/ContentFormat.yaml'
+  content:
+    type: string
+    description: The prompt content (5KB–50KB supported)
+    example: "You are a clinical AI assistant..."
+  author:
+    type: string
+    description: User who created the prompt
+    example: admin

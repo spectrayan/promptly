@@ -1,0 +1,8 @@
+type: string
+enum:
+  - VIEWER
+  - AUTHOR
+  - REVIEWER
+  - APPROVER
+  - ADMIN
+description: Project-level RBAC role

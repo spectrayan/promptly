@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.promptly</groupId>
+        <artifactId>promptly</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>promptly-openapi-spec</artifactId>
+    <packaging>pom</packaging>
+    <name>promptly-openapi-spec</name>
+    <description>OpenAPI specification — generates Java APIs and Angular SDK from contract</description>
+
+    <properties>
+        <!-- Output directories relative to this module -->
+        <apis.output>${project.basedir}/../apis/v1/promptly-apis</apis.output>
+        <angular.sdk.output>${project.basedir}/../sdks/v1/angular/promptly-client</angular.sdk.output>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+                    <!-- Step 1: Bundle multi-file spec into a single resolved YAML -->
+                    <execution>
+                        <id>bundle-spec</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/promptly-v1.yaml</inputSpec>
+                            <generatorName>openapi-yaml</generatorName>
+                            <output>${project.build.directory}/openapi-bundled</output>
+                            <generateApis>false</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 3a: Generate Spring Java interfaces + DTOs -->
+                    <execution>
+                        <id>generate-java-server</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.build.directory}/openapi-bundled/openapi/openapi.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${apis.output}</output>
+
+                            <apiPackage>com.promptly.infrastructure.in.web.api</apiPackage>
+                            <modelPackage>com.promptly.infrastructure.in.web.dto</modelPackage>
+
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+
+                            <openapiNormalizer>
+                                <REF_AS_PARENT_IN_ALLOF>true</REF_AS_PARENT_IN_ALLOF>
+                            </openapiNormalizer>
+
+                            <inlineSchemaOptions>
+                                <RESOLVE_INLINE_ENUMS>true</RESOLVE_INLINE_ENUMS>
+                                <REFACTOR_ALLOF_INLINE_SCHEMAS>true</REFACTOR_ALLOF_INLINE_SCHEMAS>
+                            </inlineSchemaOptions>
+
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <reactive>true</reactive>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <jakarta>true</jakarta>
+                                <dateLibrary>java8</dateLibrary>
+                                <openApiNullable>false</openApiNullable>
+                                <documentationProvider>springdoc</documentationProvider>
+                                <useTags>true</useTags>
+                                <sourceFolder>src/main/java</sourceFolder>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+
+                    <!-- Step 3b: Generate Angular TypeScript client SDK -->
+                    <execution>
+                        <id>generate-angular-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.build.directory}/openapi-bundled/openapi/openapi.yaml</inputSpec>
+                            <generatorName>typescript-angular</generatorName>
+                            <output>${angular.sdk.output}</output>
+
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+
+                            <openapiNormalizer>
+                                <REF_AS_PARENT_IN_ALLOF>true</REF_AS_PARENT_IN_ALLOF>
+                            </openapiNormalizer>
+
+                            <inlineSchemaOptions>
+                                <RESOLVE_INLINE_ENUMS>true</RESOLVE_INLINE_ENUMS>
+                                <REFACTOR_ALLOF_INLINE_SCHEMAS>true</REFACTOR_ALLOF_INLINE_SCHEMAS>
+                            </inlineSchemaOptions>
+
+                            <configOptions>
+                                <npmName>@promptly/client</npmName>
+                                <npmVersion>1.0.0</npmVersion>
+                                <ngVersion>19.0.0</ngVersion>
+                                <supportsES6>true</supportsES6>
+                                <withInterfaces>true</withInterfaces>
+                                <useSingleRequestParameter>true</useSingleRequestParameter>
+                                <fileNaming>kebab-case</fileNaming>
+                                <modelFileSuffix>.model</modelFileSuffix>
+                                <serviceFileSuffix>.service</serviceFileSuffix>
+                                <serviceSuffix>Service</serviceSuffix>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Step 2: Post-process bundled spec to deduplicate inline schemas -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>deduplicate-inline-schemas</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>powershell</executable>
+                            <arguments>
+                                <argument>-NoProfile</argument>
+                                <argument>-ExecutionPolicy</argument>
+                                <argument>Bypass</argument>
+                                <argument>-File</argument>
+                                <argument>${project.basedir}/src/main/resources/scripts/deduplicate-schemas.ps1</argument>
+                                <argument>${project.build.directory}/openapi-bundled/openapi/openapi.yaml</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

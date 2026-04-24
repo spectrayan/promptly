@@ -1,0 +1,41 @@
+get:
+  operationId: listProjects
+  summary: List all projects
+  description: Returns all projects the current user has access to.
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  responses:
+    '200':
+      description: List of projects
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/project/ProjectResponse.yaml'
+
+post:
+  operationId: createProject
+  summary: Create a new project
+  description: Creates a new project. The creator automatically becomes ADMIN.
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/project/CreateProjectRequest.yaml'
+  responses:
+    '201':
+      description: Project created
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/project/ProjectResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '409':
+      $ref: '../../components/responses/Conflict.yaml'

@@ -1,0 +1,14 @@
+get:
+  operationId: getAllScans
+  summary: List all scan results
+  description: Returns all scan results across all prompts.
+  tags: [Scanner]
+  responses:
+    '200':
+      description: List of scan results
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/scanner/ScanResponse.yaml'

@@ -1,0 +1,37 @@
+get:
+  operationId: listUsers
+  summary: Search users
+  description: |
+    Returns a list of users matching the search query.
+    Used for project member picker (autocomplete).
+    Requires authentication.
+  tags: [Auth]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: q
+      in: query
+      required: false
+      description: Search query (matches email or display name)
+      schema:
+        type: string
+        example: alice
+    - name: limit
+      in: query
+      required: false
+      description: Maximum number of results
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+  responses:
+    '200':
+      description: List of matching users
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/auth/UserResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

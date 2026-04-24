@@ -1,0 +1,22 @@
+get:
+  operationId: getSpecificVersion
+  summary: Get a specific version
+  description: Returns the content and metadata of a specific prompt version.
+  tags: [Prompts]
+  parameters:
+    - $ref: '../../components/parameters/PromptId.yaml'
+    - name: versionNumber
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+  responses:
+    '200':
+      description: Version details
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/prompt/VersionResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

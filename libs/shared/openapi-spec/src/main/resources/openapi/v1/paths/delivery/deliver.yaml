@@ -1,0 +1,35 @@
+get:
+  operationId: deliverPrompt
+  summary: Deliver prompt to AI agent
+  description: |
+    Low-latency endpoint for AI agents to fetch the latest active prompt
+    by application ID and optional use case / agent identifiers.
+  tags: [Delivery]
+  parameters:
+    - name: appId
+      in: query
+      required: true
+      description: Application/project identifier
+      schema:
+        type: string
+    - name: usecase
+      in: query
+      required: false
+      description: Use case filter
+      schema:
+        type: string
+    - name: agent
+      in: query
+      required: false
+      description: Agent identifier filter
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Prompt content delivered
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/delivery/DeliveryResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

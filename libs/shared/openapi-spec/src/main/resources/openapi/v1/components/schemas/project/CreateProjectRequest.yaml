@@ -1,0 +1,17 @@
+type: object
+required: [name]
+properties:
+  name:
+    type: string
+    description: Project name (unique)
+    example: customer-ops
+  description:
+    type: string
+    description: Brief description of the project
+    example: Customer operations AI prompts
+  tags:
+    type: array
+    items:
+      type: string
+    description: Tags for cross-project discovery
+    example: ["support", "nlp"]

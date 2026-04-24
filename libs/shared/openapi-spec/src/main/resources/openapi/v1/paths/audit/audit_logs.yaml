@@ -1,0 +1,35 @@
+get:
+  operationId: getAuditLogs
+  summary: Query audit logs
+  description: |
+    Returns immutable audit trail entries. Filter by resource ID, user ID, or action type.
+    If no filter is provided, returns all entries.
+  tags: [Audit]
+  parameters:
+    - name: resourceId
+      in: query
+      required: false
+      description: Filter by resource ID (prompt, workflow, scan)
+      schema:
+        type: string
+    - name: userId
+      in: query
+      required: false
+      description: Filter by actor user ID
+      schema:
+        type: string
+    - name: action
+      in: query
+      required: false
+      description: "Filter by action type (e.g., prompt.created, workflow.approved)"
+      schema:
+        type: string
+  responses:
+    '200':
+      description: List of audit log entries
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/audit/AuditResponse.yaml'

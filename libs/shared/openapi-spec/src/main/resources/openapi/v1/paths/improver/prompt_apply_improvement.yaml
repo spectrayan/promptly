@@ -1,0 +1,18 @@
+post:
+  operationId: applyImprovement
+  summary: Apply an improvement
+  description: Accepts the improved content and creates a new prompt version.
+  tags: [Improver]
+  parameters:
+    - $ref: '../../components/parameters/PromptIdPath.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/improver/ApplyImprovementRequest.yaml'
+  responses:
+    '200':
+      description: Improvement applied
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

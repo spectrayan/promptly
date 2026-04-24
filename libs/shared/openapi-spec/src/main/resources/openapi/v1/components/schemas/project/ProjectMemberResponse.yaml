@@ -1,0 +1,18 @@
+type: object
+required: [userId, displayName, email, role]
+properties:
+  userId:
+    type: string
+    example: usr-002
+  displayName:
+    type: string
+    example: Bob Chen
+  email:
+    type: string
+    example: bob@promptly.ai
+  role:
+    $ref: '../common/enums/ProjectRole.yaml'
+  joinedAt:
+    type: string
+    format: date-time
+    example: "2025-07-15T10:00:00Z"

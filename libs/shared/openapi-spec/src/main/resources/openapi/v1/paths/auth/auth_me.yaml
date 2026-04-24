@@ -1,0 +1,16 @@
+get:
+  operationId: getCurrentUser
+  summary: Get current authenticated user
+  description: Returns the profile of the currently authenticated user from the JWT token.
+  tags: [Auth]
+  security:
+    - BearerAuth: []
+  responses:
+    '200':
+      description: Current user profile
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/UserResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

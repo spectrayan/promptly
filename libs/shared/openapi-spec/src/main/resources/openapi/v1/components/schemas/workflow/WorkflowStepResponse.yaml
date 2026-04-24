@@ -1,0 +1,16 @@
+type: object
+properties:
+  step:
+    type: integer
+  role:
+    type: string
+    description: "Required role (e.g., reviewer, approver)"
+  assignedTo:
+    type: string
+  action:
+    $ref: '../common/enums/StepAction.yaml'
+  comment:
+    type: string
+  actedAt:
+    type: string
+    format: date-time

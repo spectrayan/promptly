@@ -1,0 +1,7 @@
+type: object
+required: [improvedContent, author]
+properties:
+  improvedContent:
+    type: string
+  author:
+    type: string

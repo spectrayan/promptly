@@ -1,0 +1,254 @@
+openapi: 3.1.0
+info:
+  title: Promptly API
+  description: |
+    Enterprise AI Prompt Governance Platform — REST API
+
+    Promptly enables organizations to manage, version, secure, and deploy AI prompts
+    with full governance controls. This specification covers all seven bounded contexts:
+    Prompt Registry, Workflow Engine, Vulnerability Scanner, Quality Improver,
+    Runtime Delivery, Audit & Compliance, and Semantic Search.
+  version: 1.0.0
+  contact:
+    name: Promptly Team
+    url: https://promptly.dev
+  license:
+    name: Proprietary
+    url: https://promptly.dev/license
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.promptly.dev
+    description: Production server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: 'v1/components/securitySchemes/securitySchemes.yaml'
+
+  parameters:
+    PromptId:
+      $ref: 'v1/components/parameters/PromptId.yaml'
+    PromptIdPath:
+      $ref: 'v1/components/parameters/PromptIdPath.yaml'
+    WorkflowId:
+      $ref: 'v1/components/parameters/WorkflowId.yaml'
+
+  schemas:
+    # ── Common / Enums ──
+    ContentFormat:
+      $ref: 'v1/components/schemas/common/enums/ContentFormat.yaml'
+    Environment:
+      $ref: 'v1/components/schemas/common/enums/Environment.yaml'
+    WorkflowStatus:
+      $ref: 'v1/components/schemas/common/enums/WorkflowStatus.yaml'
+    StepAction:
+      $ref: 'v1/components/schemas/common/enums/StepAction.yaml'
+    ScanStatus:
+      $ref: 'v1/components/schemas/common/enums/ScanStatus.yaml'
+    FindingType:
+      $ref: 'v1/components/schemas/common/enums/FindingType.yaml'
+    Severity:
+      $ref: 'v1/components/schemas/common/enums/Severity.yaml'
+    OrgRole:
+      $ref: 'v1/components/schemas/common/enums/OrgRole.yaml'
+    UserStatus:
+      $ref: 'v1/components/schemas/common/enums/UserStatus.yaml'
+    ProjectRole:
+      $ref: 'v1/components/schemas/common/enums/ProjectRole.yaml'
+    ProblemDetails:
+      $ref: 'v1/components/schemas/common/ProblemDetails.yaml'
+    ValidationError:
+      $ref: 'v1/components/schemas/common/ValidationError.yaml'
+
+    # ── Authentication ──
+    RegisterRequest:
+      $ref: 'v1/components/schemas/auth/RegisterRequest.yaml'
+    LoginRequest:
+      $ref: 'v1/components/schemas/auth/LoginRequest.yaml'
+    AuthResponse:
+      $ref: 'v1/components/schemas/auth/AuthResponse.yaml'
+    UserResponse:
+      $ref: 'v1/components/schemas/auth/UserResponse.yaml'
+    RefreshTokenRequest:
+      $ref: 'v1/components/schemas/auth/RefreshTokenRequest.yaml'
+
+    # ── Projects ──
+    CreateProjectRequest:
+      $ref: 'v1/components/schemas/project/CreateProjectRequest.yaml'
+    ProjectResponse:
+      $ref: 'v1/components/schemas/project/ProjectResponse.yaml'
+    AddMemberRequest:
+      $ref: 'v1/components/schemas/project/AddMemberRequest.yaml'
+    ProjectMemberResponse:
+      $ref: 'v1/components/schemas/project/ProjectMemberResponse.yaml'
+
+    # ── Prompt Registry ──
+    CreatePromptRequest:
+      $ref: 'v1/components/schemas/prompt/CreatePromptRequest.yaml'
+    UpdatePromptRequest:
+      $ref: 'v1/components/schemas/prompt/UpdatePromptRequest.yaml'
+    PromptResponse:
+      $ref: 'v1/components/schemas/prompt/PromptResponse.yaml'
+    PromptSummaryResponse:
+      $ref: 'v1/components/schemas/prompt/PromptSummaryResponse.yaml'
+    VersionResponse:
+      $ref: 'v1/components/schemas/prompt/VersionResponse.yaml'
+
+    # ── Workflow Engine ──
+    SubmitReviewRequest:
+      $ref: 'v1/components/schemas/workflow/SubmitReviewRequest.yaml'
+    ApproveRejectRequest:
+      $ref: 'v1/components/schemas/workflow/ApproveRejectRequest.yaml'
+    WorkflowResponse:
+      $ref: 'v1/components/schemas/workflow/WorkflowResponse.yaml'
+    WorkflowStepResponse:
+      $ref: 'v1/components/schemas/workflow/WorkflowStepResponse.yaml'
+
+    # ── Vulnerability Scanner ──
+    ScanResponse:
+      $ref: 'v1/components/schemas/scanner/ScanResponse.yaml'
+    FindingResponse:
+      $ref: 'v1/components/schemas/scanner/FindingResponse.yaml'
+
+    # ── Quality Improver ──
+    ImprovementResponse:
+      $ref: 'v1/components/schemas/improver/ImprovementResponse.yaml'
+    ApplyImprovementRequest:
+      $ref: 'v1/components/schemas/improver/ApplyImprovementRequest.yaml'
+
+    # ── Runtime Delivery ──
+    DeliveryResponse:
+      $ref: 'v1/components/schemas/delivery/DeliveryResponse.yaml'
+
+    # ── Audit & Compliance ──
+    AuditResponse:
+      $ref: 'v1/components/schemas/audit/AuditResponse.yaml'
+
+    # ── Semantic Search ──
+    SearchResponse:
+      $ref: 'v1/components/schemas/search/SearchResponse.yaml'
+    DuplicateCheckResponse:
+      $ref: 'v1/components/schemas/search/DuplicateCheckResponse.yaml'
+
+  responses:
+    BadRequest:
+      $ref: 'v1/components/responses/BadRequest.yaml'
+    Unauthorized:
+      $ref: 'v1/components/responses/Unauthorized.yaml'
+    Forbidden:
+      $ref: 'v1/components/responses/Forbidden.yaml'
+    NotFound:
+      $ref: 'v1/components/responses/NotFound.yaml'
+    MethodNotAllowed:
+      $ref: 'v1/components/responses/MethodNotAllowed.yaml'
+    Conflict:
+      $ref: 'v1/components/responses/Conflict.yaml'
+    PayloadTooLarge:
+      $ref: 'v1/components/responses/PayloadTooLarge.yaml'
+    UnprocessableEntity:
+      $ref: 'v1/components/responses/UnprocessableEntity.yaml'
+    TooManyRequests:
+      $ref: 'v1/components/responses/TooManyRequests.yaml'
+    InternalServerError:
+      $ref: 'v1/components/responses/InternalServerError.yaml'
+    ServiceUnavailable:
+      $ref: 'v1/components/responses/ServiceUnavailable.yaml'
+
+tags:
+  - name: Auth
+    description: Authentication — registration, login, token management (LOCAL mode)
+  - name: Projects
+    description: Projects — RBAC boundaries, team management
+  - name: Prompts
+    description: Prompt Registry — CRUD, versioning, and rollback
+  - name: Workflows
+    description: Workflow Engine — multi-step approval and environment promotion
+  - name: Scanner
+    description: Vulnerability Scanner — LLM-powered prompt security analysis
+  - name: Improver
+    description: Quality Improver — AI-assisted prompt refinement
+  - name: Delivery
+    description: Runtime Delivery — low-latency prompt serving for AI agents
+  - name: Audit
+    description: Audit & Compliance — immutable audit trail
+  - name: Search
+    description: Semantic Search — embedding-based prompt discovery
+
+paths:
+  # ── Authentication ──
+  /api/v1/auth/register:
+    $ref: 'v1/paths/auth/auth_register.yaml'
+  /api/v1/auth/login:
+    $ref: 'v1/paths/auth/auth_login.yaml'
+  /api/v1/auth/refresh:
+    $ref: 'v1/paths/auth/auth_refresh.yaml'
+  /api/v1/auth/me:
+    $ref: 'v1/paths/auth/auth_me.yaml'
+  /api/v1/users:
+    $ref: 'v1/paths/auth/users.yaml'
+
+  # ── Projects ──
+  /api/v1/projects:
+    $ref: 'v1/paths/project/projects.yaml'
+  /api/v1/projects/{id}:
+    $ref: 'v1/paths/project/projects_by_id.yaml'
+  /api/v1/projects/{projectId}/members:
+    $ref: 'v1/paths/project/project_members.yaml'
+
+  # ── Prompt Registry ──
+  /api/v1/prompts:
+    $ref: 'v1/paths/prompt/prompts.yaml'
+  /api/v1/prompts/{id}:
+    $ref: 'v1/paths/prompt/prompts_by_id.yaml'
+  /api/v1/prompts/{id}/versions:
+    $ref: 'v1/paths/prompt/prompt_versions.yaml'
+  /api/v1/prompts/{id}/versions/{versionNumber}:
+    $ref: 'v1/paths/prompt/prompt_versions_by_number.yaml'
+  /api/v1/prompts/{id}/rollback/{targetVersion}:
+    $ref: 'v1/paths/prompt/prompt_rollback.yaml'
+
+  # ── Workflow Engine ──
+  /api/v1/workflows:
+    $ref: 'v1/paths/workflow/workflows.yaml'
+  /api/v1/workflows/submit-review:
+    $ref: 'v1/paths/workflow/workflows_submit_review.yaml'
+  /api/v1/workflows/{id}:
+    $ref: 'v1/paths/workflow/workflows_by_id.yaml'
+  /api/v1/workflows/{id}/approve:
+    $ref: 'v1/paths/workflow/workflows_approve.yaml'
+  /api/v1/workflows/{id}/reject:
+    $ref: 'v1/paths/workflow/workflows_reject.yaml'
+
+  # ── Vulnerability Scanner ──
+  /api/v1/prompts/{promptId}/scan:
+    $ref: 'v1/paths/scanner/prompt_scan.yaml'
+  /api/v1/prompts/{promptId}/scan-results:
+    $ref: 'v1/paths/scanner/prompt_scan_results.yaml'
+  /api/v1/scans:
+    $ref: 'v1/paths/scanner/scans.yaml'
+
+  # ── Quality Improver ──
+  /api/v1/prompts/{promptId}/improve:
+    $ref: 'v1/paths/improver/prompt_improve.yaml'
+  /api/v1/prompts/{promptId}/apply-improvement:
+    $ref: 'v1/paths/improver/prompt_apply_improvement.yaml'
+
+  # ── Runtime Delivery ──
+  /api/v1/deliver:
+    $ref: 'v1/paths/delivery/deliver.yaml'
+
+  # ── Audit & Compliance ──
+  /api/v1/audit-logs:
+    $ref: 'v1/paths/audit/audit_logs.yaml'
+  /api/v1/audit-logs/export:
+    $ref: 'v1/paths/audit/audit_logs_export.yaml'
+
+  # ── Semantic Search ──
+  /api/v1/search:
+    $ref: 'v1/paths/search/search.yaml'
+  /api/v1/prompts/{promptId}/similar:
+    $ref: 'v1/paths/search/prompt_similar.yaml'
+  /api/v1/prompts/{promptId}/check-duplicates:
+    $ref: 'v1/paths/search/prompt_check_duplicates.yaml'

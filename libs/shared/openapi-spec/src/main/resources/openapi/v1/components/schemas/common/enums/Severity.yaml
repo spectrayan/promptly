@@ -1,0 +1,7 @@
+type: string
+description: Severity level of a finding
+enum:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW

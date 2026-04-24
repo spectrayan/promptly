@@ -1,0 +1,16 @@
+get:
+  operationId: findSimilarPrompts
+  summary: Find similar prompts
+  description: Finds prompts with similar content using vector similarity.
+  tags: [Search]
+  parameters:
+    - $ref: '../../components/parameters/PromptIdPath.yaml'
+  responses:
+    '200':
+      description: Similar prompts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/search/SearchResponse.yaml'

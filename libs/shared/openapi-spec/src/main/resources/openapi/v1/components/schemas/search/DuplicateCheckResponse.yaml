@@ -1,0 +1,10 @@
+type: object
+properties:
+  promptId:
+    type: string
+  hasDuplicates:
+    type: boolean
+  duplicates:
+    type: array
+    items:
+      $ref: '../search/SearchResponse.yaml'

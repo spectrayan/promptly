@@ -1,0 +1,23 @@
+type: object
+description: Field-level validation error details
+required:
+  - field
+  - message
+properties:
+  field:
+    type: string
+    description: Name of the field that failed validation
+    example: "name"
+  message:
+    type: string
+    description: Validation error message for this field
+    example: "must not be blank"
+  rejectedValue:
+    type: string
+    description: The value that was rejected (may be null)
+    nullable: true
+    example: ""
+  code:
+    type: string
+    description: Machine-readable error code for this field
+    example: "REQUIRED_FIELD"

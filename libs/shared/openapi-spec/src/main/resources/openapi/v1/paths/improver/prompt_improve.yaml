@@ -1,0 +1,16 @@
+post:
+  operationId: improvePrompt
+  summary: Generate AI improvement suggestions
+  description: Uses LLM to analyze the prompt and generate an improved version with explanation.
+  tags: [Improver]
+  parameters:
+    - $ref: '../../components/parameters/PromptIdPath.yaml'
+  responses:
+    '200':
+      description: Improvement suggestion
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/improver/ImprovementResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

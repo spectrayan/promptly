@@ -1,0 +1,6 @@
+type: string
+description: Action taken on a workflow approval step
+enum:
+  - pending
+  - approved
+  - rejected

@@ -1,0 +1,16 @@
+post:
+  operationId: triggerScan
+  summary: Trigger a vulnerability scan
+  description: Runs an LLM-powered vulnerability analysis on the prompt's latest version.
+  tags: [Scanner]
+  parameters:
+    - $ref: '../../components/parameters/PromptIdPath.yaml'
+  responses:
+    '200':
+      description: Scan results
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/scanner/ScanResponse.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

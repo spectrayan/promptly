@@ -1,0 +1,21 @@
+post:
+  operationId: exportAuditLogs
+  summary: Export audit logs
+  description: Exports audit trail for SOC2/HIPAA compliance.
+  tags: [Audit]
+  parameters:
+    - name: resourceId
+      in: query
+      required: false
+      description: Filter by resource ID
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Exported audit log entries
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/audit/AuditResponse.yaml'
