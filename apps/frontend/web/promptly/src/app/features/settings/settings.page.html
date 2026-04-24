@@ -1,0 +1,215 @@
+<div class="page-header">
+  <h1>Settings</h1>
+  <p>Manage LLM provider configuration and platform settings</p>
+</div>
+
+<div class="settings-layout">
+  <!-- Feature Selector (left sidebar) -->
+  <div class="feature-nav">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>LLM Features</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @for (feature of features; track feature.value) {
+          <button mat-button class="feature-btn"
+                  [class.active]="selectedFeature() === feature.value"
+                  (click)="selectFeature(feature.value)">
+            <mat-icon>{{ feature.icon }}</mat-icon>
+            <div class="feature-info">
+              <span class="feature-label">{{ feature.label }}</span>
+              <span class="feature-desc">{{ feature.description }}</span>
+            </div>
+          </button>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Deployment Info -->
+    <mat-card class="info-card">
+      <mat-card-content>
+        <div class="info-row">
+          <mat-icon>cloud</mat-icon>
+          <div>
+            <span class="info-label">Deployment Mode</span>
+            <span class="info-value badge" [class.badge-info]="deploymentMode() === 'saas'"
+                  [class.badge-success]="deploymentMode() === 'self-hosted'">
+              {{ deploymentMode() }}
+            </span>
+          </div>
+        </div>
+        <div class="info-row">
+          <mat-icon>lock</mat-icon>
+          <div>
+            <span class="info-label">Encryption</span>
+            <span class="info-value">{{ encryptionAvailable() ? 'Available ✓' : 'Not configured' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Main Config Panel -->
+  <div class="config-panel">
+    @if (loading()) {
+      <div class="loading-center"><mat-spinner diameter="40" /></div>
+    } @else {
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>{{ selectedFeatureInfo().icon }}</mat-icon>
+            {{ selectedFeatureInfo().label }} Configuration
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Provider -->
+          <div class="config-field">
+            <div class="field-header">
+              <span class="field-label">Provider</span>
+              @if (getSource('provider')) {
+                <span class="source-badge" [class]="getSourceClass(getSource('provider'))">
+                  {{ getSourceLabel(getSource('provider')) }}
+                </span>
+              }
+              @if (isLocked('provider')) {
+                <mat-icon class="lock-icon" matTooltip="Set by environment variable">lock</mat-icon>
+              }
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>LLM Provider</mat-label>
+              <mat-select [(ngModel)]="provider" [disabled]="isLocked('provider')"
+                          (selectionChange)="onProviderChange()" id="settings-provider">
+                @for (p of providers; track p.value) {
+                  <mat-option [value]="p.value">{{ p.icon }} {{ p.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Model -->
+          <div class="config-field">
+            <div class="field-header">
+              <span class="field-label">Model</span>
+              @if (getSource('model')) {
+                <span class="source-badge" [class]="getSourceClass(getSource('model'))">
+                  {{ getSourceLabel(getSource('model')) }}
+                </span>
+              }
+              @if (isLocked('model')) {
+                <mat-icon class="lock-icon" matTooltip="Set by environment variable">lock</mat-icon>
+              }
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Model</mat-label>
+              <mat-select [(ngModel)]="model" [disabled]="isLocked('model')" id="settings-model">
+                @for (m of availableModels(); track m) {
+                  <mat-option [value]="m">{{ m }}</mat-option>
+                }
+              </mat-select>
+              <mat-hint>Or type a custom model name</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="config-row">
+            <!-- Temperature -->
+            <div class="config-field flex-1">
+              <div class="field-header">
+                <span class="field-label">Temperature</span>
+                @if (getSource('temperature')) {
+                  <span class="source-badge" [class]="getSourceClass(getSource('temperature'))">
+                    {{ getSourceLabel(getSource('temperature')) }}
+                  </span>
+                }
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Temperature (0.0 – 2.0)</mat-label>
+                <input matInput type="number" [(ngModel)]="temperature"
+                       min="0" max="2" step="0.1" [disabled]="isLocked('temperature')" />
+              </mat-form-field>
+            </div>
+
+            <!-- Max Tokens -->
+            <div class="config-field flex-1">
+              <div class="field-header">
+                <span class="field-label">Max Tokens</span>
+              </div>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Max output tokens</mat-label>
+                <input matInput type="number" [(ngModel)]="maxTokens"
+                       min="256" max="128000" step="256" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Base URL -->
+          <div class="config-field">
+            <div class="field-header">
+              <span class="field-label">Base URL</span>
+              <span class="field-optional">Optional</span>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Custom API endpoint</mat-label>
+              <input matInput [(ngModel)]="baseUrl"
+                     placeholder="e.g. https://my-proxy.example.com/v1" />
+              <mat-hint>Leave blank to use the provider's default endpoint</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <mat-divider />
+
+          <!-- API Key Section -->
+          <div class="config-field api-key-section">
+            <div class="field-header">
+              <span class="field-label">API Key</span>
+              @if (isLocked('apiKey')) {
+                <mat-icon class="lock-icon" matTooltip="API keys are managed via environment variables in self-hosted mode">lock</mat-icon>
+              }
+              @if (apiKeyConfigured) {
+                <span class="badge badge-success">Configured ✓</span>
+              } @else {
+                <span class="badge badge-warning">Not set</span>
+              }
+            </div>
+
+            @if (apiKeyConfigured && apiKeyHint) {
+              <div class="current-key-hint">
+                <mat-icon>vpn_key</mat-icon>
+                <code>{{ apiKeyHint }}</code>
+              </div>
+            }
+
+            @if (!isLocked('apiKey')) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ apiKeyConfigured ? 'Update API key' : 'Enter API key' }}</mat-label>
+                <input matInput type="password" [(ngModel)]="apiKey"
+                       placeholder="sk-..." autocomplete="off" />
+                <mat-hint>{{ apiKeyConfigured ? 'Leave blank to keep current key' : 'Required for LLM calls' }}</mat-hint>
+              </mat-form-field>
+            } @else {
+              <div class="locked-field-info">
+                <mat-icon>info</mat-icon>
+                <span>API keys are configured via the <code>PROMPTLY_LLM_API_KEY</code> environment variable in self-hosted mode.</span>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-flat-button color="primary" (click)="saveConfig()"
+                  [disabled]="saving()" id="settings-save">
+            @if (saving()) {
+              <mat-spinner diameter="18" />
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            Save Configuration
+          </button>
+          <button mat-stroked-button (click)="resetConfig()">
+            <mat-icon>restart_alt</mat-icon>
+            Reset to Defaults
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+</div>

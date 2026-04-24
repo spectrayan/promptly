@@ -1,0 +1,64 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Prompt List Page
+// ═══════════════════════════════════════════════════════════════════════
+
+.prompt-table {
+  width: 100%;
+}
+
+.prompt-name-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.prompt-link {
+  color: var(--mat-sys-primary);
+  cursor: pointer;
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.copy-id-btn {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    opacity: 1 !important;
+    color: var(--mat-sys-primary);
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high) !important;
+
+    .copy-id-btn {
+      opacity: 0.5;
+    }
+  }
+
+  &:active {
+    background: var(--mat-sys-primary-container) !important;
+  }
+}

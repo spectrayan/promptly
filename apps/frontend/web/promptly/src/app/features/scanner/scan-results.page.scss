@@ -1,0 +1,33 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Scanner Page
+// ═══════════════════════════════════════════════════════════════════════
+
+.prompt-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.prompt-name {
+  font-weight: var(--weight-medium);
+  color: var(--mat-sys-primary);
+}
+
+.copy-id-btn {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  opacity: 0.4;
+  transition: opacity var(--transition-base);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    opacity: 1;
+    color: var(--mat-sys-primary);
+  }
+}

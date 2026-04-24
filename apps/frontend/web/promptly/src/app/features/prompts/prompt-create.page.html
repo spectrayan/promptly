@@ -1,0 +1,167 @@
+<div class="page-header">
+  <a routerLink="/prompts" class="back-link">
+    <mat-icon>arrow_back</mat-icon> Back to Prompts
+  </a>
+  <h1>Create New Prompt</h1>
+  <p>Define a new AI prompt with optional AI-assisted generation</p>
+</div>
+
+<div class="create-layout">
+  <!-- Main Editor Panel -->
+  <div class="editor-panel">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Prompt Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-half">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="form.name"
+                   placeholder="e.g. Customer Support Classifier" required id="create-name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-half">
+            <mat-label>Project</mat-label>
+            <mat-select [(ngModel)]="form.projectId" required id="create-project">
+              @for (proj of projectsFacade.projects(); track proj.id) {
+                <mat-option [value]="proj.id">{{ proj.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput [(ngModel)]="form.description" rows="2"
+                    placeholder="What does this prompt do? (brief summary)"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-third">
+          <mat-label>Content Format</mat-label>
+          <mat-select [(ngModel)]="form.contentFormat">
+            <mat-option value="TEXT">Text</mat-option>
+            <mat-option value="JSON">JSON</mat-option>
+            <mat-option value="YAML">YAML</mat-option>
+            <mat-option value="MARKDOWN">Markdown</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Prompt Content Editor -->
+    <mat-card class="editor-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>code</mat-icon>
+          Prompt Content
+        </mat-card-title>
+        <div class="editor-actions">
+          <button mat-stroked-button (click)="toggleAiPanel()" class="ai-toggle-btn" id="ai-assist-toggle">
+            <mat-icon>auto_fix_high</mat-icon>
+            {{ showAiPanel ? 'Hide' : 'Show' }} AI Assist
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="monaco-editor-wrapper">
+          <promptly-monaco-editor
+            [value]="form.content ?? ''"
+            (valueChange)="form.content = $event"
+            [language]="form.contentFormat ?? 'TEXT'"
+            [height]="'400px'"
+            [minimap]="false"
+            id="create-content"
+          />
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Side Panel: AI Assist + Actions -->
+  <div class="side-panel">
+    <!-- AI Assist Panel -->
+    @if (showAiPanel) {
+      <mat-card class="ai-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>auto_awesome</mat-icon>
+            AI Assistant
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-tab-group animationDuration="200ms">
+            <!-- Generate Tab -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon>lightbulb</mat-icon>&nbsp;Generate
+              </ng-template>
+              <div class="ai-tab-content">
+                <p class="ai-hint">Describe your prompt idea and AI will generate a production-quality prompt.</p>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Your idea</mat-label>
+                  <textarea matInput [(ngModel)]="aiPromptIdea" rows="4"
+                            placeholder="e.g. classify customer support tickets into billing, technical, account categories"></textarea>
+                </mat-form-field>
+                <button mat-flat-button color="primary" (click)="generateFromIdea()"
+                        [disabled]="aiGenerating || !aiPromptIdea.trim()" class="full-width" id="ai-generate-btn">
+                  @if (aiGenerating) {
+                    <mat-spinner diameter="18"></mat-spinner>&nbsp;Generating...
+                  } @else {
+                    <mat-icon>auto_awesome</mat-icon> Generate Prompt
+                  }
+                </button>
+              </div>
+            </mat-tab>
+
+            <!-- Refine Tab -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <mat-icon>tune</mat-icon>&nbsp;Refine
+              </ng-template>
+              <div class="ai-tab-content">
+                <p class="ai-hint">Improve your current content with AI-suggested safety guards and best practices.</p>
+                <button mat-flat-button color="primary" (click)="refineContent()"
+                        [disabled]="aiRefining || !form.content" class="full-width" id="ai-refine-btn">
+                  @if (aiRefining) {
+                    <mat-spinner diameter="18"></mat-spinner>&nbsp;Refining...
+                  } @else {
+                    <mat-icon>tune</mat-icon> Refine Content
+                  }
+                </button>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+
+          <!-- AI Suggestion -->
+          @if (aiSuggestion) {
+            <div class="ai-suggestion">
+              <div class="ai-suggestion-header">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>Suggestion</span>
+              </div>
+              <pre class="ai-suggestion-content">{{ aiSuggestion }}</pre>
+              <button mat-flat-button color="accent" (click)="acceptSuggestion()"
+                      class="full-width accept-btn" id="ai-accept-btn">
+                <mat-icon>check</mat-icon> Accept & Apply
+              </button>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Action Card -->
+    <mat-card class="action-card">
+      <mat-card-content class="action-buttons">
+        <button mat-flat-button color="primary" [disabled]="!isValid()"
+                (click)="submit()" class="full-width" id="create-submit">
+          <mat-icon>add</mat-icon> Create Prompt
+        </button>
+        <button mat-stroked-button (click)="cancel()" class="full-width">
+          Cancel
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+<div class="page-header page-header-row">
+  <div>
+    <h1>Prompts</h1>
+    <p>Manage and version your AI prompts</p>
+  </div>
+  <div class="header-actions">
+    <button mat-flat-button color="primary" (click)="openCreatePage()" id="new-prompt-btn">
+      <mat-icon>add</mat-icon> New Prompt
+    </button>
+  </div>
+</div>
+
+@if (facade.loading()) {
+  <div class="loading-center"><mat-spinner diameter="40" /></div>
+} @else {
+  <mat-card>
+    <table mat-table [dataSource]="paginatedPrompts()" matSort
+           (matSortChange)="onSortChange($event)" class="prompt-table">
+
+      <!-- Name — sortable -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let p">
+          <div class="prompt-name-cell">
+            <div>
+              <a class="prompt-link" (click)="goToPrompt(p.id)">{{ p.name }}</a>
+              @if (p.description) {
+                <div class="cell-subtitle">{{ p.description }}</div>
+              }
+            </div>
+            <button mat-icon-button class="copy-id-btn"
+                    (click)="copyId(p.id, $event)"
+                    [matTooltip]="'Copy ID: ' + p.id">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Version — sortable -->
+      <ng-container matColumnDef="currentVersion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Version</th>
+        <td mat-cell *matCellDef="let p"><span class="badge badge-info">v{{ p.currentVersion }}</span></td>
+      </ng-container>
+
+      <!-- Updated — sortable -->
+      <ng-container matColumnDef="updatedAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Updated</th>
+        <td mat-cell *matCellDef="let p" class="cell-muted">{{ p.updatedAt | date:'MMM d, h:mm a' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="goToPrompt(row.id)" class="clickable-row"></tr>
+    </table>
+
+    @if (sortedPrompts().length === 0) {
+      <div class="empty-state">
+        <mat-icon>edit_note</mat-icon>
+        <p>No prompts yet. Create your first one!</p>
+      </div>
+    }
+
+    <mat-paginator
+      [length]="sortedPrompts().length"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons />
+  </mat-card>
+}

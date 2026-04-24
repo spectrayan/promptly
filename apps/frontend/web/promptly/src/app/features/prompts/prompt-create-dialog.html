@@ -1,0 +1,120 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">edit_note</mat-icon>
+  Create New Prompt
+</h2>
+
+<mat-dialog-content>
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="form-half">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="form.name" placeholder="e.g. Customer Classifier" required id="create-name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-half">
+      <mat-label>Project</mat-label>
+      <mat-select [(ngModel)]="form.projectId" required id="create-project">
+        @for (proj of projectsFacade.projects(); track proj.id) {
+          <mat-option [value]="proj.id">{{ proj.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Description</mat-label>
+    <textarea matInput [(ngModel)]="form.description" rows="2" placeholder="What does this prompt do?"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Content Format</mat-label>
+    <mat-select [(ngModel)]="form.contentFormat">
+      <mat-option value="TEXT">Text</mat-option>
+      <mat-option value="JSON">JSON</mat-option>
+      <mat-option value="YAML">YAML</mat-option>
+      <mat-option value="MARKDOWN">Markdown</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- AI Assist Toggle -->
+  <div class="ai-assist-header">
+    <button mat-stroked-button (click)="toggleAiPanel()" class="ai-toggle-btn" id="ai-assist-toggle">
+      <mat-icon>auto_fix_high</mat-icon>
+      {{ showAiPanel ? 'Hide' : 'Show' }} AI Assist
+    </button>
+  </div>
+
+  <!-- AI Assist Panel -->
+  @if (showAiPanel) {
+    <div class="ai-panel">
+      <mat-tab-group animationDuration="200ms">
+        <!-- Generate Tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>lightbulb</mat-icon>&nbsp;Generate
+          </ng-template>
+          <div class="ai-tab-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Describe your prompt idea</mat-label>
+              <textarea matInput [(ngModel)]="aiPromptIdea" rows="3"
+                        placeholder="e.g. classify customer support tickets into billing, technical, account categories"></textarea>
+            </mat-form-field>
+            <button mat-flat-button color="primary" (click)="generateFromIdea()"
+                    [disabled]="aiGenerating || !aiPromptIdea.trim()" id="ai-generate-btn">
+              @if (aiGenerating) {
+                <mat-spinner diameter="18"></mat-spinner> Generating...
+              } @else {
+                <mat-icon>auto_awesome</mat-icon> Generate Prompt
+              }
+            </button>
+          </div>
+        </mat-tab>
+
+        <!-- Refine Tab -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon>tune</mat-icon>&nbsp;Refine
+          </ng-template>
+          <div class="ai-tab-content">
+            <p class="ai-hint">Refine your current content with AI-suggested improvements and safety guards.</p>
+            <button mat-flat-button color="primary" (click)="refineContent()"
+                    [disabled]="aiRefining || !form.content" id="ai-refine-btn">
+              @if (aiRefining) {
+                <mat-spinner diameter="18"></mat-spinner> Refining...
+              } @else {
+                <mat-icon>tune</mat-icon> Refine Content
+              }
+            </button>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+
+      <!-- AI Suggestion Result -->
+      @if (aiSuggestion) {
+        <div class="ai-suggestion">
+          <div class="ai-suggestion-header">
+            <mat-icon>auto_awesome</mat-icon>
+            <span>AI Suggestion</span>
+            <button mat-flat-button color="accent" (click)="acceptSuggestion()" class="accept-btn" id="ai-accept-btn">
+              <mat-icon>check</mat-icon> Accept
+            </button>
+          </div>
+          <pre class="ai-suggestion-content">{{ aiSuggestion }}</pre>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Content Editor -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Prompt Content</mat-label>
+    <textarea matInput [(ngModel)]="form.content" rows="8" class="mono-input" required
+              placeholder="Enter your prompt content here..." id="create-content"></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!isValid()" (click)="submit()" id="create-submit">
+    <mat-icon>add</mat-icon> Create Prompt
+  </button>
+</mat-dialog-actions>

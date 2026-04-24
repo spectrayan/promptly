@@ -1,0 +1,124 @@
+<div class="page-header page-header-row">
+  <div>
+    <h1>Audit Logs</h1>
+    <p>Complete audit trail for compliance and governance</p>
+  </div>
+</div>
+
+@if (facade.loading()) {
+  <div class="loading-center"><mat-spinner diameter="40" /></div>
+} @else {
+  <!-- ── Filter Strip ──────────────────────────────────────────── -->
+  <div class="audit-filters">
+    <mat-icon class="filter-icon">filter_list</mat-icon>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Action</mat-label>
+      <mat-select [ngModel]="actionFilter()" (ngModelChange)="onActionFilterChange($event)" multiple>
+        @for (a of availableActions(); track a) {
+          <mat-option [value]="a">{{ a }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Resource</mat-label>
+      <mat-select [ngModel]="resourceFilter()" (ngModelChange)="onResourceFilterChange($event)" multiple>
+        @for (r of availableResources(); track r) {
+          <mat-option [value]="r">{{ r }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Actor</mat-label>
+      <mat-select [ngModel]="actorFilter()" (ngModelChange)="onActorFilterChange($event)" multiple>
+        @for (a of availableActors(); track a) {
+          <mat-option [value]="a">{{ a }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>From</mat-label>
+      <input matInput [matDatepicker]="fromPicker"
+             [ngModel]="dateFromValue()" (ngModelChange)="onDateFromChange($event)">
+      <mat-datepicker-toggle matIconSuffix [for]="fromPicker" />
+      <mat-datepicker #fromPicker />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>To</mat-label>
+      <input matInput [matDatepicker]="toPicker"
+             [ngModel]="dateToValue()" (ngModelChange)="onDateToChange($event)">
+      <mat-datepicker-toggle matIconSuffix [for]="toPicker" />
+      <mat-datepicker #toPicker />
+    </mat-form-field>
+
+    <span class="filter-spacer"></span>
+
+    @if (hasActiveFilters()) {
+      <button mat-stroked-button class="clear-btn" (click)="clearFilters()">
+        <mat-icon>close</mat-icon> Clear
+      </button>
+    }
+
+    <span class="result-count">{{ filteredLogs().length }} entries</span>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <mat-card class="audit-table-card">
+    <table mat-table [dataSource]="paginatedLogs()" matSort
+           (matSortChange)="onSortChange($event)">
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+        <td mat-cell *matCellDef="let l">
+          <span class="badge" [class]="actionClass(l.action)">{{ l.action }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="resourceType">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Resource</th>
+        <td mat-cell *matCellDef="let l">{{ l.resourceType }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="resourceId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let l" class="mono">{{ l.resourceId | slice:0:8 }}…</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actorUserId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actor</th>
+        <td mat-cell *matCellDef="let l">{{ l.actorUserId }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="timestamp">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
+        <td mat-cell *matCellDef="let l" class="cell-muted">{{ l.timestamp | date:'MMM d, h:mm:ss a' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    @if (filteredLogs().length === 0) {
+      <div class="empty-state">
+        <mat-icon>history</mat-icon>
+        @if (hasActiveFilters()) {
+          <p>No audit entries match the current filters.</p>
+        } @else {
+          <p>No audit entries yet. Activity will appear here automatically.</p>
+        }
+      </div>
+    }
+
+    <mat-paginator
+      [length]="filteredLogs().length"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons />
+  </mat-card>
+}

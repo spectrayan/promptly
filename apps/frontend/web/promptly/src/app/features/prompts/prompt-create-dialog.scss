@@ -1,0 +1,107 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Prompt Create Dialog
+// ═══════════════════════════════════════════════════════════════════════
+
+.form-row {
+  display: flex;
+  gap: var(--space-4);
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+.form-half { flex: 1; }
+
+.mono-input {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+}
+
+.dialog-icon {
+  vertical-align: middle;
+  margin-right: var(--space-2);
+  color: var(--mat-sys-primary);
+}
+
+// ── AI Assist ──
+.ai-assist-header {
+  margin: var(--space-1) 0 var(--space-3);
+}
+
+.ai-toggle-btn {
+  border-style: dashed !important;
+  border-color: var(--mat-sys-primary) !important;
+  color: var(--mat-sys-primary) !important;
+  border-radius: var(--radius-sm) !important;
+
+  mat-icon { margin-right: var(--space-1); }
+
+  &:hover {
+    background: var(--mat-sys-primary-container) !important;
+  }
+}
+
+.ai-panel {
+  background: var(--mat-sys-surface-container-high);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  animation: slideDown var(--duration-slow) var(--ease-out);
+}
+
+.ai-tab-content {
+  padding: var(--space-4) 0;
+}
+
+.ai-hint {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--text-base);
+  margin: 0 0 var(--space-3);
+}
+
+.ai-suggestion {
+  margin-top: var(--space-4);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+}
+
+.ai-suggestion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--mat-sys-primary-container);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .accept-btn {
+    margin-left: auto;
+    height: 32px;
+    font-size: var(--text-base);
+    border-radius: var(--radius-sm) !important;
+  }
+}
+
+.ai-suggestion-content {
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  max-height: 200px;
+  overflow: auto;
+  white-space: pre-wrap;
+  margin: 0;
+  background: var(--mat-sys-surface-container-low);
+}

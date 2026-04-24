@@ -1,0 +1,80 @@
+<div class="page-header page-header-row">
+  <div>
+    <h1>Security Scans</h1>
+    <p>Vulnerability scan results across all prompts</p>
+  </div>
+  @if (hasActiveFilters()) {
+    <button mat-stroked-button class="clear-filters-btn" (click)="clearFilters()">
+      <mat-icon>filter_list_off</mat-icon> Clear Filters
+    </button>
+  }
+</div>
+
+<mat-card>
+  <table mat-table [dataSource]="paginatedScans()" matSort
+         (matSortChange)="onSortChange($event)" class="filterable-table">
+    <ng-container matColumnDef="prompt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="promptId">Prompt</th>
+      <td mat-cell *matCellDef="let s">
+        <div class="prompt-cell">
+          <span class="prompt-name">{{ getPromptName(s.promptId) }}</span>
+          <button mat-icon-button class="copy-id-btn"
+                  (click)="copyId(s.promptId); $event.stopPropagation()"
+                  [matTooltip]="'Copy ID: ' + s.promptId">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>
+        <div class="header-with-filter">
+          <span mat-sort-header="status">Status</span>
+          <mat-form-field appearance="outline" class="column-filter column-filter-select" subscriptSizing="dynamic">
+            <mat-select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($event)" multiple placeholder="All">
+              <mat-option value="pass">Pass</mat-option>
+              <mat-option value="warn">Warn</mat-option>
+              <mat-option value="fail">Fail</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let s">
+        <span class="badge" [class]="s.status === 'pass' ? 'badge-success' : 'badge-danger'">{{ s.status }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="findings">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Findings</th>
+      <td mat-cell *matCellDef="let s">{{ s.findings?.length ?? 0 }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="scannedAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Scanned</th>
+      <td mat-cell *matCellDef="let s" class="cell-muted">{{ s.scannedAt | date:'MMM d, h:mm a' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  @if (filteredScans().length === 0) {
+    <div class="empty-state">
+      <mat-icon>security</mat-icon>
+      @if (hasActiveFilters()) {
+        <p>No scans match the current filters.</p>
+      } @else {
+        <p>No scans yet. Trigger a scan from a prompt's detail page.</p>
+      }
+    </div>
+  }
+
+  <mat-paginator
+    [length]="filteredScans().length"
+    [pageSize]="pageSize()"
+    [pageIndex]="pageIndex()"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons />
+</mat-card>

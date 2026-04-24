@@ -1,0 +1,199 @@
+@if (facade.loading()) {
+  <div class="loading-center"><mat-spinner diameter="40" /></div>
+} @else if (facade.selected(); as p) {
+  <div class="page-header">
+    <a routerLink="/prompts" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Back to Prompts
+    </a>
+    <h1>{{ p.name }}</h1>
+    <p>{{ p.description }}</p>
+  </div>
+
+  <!-- Lock Banner for non-DEV prompts -->
+  @if (lockReason()) {
+    <div class="lock-banner">
+      <mat-icon>lock</mat-icon>
+      <span>{{ lockReason() }}</span>
+      <button mat-stroked-button class="clone-banner-btn" (click)="onClone()">
+        <mat-icon>content_copy</mat-icon> Clone to DEV
+      </button>
+    </div>
+  }
+
+  <div class="detail-grid">
+    <!-- Main Content -->
+    <div class="detail-main">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Content</mat-card-title>
+          <span class="badge badge-info">v{{ p.currentVersion }}</span>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- View mode -->
+          @if (!editing()) {
+            <pre class="content-block">{{ p.latestContent }}</pre>
+          }
+
+          <!-- Edit mode -->
+          @if (editing()) {
+            <div class="edit-panel">
+              <div class="monaco-editor-wrapper">
+                <promptly-monaco-editor
+                  [(value)]="editContent"
+                  [language]="p.contentFormat ?? 'TEXT'"
+                  [height]="'350px'"
+                  [minimap]="false"
+                />
+              </div>
+              <mat-form-field appearance="outline" class="edit-message-field">
+                <mat-label>Change message (what did you change?)</mat-label>
+                <input matInput [(ngModel)]="editChangeMessage" placeholder="e.g. Improved safety guardrails" />
+              </mat-form-field>
+            </div>
+          }
+        </mat-card-content>
+        <mat-card-actions>
+          @if (!editing()) {
+            @if (canEdit()) {
+              <button mat-button (click)="onEdit()">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+            }
+            @if (canImprove()) {
+              <button mat-button (click)="onImprove()">
+                <mat-icon>auto_fix_high</mat-icon> Improve
+              </button>
+            }
+            <button mat-button (click)="onScan()">
+              <mat-icon>security</mat-icon> Scan
+            </button>
+          } @else {
+            <button mat-flat-button color="primary" (click)="saveEdit()"
+                    [disabled]="!editContent.trim()">
+              <mat-icon>save</mat-icon> Save as v{{ (p.currentVersion ?? 0) + 1 }}
+            </button>
+            <button mat-button (click)="cancelEdit()">
+              Cancel
+            </button>
+          }
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Version History -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Version History</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="facade.versions()">
+            <ng-container matColumnDef="versionNumber">
+              <th mat-header-cell *matHeaderCellDef>Version</th>
+              <td mat-cell *matCellDef="let v"><span class="badge badge-info">v{{ v.versionNumber }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="changeMessage">
+              <th mat-header-cell *matHeaderCellDef>Change</th>
+              <td mat-cell *matCellDef="let v">{{ v.changeMessage ?? 'Initial version' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="createdBy">
+              <th mat-header-cell *matHeaderCellDef>Author</th>
+              <td mat-cell *matCellDef="let v">{{ v.createdBy }}</td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <td mat-cell *matCellDef="let v" class="cell-muted">{{ v.createdAt | date:'MMM d, h:mm a' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let v">
+                @if (canRollback() && v.versionNumber !== p.currentVersion) {
+                  <button mat-icon-button (click)="onRollback(v.versionNumber)" matTooltip="Rollback to this version">
+                    <mat-icon>restore</mat-icon>
+                  </button>
+                }
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="versionColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: versionColumns"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Version Diff Viewer -->
+      @if (facade.versions().length >= 2) {
+        <promptly-version-diff [versions]="facade.versions()"></promptly-version-diff>
+      }
+    </div>
+
+    <!-- Sidebar -->
+    <div class="detail-sidebar">
+      <!-- Prompt ID — easy copy -->
+      <mat-card class="id-card">
+        <mat-card-content>
+          <div class="id-row">
+            <div class="id-label">Prompt ID</div>
+            <div class="id-value-row">
+              <code class="id-value">{{ p.id }}</code>
+              <button mat-icon-button class="copy-id-btn" (click)="copyId()" matTooltip="Copy Prompt ID">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header><mat-card-title>Properties</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <dl class="prop-list">
+            <dt>Format</dt><dd>{{ p.contentFormat }}</dd>
+            <dt>Created</dt><dd class="cell-muted">{{ p.createdAt | date:'medium' }}</dd>
+            <dt>Updated</dt><dd class="cell-muted">{{ p.updatedAt | date:'medium' }}</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header><mat-card-title>Actions</mat-card-title></mat-card-header>
+        <mat-card-content class="action-buttons">
+          @if (canClone()) {
+            <button mat-stroked-button (click)="onClone()">
+              <mat-icon>content_copy</mat-icon> Clone Prompt
+            </button>
+          }
+
+          @if (canSubmitReview()) {
+            <button mat-stroked-button (click)="onSubmitReview()">
+              <mat-icon>rate_review</mat-icon> Submit for Review
+            </button>
+          } @else {
+            <button mat-stroked-button disabled
+                    matTooltip="Only DEV prompts can be submitted for review">
+              <mat-icon>rate_review</mat-icon> Submit for Review
+            </button>
+          }
+
+          @if (canDelete()) {
+            <button mat-stroked-button color="warn" (click)="onDelete()">
+              <mat-icon>delete</mat-icon> Delete Prompt
+            </button>
+          } @else {
+            <button mat-stroked-button disabled
+                    matTooltip="Only DEV prompts can be deleted">
+              <mat-icon>delete</mat-icon> Delete Prompt
+            </button>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      @if (scannerFacade.currentScan(); as scan) {
+        <mat-card>
+          <mat-card-header><mat-card-title>Last Scan</mat-card-title></mat-card-header>
+          <mat-card-content>
+            <span class="badge" [class]="scan.status === 'pass' ? 'badge-success' : 'badge-danger'">{{ scan.status }}</span>
+            <div class="scan-meta">{{ scan.findings?.length ?? 0 }} findings</div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+}

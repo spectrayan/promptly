@@ -1,0 +1,184 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Prompt Create Page
+// ═══════════════════════════════════════════════════════════════════════
+
+.create-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Editor Panel ────────────────────────────────────────────────────
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// ── Form ──
+.form-row {
+  display: flex;
+  gap: var(--space-4);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.form-half { flex: 1; }
+.form-third { width: 33%; }
+
+// ── Content Editor ──
+.editor-card {
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-semibold);
+
+      mat-icon { color: var(--mat-sys-primary); }
+    }
+  }
+
+  .editor-actions {
+    margin-left: auto;
+  }
+}
+
+// ── Monaco Editor Wrapper ──
+.monaco-editor-wrapper {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-2);
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+
+  promptly-monaco-editor {
+    border-color: var(--mat-sys-outline-variant);
+    transition: border-color var(--transition-base);
+
+    &:focus-within {
+      border-color: var(--mat-sys-primary);
+    }
+  }
+}
+
+// ── AI Toggle ──
+.ai-toggle-btn {
+  border-style: dashed !important;
+  border-color: var(--mat-sys-primary) !important;
+  color: var(--mat-sys-primary) !important;
+  font-size: var(--text-base);
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-base) !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: var(--space-1);
+  }
+
+  &:hover {
+    background: var(--mat-sys-primary-container) !important;
+  }
+}
+
+// ── AI Card ──
+.ai-card {
+  animation: slideDown var(--duration-slow) var(--ease-out);
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+
+    mat-icon { color: var(--mat-sys-primary); }
+  }
+}
+
+.ai-tab-content {
+  padding: var(--space-4) 0;
+}
+
+.ai-hint {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--text-base);
+  margin: 0 0 var(--space-3);
+  line-height: var(--leading-relaxed);
+}
+
+.ai-suggestion {
+  margin-top: var(--space-4);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+}
+
+.ai-suggestion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--mat-sys-primary-container);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.ai-suggestion-content {
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  max-height: 250px;
+  overflow: auto;
+  white-space: pre-wrap;
+  margin: 0;
+  background: var(--mat-sys-surface-container-low);
+}
+
+.accept-btn {
+  margin: var(--space-3) var(--space-4);
+  width: calc(100% - var(--space-8)) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+// ── Side Panel ──
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// ── Action Card ──
+.action-card {
+  position: sticky;
+  top: var(--space-6);
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

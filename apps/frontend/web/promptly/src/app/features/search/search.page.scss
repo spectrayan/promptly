@@ -1,0 +1,35 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Search Page
+// ═══════════════════════════════════════════════════════════════════════
+
+.search-card {
+  margin-bottom: var(--space-4);
+}
+
+.search-field {
+  width: 100%;
+}
+
+.score {
+  font-size: var(--text-xs);
+  color: var(--mat-sys-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.empty-state-card {
+  text-align: center;
+  padding: var(--space-12);
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    opacity: 0.4;
+    margin-bottom: var(--space-2);
+  }
+
+  p {
+    font-size: var(--text-md);
+  }
+}

@@ -1,0 +1,198 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Prompt Detail Page
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── Lock Banner (for non-DEV prompts) ───────────────────────────────
+.lock-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  background: rgba(255, 183, 77, 0.08);
+  border: 1px solid rgba(255, 183, 77, 0.3);
+  border-radius: var(--radius-md);
+  color: #ffb74d;
+  font-size: var(--text-base);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  span {
+    flex: 1;
+  }
+
+  .clone-banner-btn {
+    flex-shrink: 0;
+    border-color: rgba(255, 183, 77, 0.4) !important;
+    color: #ffb74d !important;
+    font-weight: var(--weight-semibold);
+
+    &:hover {
+      background: rgba(255, 183, 77, 0.12) !important;
+      border-color: #ffb74d !important;
+    }
+  }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+  animation: fadeInUp var(--duration-slow) var(--ease-out);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.content-block {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: var(--leading-loose);
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--info);
+}
+
+.prop-list {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+
+  dt {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+  }
+
+  dd {
+    font-size: var(--text-base);
+  }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+
+  button {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: var(--radius-sm) !important;
+    transition: all var(--transition-base) !important;
+  }
+}
+
+.scan-meta {
+  font-size: var(--text-sm);
+  color: var(--mat-sys-on-surface-variant);
+  margin-top: var(--space-1);
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// ── Prompt ID Card — easy copy ──────────────────────────────────────
+.id-card {
+  background: var(--mat-sys-surface-container-high) !important;
+  border: 1px dashed var(--mat-sys-outline-variant) !important;
+}
+
+.id-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.id-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.id-value-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.id-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--mat-sys-primary);
+  background: var(--mat-sys-surface-container-low);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--mat-sys-outline-variant);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: all;
+}
+
+.copy-id-btn {
+  flex-shrink: 0;
+  transition: all var(--transition-base);
+
+  &:hover {
+    color: var(--mat-sys-primary) !important;
+  }
+}
+
+// ── Edit Mode ──────────────────────────────────────────────────────
+.edit-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: fadeInUp var(--duration-fast) var(--ease-out);
+
+  .edit-content-field {
+    width: 100%;
+  }
+
+  .edit-textarea {
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    line-height: var(--leading-loose);
+    resize: vertical;
+  }
+
+  .edit-message-field {
+    width: 100%;
+  }
+
+  // Hide subscript wrappers in edit mode
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}

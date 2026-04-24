@@ -1,0 +1,60 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Audit Log Page
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── Filter Strip (standalone bar above the table card) ─────────────
+.audit-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--radius-md);
+
+  .filter-icon {
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.6;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  mat-form-field {
+    width: 150px;
+    font-size: 13px;
+  }
+
+  .filter-spacer {
+    flex: 1;
+  }
+
+  .clear-btn {
+    font-size: var(--text-sm);
+    border-color: var(--mat-sys-outline-variant) !important;
+    height: 36px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      margin-right: 2px;
+    }
+  }
+
+  .result-count {
+    font-size: var(--text-sm);
+    color: var(--mat-sys-on-surface-variant);
+    white-space: nowrap;
+    padding-right: var(--space-1);
+  }
+}
+
+// ── Table card ─────────────────────────────────────────────────────
+.audit-table-card {
+  table {
+    width: 100%;
+  }
+}

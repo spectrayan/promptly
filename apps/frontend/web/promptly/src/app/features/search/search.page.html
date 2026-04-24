@@ -1,0 +1,36 @@
+<div class="page-header">
+  <h1>Search</h1>
+  <p>Semantic search across all prompts</p>
+</div>
+
+<mat-card class="search-card">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search prompts...</mat-label>
+    <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" />
+    <button mat-icon-button matSuffix (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+</mat-card>
+
+@if (facade.searching()) {
+  <div class="loading-center"><mat-spinner diameter="40" /></div>
+} @else if (facade.results().length > 0) {
+  <mat-card>
+    <mat-nav-list>
+      @for (result of facade.results(); track result.promptId) {
+        <a mat-list-item [routerLink]="['/prompts', result.promptId]">
+          <mat-icon matListItemIcon>description</mat-icon>
+          <span matListItemTitle>{{ result.name }}</span>
+          <span matListItemLine>{{ result.description }}</span>
+          <span matListItemMeta class="score">{{ (result.score ?? 0) | number:'1.0-2' }} relevance</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-card>
+} @else if (facade.query()) {
+  <mat-card class="empty-state-card">
+    <mat-icon>search_off</mat-icon>
+    <p>No results found for "{{ facade.query() }}"</p>
+  </mat-card>
+}
