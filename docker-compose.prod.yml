@@ -1,0 +1,60 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Promptly — Production Docker Compose
+# ═══════════════════════════════════════════════════════════════════════
+# Usage:
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Environment variables (set in .env or export):
+#   PROMPTLY_LLM_API_KEY          — API key for the configured LLM provider
+#   PROMPTLY_LLM_PROVIDER         — LLM provider (openai, anthropic, gemini, ollama)
+#   PROMPTLY_LLM_MODEL            — Model name (e.g. gemini-2.5-flash)
+#   PROMPTLY_DEPLOYMENT_MODE      — 'saas' or 'self-hosted' (default: self-hosted)
+#   PROMPTLY_LLM_CREDENTIAL_ENCRYPTION_KEY — AES key for SaaS mode API key encryption
+
+services:
+  # ── MongoDB ─────────────────────────────────────────────────────────
+  mongodb:
+    image: mongodb/mongodb-atlas-local:8.0
+    container_name: promptly-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - promptly-mongo-data:/data/db
+    environment:
+      - MONGODB_INITDB_DATABASE=promptly
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── Backend API ─────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/core/Dockerfile
+    container_name: promptly-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/promptly
+      - PROMPTLY_LLM_API_KEY=${PROMPTLY_LLM_API_KEY:-}
+      - PROMPTLY_LLM_PROVIDER=${PROMPTLY_LLM_PROVIDER:-gemini}
+      - PROMPTLY_LLM_MODEL=${PROMPTLY_LLM_MODEL:-gemini-2.5-flash}
+      - PROMPTLY_DEPLOYMENT_MODE=${PROMPTLY_DEPLOYMENT_MODE:-self-hosted}
+      - PROMPTLY_LLM_CREDENTIAL_ENCRYPTION_KEY=${PROMPTLY_LLM_CREDENTIAL_ENCRYPTION_KEY:-}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    restart: unless-stopped
+
+volumes:
+  promptly-mongo-data:

@@ -1,0 +1,19 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-atlas-local:8.0
+    container_name: promptly-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - promptly-mongo-data:/data/db
+    environment:
+      - MONGODB_INITDB_DATABASE=promptly
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  promptly-mongo-data:
