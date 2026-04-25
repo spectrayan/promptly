@@ -65,8 +65,8 @@ try {
     # ═══════════════════════════════════════════════════════════════════
     Log "Starting backend (Spring Boot)..."
 
-    $backendProc = Start-Process -FilePath "mvn" `
-        -ArgumentList "spring-boot:run", "-f", "apps/backend/core/pom.xml", "-Dspring-boot.run.profiles=dev" `
+    $backendProc = Start-Process -FilePath "cmd.exe" `
+        -ArgumentList "/c", "mvn spring-boot:run -f apps/backend/core/pom.xml -Dspring-boot.run.profiles=dev" `
         -NoNewWindow -PassThru
 
     Ok "Backend starting (PID $($backendProc.Id)) - http://localhost:8080"
@@ -76,8 +76,8 @@ try {
     # ═══════════════════════════════════════════════════════════════════
     Log "Starting frontend (Angular)..."
 
-    $frontendProc = Start-Process -FilePath "npx" `
-        -ArgumentList "nx", "serve", "promptly" `
+    $frontendProc = Start-Process -FilePath "cmd.exe" `
+        -ArgumentList "/c", "npx nx serve promptly" `
         -NoNewWindow -PassThru
 
     Ok "Frontend starting (PID $($frontendProc.Id)) - http://localhost:4200"
