@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Workflows", description = "Workflow Engine — multi-step approval and environment promotion")
 public interface WorkflowsApi {
@@ -121,8 +121,9 @@ public interface WorkflowsApi {
     String PATH_LIST_WORKFLOWS = "/api/v1/workflows";
     /**
      * GET /api/v1/workflows : List workflows
-     * Returns workflows, optionally filtered by prompt ID or pending status.
+     * Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
      *
+     * @param projectId Filter workflows by project ID (optional)
      * @param promptId Filter by prompt ID (optional)
      * @param pendingOnly Only return pending workflows (optional, default to false)
      * @return List of workflows (status code 200)
@@ -130,7 +131,7 @@ public interface WorkflowsApi {
     @Operation(
         operationId = "listWorkflows",
         summary = "List workflows",
-        description = "Returns workflows, optionally filtered by prompt ID or pending status.",
+        description = "Returns workflows, optionally filtered by prompt ID, project ID, or pending status.",
         tags = { "Workflows" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of workflows", content = {
@@ -144,6 +145,7 @@ public interface WorkflowsApi {
         produces = { "application/json" }
     )
     Mono<ResponseEntity<Flux<WorkflowResponse>>> listWorkflows(
+        @Parameter(name = "projectId", description = "Filter workflows by project ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "projectId", required = false) @Nullable String projectId,
         @Parameter(name = "promptId", description = "Filter by prompt ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "promptId", required = false) @Nullable String promptId,
         @Parameter(name = "pendingOnly", description = "Only return pending workflows", in = ParameterIn.QUERY) @Valid @RequestParam(value = "pendingOnly", required = false, defaultValue = "false") Boolean pendingOnly,
         @Parameter(hidden = true) final ServerWebExchange exchange

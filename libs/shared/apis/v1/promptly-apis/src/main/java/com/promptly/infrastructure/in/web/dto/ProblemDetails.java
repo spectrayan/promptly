@@ -26,7 +26,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "ProblemDetails", description = "RFC 9457 Problem Details for HTTP APIs — Standard error response format")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class ProblemDetails {
 
   private URI type;
@@ -177,7 +177,7 @@ public class ProblemDetails {
    * @return timestamp
    */
   @Valid 
-  @Schema(name = "timestamp", example = "2026-04-23T12:00:00.000+00:00", description = "Timestamp when the error occurred (ISO 8601 format)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "timestamp", example = "2026-04-23T12:00:00.000Z", description = "Timestamp when the error occurred (ISO 8601 format)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("timestamp")
   public @Nullable OffsetDateTime getTimestamp() {
     return timestamp;

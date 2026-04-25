@@ -5,6 +5,7 @@
  */
 package com.promptly.infrastructure.in.web.api;
 
+import org.springframework.lang.Nullable;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.ScanResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
@@ -35,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Scanner", description = "Vulnerability Scanner — LLM-powered prompt security analysis")
 public interface ScannerApi {
@@ -43,14 +44,15 @@ public interface ScannerApi {
     String PATH_GET_ALL_SCANS = "/api/v1/scans";
     /**
      * GET /api/v1/scans : List all scan results
-     * Returns all scan results across all prompts.
+     * Returns all scan results across all prompts. Optionally filter by project ID.
      *
+     * @param projectId Filter scan results by project ID (optional)
      * @return List of scan results (status code 200)
      */
     @Operation(
         operationId = "getAllScans",
         summary = "List all scan results",
-        description = "Returns all scan results across all prompts.",
+        description = "Returns all scan results across all prompts. Optionally filter by project ID.",
         tags = { "Scanner" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of scan results", content = {
@@ -64,6 +66,7 @@ public interface ScannerApi {
         produces = { "application/json" }
     )
     Mono<ResponseEntity<Flux<ScanResponse>>> getAllScans(
+        @Parameter(name = "projectId", description = "Filter scan results by project ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "projectId", required = false) @Nullable String projectId,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

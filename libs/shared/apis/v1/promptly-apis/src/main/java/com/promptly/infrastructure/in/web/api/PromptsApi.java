@@ -6,6 +6,8 @@
 package com.promptly.infrastructure.in.web.api;
 
 import com.promptly.infrastructure.in.web.dto.CreatePromptRequest;
+import com.promptly.infrastructure.in.web.dto.GenerateFromIdeaRequest;
+import com.promptly.infrastructure.in.web.dto.GenerateFromIdeaResponse;
 import org.springframework.lang.Nullable;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.PromptResponse;
@@ -40,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Prompts", description = "Prompt Registry — CRUD, versioning, and rollback")
 public interface PromptsApi {
@@ -115,6 +117,43 @@ public interface PromptsApi {
     )
     Mono<ResponseEntity<Void>> deletePrompt(
         @Parameter(name = "id", description = "Unique prompt identifier", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_GENERATE_FROM_IDEA = "/api/v1/prompts/generate";
+    /**
+     * POST /api/v1/prompts/generate : Generate a prompt from a natural-language idea
+     * Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. 
+     *
+     * @param generateFromIdeaRequest  (required)
+     * @return Generated prompt content (status code 200)
+     *         or The request was invalid or malformed (validation errors, missing required fields, etc.) (status code 400)
+     */
+    @Operation(
+        operationId = "generateFromIdea",
+        summary = "Generate a prompt from a natural-language idea",
+        description = "Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. ",
+        tags = { "Prompts" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Generated prompt content", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = GenerateFromIdeaResponse.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = GenerateFromIdeaResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "The request was invalid or malformed (validation errors, missing required fields, etc.)", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = PromptsApi.PATH_GENERATE_FROM_IDEA,
+        produces = { "application/json", "application/problem+json" },
+        consumes = { "application/json" }
+    )
+    Mono<ResponseEntity<GenerateFromIdeaResponse>> generateFromIdea(
+        @Parameter(name = "GenerateFromIdeaRequest", description = "", required = true) @Valid @RequestBody Mono<GenerateFromIdeaRequest> generateFromIdeaRequest,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

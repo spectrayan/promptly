@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.promptly.infrastructure.in.web.dto.Environment;
 import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
 import com.promptly.infrastructure.in.web.dto.WorkflowStepResponse;
 import java.time.OffsetDateTime;
@@ -27,7 +26,7 @@ import jakarta.annotation.Generated;
  * WorkflowResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class WorkflowResponse {
 
   private @Nullable String id;
@@ -41,10 +40,6 @@ public class WorkflowResponse {
   private @Nullable WorkflowStatus status;
 
   private @Nullable Integer currentStep;
-
-  private @Nullable Environment sourceEnvironment;
-
-  private @Nullable Environment targetEnvironment;
 
   private @Nullable String requestedBy;
 
@@ -126,11 +121,11 @@ public class WorkflowResponse {
   }
 
   /**
-   * Workflow type (e.g., approval, promotion)
+   * Workflow type (e.g., approval)
    * @return type
    */
   
-  @Schema(name = "type", description = "Workflow type (e.g., approval, promotion)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "type", description = "Workflow type (e.g., approval)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("type")
   public @Nullable String getType() {
     return type;
@@ -181,48 +176,6 @@ public class WorkflowResponse {
   @JsonProperty("currentStep")
   public void setCurrentStep(@Nullable Integer currentStep) {
     this.currentStep = currentStep;
-  }
-
-  public WorkflowResponse sourceEnvironment(@Nullable Environment sourceEnvironment) {
-    this.sourceEnvironment = sourceEnvironment;
-    return this;
-  }
-
-  /**
-   * Get sourceEnvironment
-   * @return sourceEnvironment
-   */
-  @Valid 
-  @Schema(name = "sourceEnvironment", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("sourceEnvironment")
-  public @Nullable Environment getSourceEnvironment() {
-    return sourceEnvironment;
-  }
-
-  @JsonProperty("sourceEnvironment")
-  public void setSourceEnvironment(@Nullable Environment sourceEnvironment) {
-    this.sourceEnvironment = sourceEnvironment;
-  }
-
-  public WorkflowResponse targetEnvironment(@Nullable Environment targetEnvironment) {
-    this.targetEnvironment = targetEnvironment;
-    return this;
-  }
-
-  /**
-   * Get targetEnvironment
-   * @return targetEnvironment
-   */
-  @Valid 
-  @Schema(name = "targetEnvironment", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("targetEnvironment")
-  public @Nullable Environment getTargetEnvironment() {
-    return targetEnvironment;
-  }
-
-  @JsonProperty("targetEnvironment")
-  public void setTargetEnvironment(@Nullable Environment targetEnvironment) {
-    this.targetEnvironment = targetEnvironment;
   }
 
   public WorkflowResponse requestedBy(@Nullable String requestedBy) {
@@ -332,8 +285,6 @@ public class WorkflowResponse {
         Objects.equals(this.type, workflowResponse.type) &&
         Objects.equals(this.status, workflowResponse.status) &&
         Objects.equals(this.currentStep, workflowResponse.currentStep) &&
-        Objects.equals(this.sourceEnvironment, workflowResponse.sourceEnvironment) &&
-        Objects.equals(this.targetEnvironment, workflowResponse.targetEnvironment) &&
         Objects.equals(this.requestedBy, workflowResponse.requestedBy) &&
         Objects.equals(this.steps, workflowResponse.steps) &&
         Objects.equals(this.createdAt, workflowResponse.createdAt) &&
@@ -342,7 +293,7 @@ public class WorkflowResponse {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, promptId, promptVersion, type, status, currentStep, sourceEnvironment, targetEnvironment, requestedBy, steps, createdAt, updatedAt);
+    return Objects.hash(id, promptId, promptVersion, type, status, currentStep, requestedBy, steps, createdAt, updatedAt);
   }
 
   @Override
@@ -355,8 +306,6 @@ public class WorkflowResponse {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    currentStep: ").append(toIndentedString(currentStep)).append("\n");
-    sb.append("    sourceEnvironment: ").append(toIndentedString(sourceEnvironment)).append("\n");
-    sb.append("    targetEnvironment: ").append(toIndentedString(targetEnvironment)).append("\n");
     sb.append("    requestedBy: ").append(toIndentedString(requestedBy)).append("\n");
     sb.append("    steps: ").append(toIndentedString(steps)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");

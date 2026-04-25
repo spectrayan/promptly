@@ -20,7 +20,7 @@ import jakarta.annotation.Generated;
  * PromptSummaryResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class PromptSummaryResponse {
 
   private @Nullable String id;
@@ -32,8 +32,6 @@ public class PromptSummaryResponse {
   private @Nullable String projectId;
 
   private @Nullable Integer currentVersion;
-
-  private @Nullable String activeEnvironment;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private @Nullable OffsetDateTime updatedAt;
@@ -143,27 +141,6 @@ public class PromptSummaryResponse {
     this.currentVersion = currentVersion;
   }
 
-  public PromptSummaryResponse activeEnvironment(@Nullable String activeEnvironment) {
-    this.activeEnvironment = activeEnvironment;
-    return this;
-  }
-
-  /**
-   * Get activeEnvironment
-   * @return activeEnvironment
-   */
-  
-  @Schema(name = "activeEnvironment", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("activeEnvironment")
-  public @Nullable String getActiveEnvironment() {
-    return activeEnvironment;
-  }
-
-  @JsonProperty("activeEnvironment")
-  public void setActiveEnvironment(@Nullable String activeEnvironment) {
-    this.activeEnvironment = activeEnvironment;
-  }
-
   public PromptSummaryResponse updatedAt(@Nullable OffsetDateTime updatedAt) {
     this.updatedAt = updatedAt;
     return this;
@@ -199,13 +176,12 @@ public class PromptSummaryResponse {
         Objects.equals(this.description, promptSummaryResponse.description) &&
         Objects.equals(this.projectId, promptSummaryResponse.projectId) &&
         Objects.equals(this.currentVersion, promptSummaryResponse.currentVersion) &&
-        Objects.equals(this.activeEnvironment, promptSummaryResponse.activeEnvironment) &&
         Objects.equals(this.updatedAt, promptSummaryResponse.updatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, projectId, currentVersion, activeEnvironment, updatedAt);
+    return Objects.hash(id, name, description, projectId, currentVersion, updatedAt);
   }
 
   @Override
@@ -217,7 +193,6 @@ public class PromptSummaryResponse {
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    projectId: ").append(toIndentedString(projectId)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
-    sb.append("    activeEnvironment: ").append(toIndentedString(activeEnvironment)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("}");
     return sb.toString();

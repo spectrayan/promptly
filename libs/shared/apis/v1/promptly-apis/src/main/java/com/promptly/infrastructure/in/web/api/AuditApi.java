@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Audit", description = "Audit & Compliance — immutable audit trail")
 public interface AuditApi {
@@ -73,8 +73,9 @@ public interface AuditApi {
     String PATH_GET_AUDIT_LOGS = "/api/v1/audit-logs";
     /**
      * GET /api/v1/audit-logs : Query audit logs
-     * Returns immutable audit trail entries. Filter by resource ID, user ID, or action type. If no filter is provided, returns all entries. 
+     * Returns immutable audit trail entries. Filter by project ID, resource ID, user ID, or action type. If no filter is provided, returns all entries. 
      *
+     * @param projectId Filter audit logs by project ID (optional)
      * @param resourceId Filter by resource ID (prompt, workflow, scan) (optional)
      * @param userId Filter by actor user ID (optional)
      * @param action Filter by action type (e.g., prompt.created, workflow.approved) (optional)
@@ -83,7 +84,7 @@ public interface AuditApi {
     @Operation(
         operationId = "getAuditLogs",
         summary = "Query audit logs",
-        description = "Returns immutable audit trail entries. Filter by resource ID, user ID, or action type. If no filter is provided, returns all entries. ",
+        description = "Returns immutable audit trail entries. Filter by project ID, resource ID, user ID, or action type. If no filter is provided, returns all entries. ",
         tags = { "Audit" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of audit log entries", content = {
@@ -97,6 +98,7 @@ public interface AuditApi {
         produces = { "application/json" }
     )
     Mono<ResponseEntity<Flux<AuditResponse>>> getAuditLogs(
+        @Parameter(name = "projectId", description = "Filter audit logs by project ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "projectId", required = false) @Nullable String projectId,
         @Parameter(name = "resourceId", description = "Filter by resource ID (prompt, workflow, scan)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "resourceId", required = false) @Nullable String resourceId,
         @Parameter(name = "userId", description = "Filter by actor user ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "userId", required = false) @Nullable String userId,
         @Parameter(name = "action", description = "Filter by action type (e.g., prompt.created, workflow.approved)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "action", required = false) @Nullable String action,

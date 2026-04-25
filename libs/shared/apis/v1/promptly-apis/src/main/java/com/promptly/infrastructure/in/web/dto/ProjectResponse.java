@@ -23,7 +23,7 @@ import jakarta.annotation.Generated;
  * ProjectResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class ProjectResponse {
 
   private String id;
@@ -226,7 +226,7 @@ public class ProjectResponse {
    * @return createdAt
    */
   @NotNull @Valid 
-  @Schema(name = "createdAt", example = "2025-06-01T08:00:00.000+00:00", requiredMode = Schema.RequiredMode.REQUIRED)
+  @Schema(name = "createdAt", example = "2025-06-01T08:00:00Z", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("createdAt")
   public OffsetDateTime getCreatedAt() {
     return createdAt;
@@ -247,7 +247,7 @@ public class ProjectResponse {
    * @return updatedAt
    */
   @Valid 
-  @Schema(name = "updatedAt", example = "2026-04-01T10:00:00.000+00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Schema(name = "updatedAt", example = "2026-04-01T10:00:00Z", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("updatedAt")
   public @Nullable OffsetDateTime getUpdatedAt() {
     return updatedAt;

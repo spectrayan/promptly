@@ -10,6 +10,7 @@ import com.promptly.infrastructure.in.web.dto.CreateProjectRequest;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.ProjectMemberResponse;
 import com.promptly.infrastructure.in.web.dto.ProjectResponse;
+import com.promptly.infrastructure.in.web.dto.UpdateMemberRequest;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Projects", description = "Projects — RBAC boundaries, team management")
 public interface ProjectsApi {
@@ -228,6 +229,88 @@ public interface ProjectsApi {
         produces = { "application/json" }
     )
     Mono<ResponseEntity<Flux<ProjectResponse>>> listProjects(
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_REMOVE_PROJECT_MEMBER = "/api/v1/projects/{projectId}/members/{userId}";
+    /**
+     * DELETE /api/v1/projects/{projectId}/members/{userId} : Remove a member from a project
+     *
+     * @param projectId  (required)
+     * @param userId  (required)
+     * @return Member removed (status code 204)
+     *         or The requested resource was not found (status code 404)
+     */
+    @Operation(
+        operationId = "removeProjectMember",
+        summary = "Remove a member from a project",
+        tags = { "Projects" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Member removed"),
+            @ApiResponse(responseCode = "404", description = "The requested resource was not found", content = {
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = ProjectsApi.PATH_REMOVE_PROJECT_MEMBER,
+        produces = { "application/problem+json" }
+    )
+    Mono<ResponseEntity<Void>> removeProjectMember(
+        @Parameter(name = "projectId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("projectId") String projectId,
+        @Parameter(name = "userId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("userId") String userId,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_UPDATE_PROJECT_MEMBER = "/api/v1/projects/{projectId}/members/{userId}";
+    /**
+     * PUT /api/v1/projects/{projectId}/members/{userId} : Update a project member&#39;s role
+     *
+     * @param projectId  (required)
+     * @param userId  (required)
+     * @param updateMemberRequest  (required)
+     * @return Member updated (status code 200)
+     *         or The request was invalid or malformed (validation errors, missing required fields, etc.) (status code 400)
+     *         or The requested resource was not found (status code 404)
+     */
+    @Operation(
+        operationId = "updateProjectMember",
+        summary = "Update a project member's role",
+        tags = { "Projects" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Member updated", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProjectMemberResponse.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProjectMemberResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "The request was invalid or malformed (validation errors, missing required fields, etc.)", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "The requested resource was not found", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PUT,
+        value = ProjectsApi.PATH_UPDATE_PROJECT_MEMBER,
+        produces = { "application/json", "application/problem+json" },
+        consumes = { "application/json" }
+    )
+    Mono<ResponseEntity<ProjectMemberResponse>> updateProjectMember(
+        @Parameter(name = "projectId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("projectId") String projectId,
+        @Parameter(name = "userId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("userId") String userId,
+        @Parameter(name = "UpdateMemberRequest", description = "", required = true) @Valid @RequestBody Mono<UpdateMemberRequest> updateMemberRequest,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

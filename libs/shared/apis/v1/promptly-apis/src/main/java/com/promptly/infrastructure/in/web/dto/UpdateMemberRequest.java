@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.promptly.infrastructure.in.web.dto.ProjectRole;
 import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -15,44 +17,44 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * RefreshTokenRequest
+ * UpdateMemberRequest
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
-public class RefreshTokenRequest {
+public class UpdateMemberRequest {
 
-  private String refreshToken;
+  private ProjectRole role;
 
-  public RefreshTokenRequest() {
+  public UpdateMemberRequest() {
     super();
   }
 
   /**
    * Constructor with only required parameters
    */
-  public RefreshTokenRequest(String refreshToken) {
-    this.refreshToken = refreshToken;
+  public UpdateMemberRequest(ProjectRole role) {
+    this.role = role;
   }
 
-  public RefreshTokenRequest refreshToken(String refreshToken) {
-    this.refreshToken = refreshToken;
+  public UpdateMemberRequest role(ProjectRole role) {
+    this.role = role;
     return this;
   }
 
   /**
-   * The refresh token to exchange for a new access token
-   * @return refreshToken
+   * Get role
+   * @return role
    */
-  @NotNull 
-  @Schema(name = "refreshToken", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", description = "The refresh token to exchange for a new access token", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("refreshToken")
-  public String getRefreshToken() {
-    return refreshToken;
+  @NotNull @Valid 
+  @Schema(name = "role", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("role")
+  public ProjectRole getRole() {
+    return role;
   }
 
-  @JsonProperty("refreshToken")
-  public void setRefreshToken(String refreshToken) {
-    this.refreshToken = refreshToken;
+  @JsonProperty("role")
+  public void setRole(ProjectRole role) {
+    this.role = role;
   }
 
   @Override
@@ -63,20 +65,20 @@ public class RefreshTokenRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    RefreshTokenRequest refreshTokenRequest = (RefreshTokenRequest) o;
-    return Objects.equals(this.refreshToken, refreshTokenRequest.refreshToken);
+    UpdateMemberRequest updateMemberRequest = (UpdateMemberRequest) o;
+    return Objects.equals(this.role, updateMemberRequest.role);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(refreshToken);
+    return Objects.hash(role);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class RefreshTokenRequest {\n");
-    sb.append("    refreshToken: ").append(toIndentedString(refreshToken)).append("\n");
+    sb.append("class UpdateMemberRequest {\n");
+    sb.append("    role: ").append(toIndentedString(role)).append("\n");
     sb.append("}");
     return sb.toString();
   }

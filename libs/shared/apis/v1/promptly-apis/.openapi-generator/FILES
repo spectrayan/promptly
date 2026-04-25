@@ -19,9 +19,10 @@ src/main/java/com/promptly/infrastructure/in/web/dto/CreateProjectRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/CreatePromptRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/DeliveryResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/DuplicateCheckResponse.java
-src/main/java/com/promptly/infrastructure/in/web/dto/Environment.java
 src/main/java/com/promptly/infrastructure/in/web/dto/FindingResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/FindingType.java
+src/main/java/com/promptly/infrastructure/in/web/dto/GenerateFromIdeaRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/GenerateFromIdeaResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ImprovementResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/LoginRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/OrgRole.java
@@ -39,6 +40,7 @@ src/main/java/com/promptly/infrastructure/in/web/dto/SearchResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/Severity.java
 src/main/java/com/promptly/infrastructure/in/web/dto/StepAction.java
 src/main/java/com/promptly/infrastructure/in/web/dto/SubmitReviewRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/UpdateMemberRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UpdatePromptRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UserResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UserStatus.java

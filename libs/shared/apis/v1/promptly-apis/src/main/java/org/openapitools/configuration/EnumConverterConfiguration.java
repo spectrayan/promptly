@@ -1,7 +1,6 @@
 package org.openapitools.configuration;
 
 import com.promptly.infrastructure.in.web.dto.ContentFormat;
-import com.promptly.infrastructure.in.web.dto.Environment;
 import com.promptly.infrastructure.in.web.dto.FindingType;
 import com.promptly.infrastructure.in.web.dto.OrgRole;
 import com.promptly.infrastructure.in.web.dto.ProjectRole;
@@ -31,15 +30,6 @@ public class EnumConverterConfiguration {
             @Override
             public ContentFormat convert(String source) {
                 return ContentFormat.fromValue(source);
-            }
-        };
-    }
-    @Bean(name = "org.openapitools.configuration.EnumConverterConfiguration.environmentConverter")
-    Converter<String, Environment> environmentConverter() {
-        return new Converter<String, Environment>() {
-            @Override
-            public Environment convert(String source) {
-                return Environment.fromValue(source);
             }
         };
     }

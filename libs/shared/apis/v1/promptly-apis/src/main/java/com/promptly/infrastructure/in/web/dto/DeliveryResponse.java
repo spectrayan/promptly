@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * DeliveryResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class DeliveryResponse {
 
   private @Nullable String promptId;
@@ -28,8 +28,6 @@ public class DeliveryResponse {
   private @Nullable String content;
 
   private @Nullable Integer version;
-
-  private @Nullable String environment;
 
   private @Nullable String contentFormat;
 
@@ -117,27 +115,6 @@ public class DeliveryResponse {
     this.version = version;
   }
 
-  public DeliveryResponse environment(@Nullable String environment) {
-    this.environment = environment;
-    return this;
-  }
-
-  /**
-   * Get environment
-   * @return environment
-   */
-  
-  @Schema(name = "environment", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("environment")
-  public @Nullable String getEnvironment() {
-    return environment;
-  }
-
-  @JsonProperty("environment")
-  public void setEnvironment(@Nullable String environment) {
-    this.environment = environment;
-  }
-
   public DeliveryResponse contentFormat(@Nullable String contentFormat) {
     this.contentFormat = contentFormat;
     return this;
@@ -172,13 +149,12 @@ public class DeliveryResponse {
         Objects.equals(this.name, deliveryResponse.name) &&
         Objects.equals(this.content, deliveryResponse.content) &&
         Objects.equals(this.version, deliveryResponse.version) &&
-        Objects.equals(this.environment, deliveryResponse.environment) &&
         Objects.equals(this.contentFormat, deliveryResponse.contentFormat);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(promptId, name, content, version, environment, contentFormat);
+    return Objects.hash(promptId, name, content, version, contentFormat);
   }
 
   @Override
@@ -189,7 +165,6 @@ public class DeliveryResponse {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    content: ").append(toIndentedString(content)).append("\n");
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
-    sb.append("    environment: ").append(toIndentedString(environment)).append("\n");
     sb.append("    contentFormat: ").append(toIndentedString(contentFormat)).append("\n");
     sb.append("}");
     return sb.toString();

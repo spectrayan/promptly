@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Organization-level role
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public enum OrgRole {
   
   ORG_ADMIN("ORG_ADMIN"),

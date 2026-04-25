@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * ProjectMemberResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class ProjectMemberResponse {
 
   private String userId;
@@ -33,8 +33,10 @@ public class ProjectMemberResponse {
 
   private ProjectRole role;
 
+  private @Nullable String addedBy;
+
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-  private @Nullable OffsetDateTime joinedAt;
+  private @Nullable OffsetDateTime addedAt;
 
   public ProjectMemberResponse() {
     super();
@@ -134,25 +136,46 @@ public class ProjectMemberResponse {
     this.role = role;
   }
 
-  public ProjectMemberResponse joinedAt(@Nullable OffsetDateTime joinedAt) {
-    this.joinedAt = joinedAt;
+  public ProjectMemberResponse addedBy(@Nullable String addedBy) {
+    this.addedBy = addedBy;
     return this;
   }
 
   /**
-   * Get joinedAt
-   * @return joinedAt
+   * Get addedBy
+   * @return addedBy
    */
-  @Valid 
-  @Schema(name = "joinedAt", example = "2025-07-15T10:00:00.000+00:00", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("joinedAt")
-  public @Nullable OffsetDateTime getJoinedAt() {
-    return joinedAt;
+  
+  @Schema(name = "addedBy", example = "usr-001", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("addedBy")
+  public @Nullable String getAddedBy() {
+    return addedBy;
   }
 
-  @JsonProperty("joinedAt")
-  public void setJoinedAt(@Nullable OffsetDateTime joinedAt) {
-    this.joinedAt = joinedAt;
+  @JsonProperty("addedBy")
+  public void setAddedBy(@Nullable String addedBy) {
+    this.addedBy = addedBy;
+  }
+
+  public ProjectMemberResponse addedAt(@Nullable OffsetDateTime addedAt) {
+    this.addedAt = addedAt;
+    return this;
+  }
+
+  /**
+   * Get addedAt
+   * @return addedAt
+   */
+  @Valid 
+  @Schema(name = "addedAt", example = "2025-07-15T10:00:00Z", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("addedAt")
+  public @Nullable OffsetDateTime getAddedAt() {
+    return addedAt;
+  }
+
+  @JsonProperty("addedAt")
+  public void setAddedAt(@Nullable OffsetDateTime addedAt) {
+    this.addedAt = addedAt;
   }
 
   @Override
@@ -168,12 +191,13 @@ public class ProjectMemberResponse {
         Objects.equals(this.displayName, projectMemberResponse.displayName) &&
         Objects.equals(this.email, projectMemberResponse.email) &&
         Objects.equals(this.role, projectMemberResponse.role) &&
-        Objects.equals(this.joinedAt, projectMemberResponse.joinedAt);
+        Objects.equals(this.addedBy, projectMemberResponse.addedBy) &&
+        Objects.equals(this.addedAt, projectMemberResponse.addedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(userId, displayName, email, role, joinedAt);
+    return Objects.hash(userId, displayName, email, role, addedBy, addedAt);
   }
 
   @Override
@@ -184,7 +208,8 @@ public class ProjectMemberResponse {
     sb.append("    displayName: ").append(toIndentedString(displayName)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    role: ").append(toIndentedString(role)).append("\n");
-    sb.append("    joinedAt: ").append(toIndentedString(joinedAt)).append("\n");
+    sb.append("    addedBy: ").append(toIndentedString(addedBy)).append("\n");
+    sb.append("    addedAt: ").append(toIndentedString(addedAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

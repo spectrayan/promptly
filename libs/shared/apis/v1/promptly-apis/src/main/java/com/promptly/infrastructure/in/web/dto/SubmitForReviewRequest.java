@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -15,11 +16,12 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * SubmitReviewRequest
+ * SubmitForReviewRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
-public class SubmitReviewRequest {
+@JsonTypeName("submitForReview_request")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-24T21:29:54.630159449-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+public class SubmitForReviewRequest {
 
   private String promptId;
 
@@ -27,20 +29,20 @@ public class SubmitReviewRequest {
 
   private String requestedBy;
 
-  public SubmitReviewRequest() {
+  public SubmitForReviewRequest() {
     super();
   }
 
   /**
    * Constructor with only required parameters
    */
-  public SubmitReviewRequest(String promptId, Integer promptVersion, String requestedBy) {
+  public SubmitForReviewRequest(String promptId, Integer promptVersion, String requestedBy) {
     this.promptId = promptId;
     this.promptVersion = promptVersion;
     this.requestedBy = requestedBy;
   }
 
-  public SubmitReviewRequest promptId(String promptId) {
+  public SubmitForReviewRequest promptId(String promptId) {
     this.promptId = promptId;
     return this;
   }
@@ -61,7 +63,7 @@ public class SubmitReviewRequest {
     this.promptId = promptId;
   }
 
-  public SubmitReviewRequest promptVersion(Integer promptVersion) {
+  public SubmitForReviewRequest promptVersion(Integer promptVersion) {
     this.promptVersion = promptVersion;
     return this;
   }
@@ -82,7 +84,7 @@ public class SubmitReviewRequest {
     this.promptVersion = promptVersion;
   }
 
-  public SubmitReviewRequest requestedBy(String requestedBy) {
+  public SubmitForReviewRequest requestedBy(String requestedBy) {
     this.requestedBy = requestedBy;
     return this;
   }
@@ -111,10 +113,10 @@ public class SubmitReviewRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SubmitReviewRequest submitReviewRequest = (SubmitReviewRequest) o;
-    return Objects.equals(this.promptId, submitReviewRequest.promptId) &&
-        Objects.equals(this.promptVersion, submitReviewRequest.promptVersion) &&
-        Objects.equals(this.requestedBy, submitReviewRequest.requestedBy);
+    SubmitForReviewRequest submitForReviewRequest = (SubmitForReviewRequest) o;
+    return Objects.equals(this.promptId, submitForReviewRequest.promptId) &&
+        Objects.equals(this.promptVersion, submitForReviewRequest.promptVersion) &&
+        Objects.equals(this.requestedBy, submitForReviewRequest.requestedBy);
   }
 
   @Override
@@ -125,7 +127,7 @@ public class SubmitReviewRequest {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SubmitReviewRequest {\n");
+    sb.append("class SubmitForReviewRequest {\n");
     sb.append("    promptId: ").append(toIndentedString(promptId)).append("\n");
     sb.append("    promptVersion: ").append(toIndentedString(promptVersion)).append("\n");
     sb.append("    requestedBy: ").append(toIndentedString(requestedBy)).append("\n");

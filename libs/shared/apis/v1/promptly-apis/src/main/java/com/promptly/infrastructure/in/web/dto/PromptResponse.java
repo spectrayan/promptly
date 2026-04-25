@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.promptly.infrastructure.in.web.dto.ContentFormat;
-import com.promptly.infrastructure.in.web.dto.Environment;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ import jakarta.annotation.Generated;
  * PromptResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-23T20:26:14.636453-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class PromptResponse {
 
   private @Nullable String id;
@@ -40,8 +39,6 @@ public class PromptResponse {
   private @Nullable ContentFormat contentFormat;
 
   private @Nullable Integer currentVersion;
-
-  private @Nullable Environment activeEnvironment;
 
   private @Nullable String latestContent;
 
@@ -180,27 +177,6 @@ public class PromptResponse {
     this.currentVersion = currentVersion;
   }
 
-  public PromptResponse activeEnvironment(@Nullable Environment activeEnvironment) {
-    this.activeEnvironment = activeEnvironment;
-    return this;
-  }
-
-  /**
-   * Get activeEnvironment
-   * @return activeEnvironment
-   */
-  @Valid 
-  @Schema(name = "activeEnvironment", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("activeEnvironment")
-  public @Nullable Environment getActiveEnvironment() {
-    return activeEnvironment;
-  }
-
-  @JsonProperty("activeEnvironment")
-  public void setActiveEnvironment(@Nullable Environment activeEnvironment) {
-    this.activeEnvironment = activeEnvironment;
-  }
-
   public PromptResponse latestContent(@Nullable String latestContent) {
     this.latestContent = latestContent;
     return this;
@@ -308,7 +284,6 @@ public class PromptResponse {
         Objects.equals(this.projectId, promptResponse.projectId) &&
         Objects.equals(this.contentFormat, promptResponse.contentFormat) &&
         Objects.equals(this.currentVersion, promptResponse.currentVersion) &&
-        Objects.equals(this.activeEnvironment, promptResponse.activeEnvironment) &&
         Objects.equals(this.latestContent, promptResponse.latestContent) &&
         Objects.equals(this.tags, promptResponse.tags) &&
         Objects.equals(this.createdAt, promptResponse.createdAt) &&
@@ -317,7 +292,7 @@ public class PromptResponse {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, projectId, contentFormat, currentVersion, activeEnvironment, latestContent, tags, createdAt, updatedAt);
+    return Objects.hash(id, name, description, projectId, contentFormat, currentVersion, latestContent, tags, createdAt, updatedAt);
   }
 
   @Override
@@ -330,7 +305,6 @@ public class PromptResponse {
     sb.append("    projectId: ").append(toIndentedString(projectId)).append("\n");
     sb.append("    contentFormat: ").append(toIndentedString(contentFormat)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
-    sb.append("    activeEnvironment: ").append(toIndentedString(activeEnvironment)).append("\n");
     sb.append("    latestContent: ").append(toIndentedString(latestContent)).append("\n");
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");

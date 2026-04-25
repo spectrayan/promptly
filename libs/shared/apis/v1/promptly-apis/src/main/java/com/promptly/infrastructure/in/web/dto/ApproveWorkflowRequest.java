@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -15,28 +16,29 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * ApproveRejectRequest
+ * ApproveWorkflowRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
-public class ApproveRejectRequest {
+@JsonTypeName("approveWorkflow_request")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-24T21:29:54.630159449-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+public class ApproveWorkflowRequest {
 
   private String actor;
 
   private @Nullable String comment;
 
-  public ApproveRejectRequest() {
+  public ApproveWorkflowRequest() {
     super();
   }
 
   /**
    * Constructor with only required parameters
    */
-  public ApproveRejectRequest(String actor) {
+  public ApproveWorkflowRequest(String actor) {
     this.actor = actor;
   }
 
-  public ApproveRejectRequest actor(String actor) {
+  public ApproveWorkflowRequest actor(String actor) {
     this.actor = actor;
     return this;
   }
@@ -57,7 +59,7 @@ public class ApproveRejectRequest {
     this.actor = actor;
   }
 
-  public ApproveRejectRequest comment(@Nullable String comment) {
+  public ApproveWorkflowRequest comment(@Nullable String comment) {
     this.comment = comment;
     return this;
   }
@@ -86,9 +88,9 @@ public class ApproveRejectRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ApproveRejectRequest approveRejectRequest = (ApproveRejectRequest) o;
-    return Objects.equals(this.actor, approveRejectRequest.actor) &&
-        Objects.equals(this.comment, approveRejectRequest.comment);
+    ApproveWorkflowRequest approveWorkflowRequest = (ApproveWorkflowRequest) o;
+    return Objects.equals(this.actor, approveWorkflowRequest.actor) &&
+        Objects.equals(this.comment, approveWorkflowRequest.comment);
   }
 
   @Override
@@ -99,7 +101,7 @@ public class ApproveRejectRequest {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ApproveRejectRequest {\n");
+    sb.append("class ApproveWorkflowRequest {\n");
     sb.append("    actor: ").append(toIndentedString(actor)).append("\n");
     sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
     sb.append("}");
