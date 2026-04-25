@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SEED_DIR="$ROOT_DIR/seed-data"
 CONTAINER="promptly-mongodb"
-DB="test"
+DB="promptly"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'

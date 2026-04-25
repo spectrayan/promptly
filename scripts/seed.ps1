@@ -7,7 +7,7 @@
 $RootDir = Split-Path -Parent $PSScriptRoot
 $SeedDir = Join-Path $RootDir "seed-data"
 $Container = "promptly-mongodb"
-$Database = "test"
+$Database = "promptly"
 
 function Log($msg)  { Write-Host "[seed] $msg" -ForegroundColor Cyan }
 function Ok($msg)   { Write-Host "[seed] $msg" -ForegroundColor Green }
