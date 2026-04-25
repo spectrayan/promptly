@@ -72,9 +72,14 @@ public class NotificationApplicationService implements NotificationUseCase {
                                 return notifRepo.save(notif)
                                         .doOnSuccess(saved -> {
                                             // SSE push for real-time delivery
+                                            // Include eventType in payload so frontend can build proper messages
                                             try {
+                                                var ssePayload = new java.util.HashMap<>(payload);
+                                                ssePayload.put("eventType", eventType.getKey());
+                                                ssePayload.put("_title", eventType.getTitle());
+                                                ssePayload.put("_message", message);
                                                 sse.emit("project-" + projectId,
-                                                        eventType.getKey(), payload);
+                                                        eventType.getKey(), ssePayload);
                                             } catch (Exception e) {
                                                 log.debug("SSE push skipped (no subscribers): {}",
                                                         e.getMessage());

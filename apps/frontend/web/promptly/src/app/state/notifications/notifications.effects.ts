@@ -90,10 +90,13 @@ export class NotificationsEffects {
             const eventType = (event as any)?.eventType ?? 'notification';
             const meta = EVENT_META[eventType] ?? { icon: 'notifications', title: 'Notification' };
 
+            // Use backend-provided title/message when available (avoids raw JSON)
+            const title = (event as any)?._title ?? meta.title;
+            const message = (event as any)?._message ?? this.buildMessage(eventType, event);
+
             // Show snackbar for real-time feedback
-            const message = this.buildMessage(eventType, event);
             this.snackBar.open(
-              `${meta.title}: ${message}`,
+              `${title}: ${message}`,
               'Dismiss',
               {
                 duration: 5000,
