@@ -12,6 +12,7 @@ import com.promptly.prompt.domain.model.PromptSpecifications;
 import com.promptly.prompt.domain.model.PromptStatus;
 import com.promptly.prompt.domain.model.PromptVersion;
 import com.promptly.shared.exception.DuplicateResourceException;
+import com.promptly.shared.exception.ErrorCode;
 import com.promptly.shared.exception.ErrorMessages;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,7 @@ public class PromptApplicationService implements
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.<Prompt>error(new DuplicateResourceException(
+                                ErrorCode.PROMPT_DUPLICATE_NAME,
                                 String.format(ErrorMessages.DUPLICATE_PROMPT_NAME, command.name())));
                     }
 

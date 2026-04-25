@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WorkflowsService } from '@promptly/client';
-import { ErrorMessages } from '../../shared/constants/error-messages';
+import { resolveErrorMessage, FallbackMessages } from '../../shared/constants/error-messages';
 import * as WfActions from './workflows.actions';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class WorkflowsEffects {
       switchMap(({ projectId }) =>
         this.api.listWorkflows({ projectId }).pipe(
           map(workflows => WfActions.loadWorkflowsSuccess({ workflows })),
-          catchError(err => of(WfActions.loadWorkflowsFailure({ error: err?.error?.detail ?? ErrorMessages.LOAD_WORKFLOWS })))
+          catchError(err => of(WfActions.loadWorkflowsFailure({ error: resolveErrorMessage(err?.error, FallbackMessages.LOAD_WORKFLOWS) })))
         )
       )
     )
@@ -31,7 +31,7 @@ export class WorkflowsEffects {
       switchMap(({ request }) =>
         this.api.submitForReview({ submitReviewRequest: request }).pipe(
           map((workflow: any) => WfActions.submitForReviewSuccess({ workflow })),
-          catchError(err => of(WfActions.submitForReviewFailure({ error: err?.error?.detail ?? ErrorMessages.SUBMIT_REVIEW })))
+          catchError(err => of(WfActions.submitForReviewFailure({ error: resolveErrorMessage(err?.error, FallbackMessages.SUBMIT_REVIEW) })))
         )
       )
     )
@@ -43,7 +43,7 @@ export class WorkflowsEffects {
       switchMap(({ id, request }) =>
         this.api.approveWorkflow({ id, approveRejectRequest: request }).pipe(
           map((workflow: any) => WfActions.approveWorkflowSuccess({ workflow })),
-          catchError(err => of(WfActions.approveWorkflowFailure({ error: err?.error?.detail ?? ErrorMessages.APPROVE_WORKFLOW })))
+          catchError(err => of(WfActions.approveWorkflowFailure({ error: resolveErrorMessage(err?.error, FallbackMessages.APPROVE_WORKFLOW) })))
         )
       )
     )
@@ -55,7 +55,7 @@ export class WorkflowsEffects {
       switchMap(({ id, request }) =>
         this.api.rejectWorkflow({ id, approveRejectRequest: request }).pipe(
           map((workflow: any) => WfActions.rejectWorkflowSuccess({ workflow })),
-          catchError(err => of(WfActions.rejectWorkflowFailure({ error: err?.error?.detail ?? ErrorMessages.REJECT_WORKFLOW })))
+          catchError(err => of(WfActions.rejectWorkflowFailure({ error: resolveErrorMessage(err?.error, FallbackMessages.REJECT_WORKFLOW) })))
         )
       )
     )

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ScannerService, ScanResponse } from '@promptly/client';
-import { ErrorMessages } from '../../shared/constants/error-messages';
+import { resolveErrorMessage, FallbackMessages } from '../../shared/constants/error-messages';
 
 /**
  * Scanner facade — signal-based (no NgRx).
@@ -18,7 +18,7 @@ export class ScannerFacade {
   loadAllScans(projectId?: string): void {
     this.api.getAllScans({ projectId }).subscribe({
       next: scans => this.scans.set(scans),
-      error: err => this.error.set(err?.error?.detail ?? ErrorMessages.LOAD_SCANS),
+      error: err => this.error.set(resolveErrorMessage(err?.error, FallbackMessages.LOAD_SCANS)),
     });
   }
 

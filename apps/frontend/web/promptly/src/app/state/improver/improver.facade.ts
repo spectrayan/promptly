@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ImproverService, ImprovementResponse } from '@promptly/client';
-import { ErrorMessages } from '../../shared/constants/error-messages';
+import { resolveErrorMessage, FallbackMessages } from '../../shared/constants/error-messages';
 
 /**
  * Improver facade — signal-based (no NgRx).
@@ -65,7 +65,7 @@ export class ImproverFacade {
         this.clearSuggestion();
       },
       error: (err) => {
-        this.error.set(err?.error?.detail ?? ErrorMessages.APPLY_IMPROVEMENT);
+        this.error.set(resolveErrorMessage(err?.error, FallbackMessages.APPLY_IMPROVEMENT));
         this.applying.set(false);
       },
     });

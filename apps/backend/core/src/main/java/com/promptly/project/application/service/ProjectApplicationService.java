@@ -7,6 +7,7 @@ import com.promptly.project.domain.model.Project;
 import com.promptly.project.domain.model.ProjectMember;
 import com.promptly.project.domain.model.ProjectRole;
 import com.promptly.shared.exception.DuplicateResourceException;
+import com.promptly.shared.exception.ErrorCode;
 import com.promptly.shared.exception.ErrorMessages;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class ProjectApplicationService implements ProjectUseCase {
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new DuplicateResourceException(
+                                ErrorCode.PROJECT_DUPLICATE_NAME,
                                 String.format(ErrorMessages.DUPLICATE_PROJECT_NAME, command.name())));
                     }
 
@@ -73,7 +75,7 @@ public class ProjectApplicationService implements ProjectUseCase {
     @Override
     public Mono<Project> getProject(String id) {
         return projectRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Project", id)));
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException(ErrorCode.PROJECT_NOT_FOUND, "Project", id)));
     }
 
     @Override
@@ -86,7 +88,8 @@ public class ProjectApplicationService implements ProjectUseCase {
         return memberRepository.existsByProjectIdAndUserId(projectId, userId)
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new DuplicateResourceException(ErrorMessages.DUPLICATE_PROJECT_MEMBER));
+                        return Mono.error(new DuplicateResourceException(
+                                ErrorCode.PROJECT_MEMBER_EXISTS, ErrorMessages.DUPLICATE_PROJECT_MEMBER));
                     }
 
                     ProjectMember member = ProjectMember.builder()

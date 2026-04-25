@@ -6,7 +6,14 @@ package com.promptly.shared.exception;
  */
 public class DuplicateResourceException extends RuntimeException {
 
-    public DuplicateResourceException(String message) {
+    private final String code;
+
+    public DuplicateResourceException(String code, String message) {
         super(message);
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
     }
 }

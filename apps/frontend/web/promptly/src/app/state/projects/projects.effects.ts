@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectsService } from '@promptly/client';
-import { ErrorMessages } from '../../shared/constants/error-messages';
+import { resolveErrorMessage, FallbackMessages } from '../../shared/constants/error-messages';
 import * as ProjectsActions from './projects.actions';
 import * as AuthActions from '../auth/auth.actions';
 
@@ -31,7 +31,7 @@ export class ProjectsEffects {
         this.api.listProjects().pipe(
           map(projects => ProjectsActions.loadProjectsSuccess({ projects })),
           catchError(err => of(ProjectsActions.loadProjectsFailure({
-            error: err?.error?.detail ?? ErrorMessages.LOAD_PROJECTS
+            error: resolveErrorMessage(err?.error, FallbackMessages.LOAD_PROJECTS)
           })))
         )
       )
@@ -45,7 +45,7 @@ export class ProjectsEffects {
         this.api.createProject({ createProjectRequest: request }).pipe(
           map(project => ProjectsActions.createProjectSuccess({ project })),
           catchError(err => of(ProjectsActions.createProjectFailure({
-            error: err?.error?.detail ?? ErrorMessages.CREATE_PROJECT
+            error: resolveErrorMessage(err?.error, FallbackMessages.CREATE_PROJECT)
           })))
         )
       )
@@ -70,7 +70,7 @@ export class ProjectsEffects {
         this.api.listProjectMembers({ projectId }).pipe(
           map(members => ProjectsActions.loadProjectMembersSuccess({ members })),
           catchError(err => of(ProjectsActions.loadProjectMembersFailure({
-            error: err?.error?.detail ?? ErrorMessages.LOAD_MEMBERS
+            error: resolveErrorMessage(err?.error, FallbackMessages.LOAD_MEMBERS)
           })))
         )
       )
@@ -84,7 +84,7 @@ export class ProjectsEffects {
         this.api.addProjectMember({ projectId, addMemberRequest: request }).pipe(
           map(member => ProjectsActions.addProjectMemberSuccess({ member })),
           catchError(err => of(ProjectsActions.addProjectMemberFailure({
-            error: err?.error?.detail ?? ErrorMessages.ADD_MEMBER
+            error: resolveErrorMessage(err?.error, FallbackMessages.ADD_MEMBER)
           })))
         )
       )
@@ -98,7 +98,7 @@ export class ProjectsEffects {
         this.api.updateProjectMember({ projectId, userId, updateMemberRequest: request }).pipe(
           map(member => ProjectsActions.updateProjectMemberSuccess({ member })),
           catchError(err => of(ProjectsActions.updateProjectMemberFailure({
-            error: err?.error?.detail ?? ErrorMessages.UPDATE_MEMBER
+            error: resolveErrorMessage(err?.error, FallbackMessages.UPDATE_MEMBER)
           })))
         )
       )
@@ -112,7 +112,7 @@ export class ProjectsEffects {
         this.api.removeProjectMember({ projectId, userId }).pipe(
           map(() => ProjectsActions.removeProjectMemberSuccess({ userId })),
           catchError(err => of(ProjectsActions.removeProjectMemberFailure({
-            error: err?.error?.detail ?? ErrorMessages.REMOVE_MEMBER
+            error: resolveErrorMessage(err?.error, FallbackMessages.REMOVE_MEMBER)
           })))
         )
       )
