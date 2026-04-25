@@ -217,3 +217,14 @@ mat-card-header {
     display: none;
   }
 }
+
+// ── Diff Toggle ──────────────────────────────────────────────────
+.diff-toggle {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2) 0;
+
+  button {
+    gap: var(--space-2);
+  }
+}

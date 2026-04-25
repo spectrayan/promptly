@@ -126,9 +126,22 @@
         </mat-card-content>
       </mat-card>
 
-      <!-- Version Diff Viewer -->
+      <!-- Version Diff Viewer (on-demand) -->
       @if (facade.versions().length >= 2) {
-        <promptly-version-diff [versions]="facade.versions()"></promptly-version-diff>
+        @if (!showDiff) {
+          <div class="diff-toggle">
+            <button mat-stroked-button (click)="showDiff = true">
+              <mat-icon>compare_arrows</mat-icon> Compare Versions
+            </button>
+          </div>
+        } @else {
+          <promptly-version-diff [versions]="facade.versions()"></promptly-version-diff>
+          <div class="diff-toggle">
+            <button mat-button (click)="showDiff = false">
+              <mat-icon>close</mat-icon> Hide Diff
+            </button>
+          </div>
+        }
       }
     </div>
 

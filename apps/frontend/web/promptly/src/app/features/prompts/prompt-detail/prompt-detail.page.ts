@@ -51,6 +51,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   readonly editing = signal(false);
   editContent = '';
   editChangeMessage = '';
+  showDiff = false;
 
   // ═══════════════════════════════════════════════════════════════════
   // Business rules computed from prompt state (mirrors backend specs)
