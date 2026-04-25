@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════════════
 # Promptly — Seed Database
-# Loads seed-data/init.js into the running MongoDB container.
+# Imports per-collection JSON files via mongoimport then creates indexes.
 # Usage: ./scripts/seed.sh
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -9,31 +9,75 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-SEED_FILE="$ROOT_DIR/seed-data/init.js"
+SEED_DIR="$ROOT_DIR/seed-data"
 CONTAINER="promptly-mongodb"
 DB="test"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
-if [[ ! -f "$SEED_FILE" ]]; then
-  echo -e "${RED}[seed]${NC} Seed file not found: $SEED_FILE"
-  exit 1
-fi
+log()  { echo -e "${CYAN}[seed]${NC} $1"; }
+ok()   { echo -e "${GREEN}[seed]${NC} $1"; }
+warn() { echo -e "${YELLOW}[seed]${NC} $1"; }
+err()  { echo -e "${RED}[seed]${NC} $1"; }
 
+# Detect container
 if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
-  echo -e "${RED}[seed]${NC} Container '${CONTAINER}' is not running. Start it first with ./scripts/start-dev.sh"
-  exit 1
+  CONTAINER="mongo-vector"
+  if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
+    err "No MongoDB container found (tried promptly-mongodb, mongo-vector)."
+    exit 1
+  fi
 fi
 
-echo -e "${CYAN}[seed]${NC} Seeding database '${DB}' from ${SEED_FILE}..."
-cat "$SEED_FILE" | docker exec -i "$CONTAINER" mongosh "$DB" --quiet
+log "Seeding database '${DB}' (container: $CONTAINER)..."
+echo ""
 
-if [[ $? -eq 0 ]]; then
-  echo -e "${GREEN}[seed]${NC} Database seeded successfully."
-else
-  echo -e "${RED}[seed]${NC} Seeding failed."
-  exit 1
-fi
+# ── Collection → JSON file mapping ──
+declare -A COLLECTIONS=(
+  [users]="users/users.json"
+  [projects]="projects/projects.json"
+  [project_members]="project_members/project_members.json"
+  [prompts]="prompts/prompts.json"
+  [workflows]="workflows/workflows.json"
+  [scan_results]="scan_results/scan_results.json"
+  [audit_logs]="audit_logs/audit_logs.json"
+)
+
+ORDER=(users projects project_members prompts workflows scan_results audit_logs)
+
+for collection in "${ORDER[@]}"; do
+  json_file="${COLLECTIONS[$collection]}"
+  full_path="$SEED_DIR/$json_file"
+
+  if [[ ! -f "$full_path" ]]; then
+    warn "Skipping $collection — $json_file not found"
+    continue
+  fi
+
+  # Drop existing collection
+  docker exec -i "$CONTAINER" mongosh "$DB" --quiet --eval "db.$collection.drop()" > /dev/null 2>&1 || true
+
+  # Import via mongoimport
+  docker exec -i "$CONTAINER" mongoimport \
+    --db "$DB" \
+    --collection "$collection" \
+    --jsonArray \
+    --quiet \
+    < "$full_path"
+
+  count=$(docker exec -i "$CONTAINER" mongosh "$DB" --quiet --eval "db.$collection.countDocuments()")
+  ok "$collection: $count documents"
+done
+
+echo ""
+
+# ── Create indexes ──
+log "Creating indexes..."
+cat "$SEED_DIR/init.js" | docker exec -i "$CONTAINER" mongosh "$DB" --quiet
+
+echo ""
+ok "Done!"
