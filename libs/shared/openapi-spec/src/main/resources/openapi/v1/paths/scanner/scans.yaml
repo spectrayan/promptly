@@ -1,8 +1,15 @@
 get:
   operationId: getAllScans
   summary: List all scan results
-  description: Returns all scan results across all prompts.
+  description: Returns all scan results across all prompts. Optionally filter by project ID.
   tags: [Scanner]
+  parameters:
+    - name: projectId
+      in: query
+      required: false
+      description: Filter scan results by project ID
+      schema:
+        type: string
   responses:
     '200':
       description: List of scan results

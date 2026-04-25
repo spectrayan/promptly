@@ -1,9 +1,15 @@
 get:
   operationId: listWorkflows
   summary: List workflows
-  description: Returns workflows, optionally filtered by prompt ID or pending status.
+  description: Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
   tags: [Workflows]
   parameters:
+    - name: projectId
+      in: query
+      required: false
+      description: Filter workflows by project ID
+      schema:
+        type: string
     - name: promptId
       in: query
       required: false

@@ -2,10 +2,16 @@ get:
   operationId: getAuditLogs
   summary: Query audit logs
   description: |
-    Returns immutable audit trail entries. Filter by resource ID, user ID, or action type.
+    Returns immutable audit trail entries. Filter by project ID, resource ID, user ID, or action type.
     If no filter is provided, returns all entries.
   tags: [Audit]
   parameters:
+    - name: projectId
+      in: query
+      required: false
+      description: Filter audit logs by project ID
+      schema:
+        type: string
     - name: resourceId
       in: query
       required: false
