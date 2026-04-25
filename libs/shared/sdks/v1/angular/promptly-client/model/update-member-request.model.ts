@@ -7,11 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ProjectRole } from './project-role.model';
 
 
-export interface SubmitReviewRequest { 
-    promptId: string;
-    promptVersion: number;
-    requestedBy: string;
+export interface UpdateMemberRequest { 
+    role: ProjectRole;
 }
+export namespace UpdateMemberRequest {
+}
+
 

@@ -15,7 +15,8 @@ export interface ProjectMemberResponse {
     displayName: string;
     email: string;
     role: ProjectRole;
-    joinedAt?: string;
+    addedBy?: string;
+    addedAt?: string;
 }
 export namespace ProjectMemberResponse {
 }

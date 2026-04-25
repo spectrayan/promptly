@@ -15,7 +15,6 @@ export interface PromptSummaryResponse {
     description?: string;
     projectId?: string;
     currentVersion?: number;
-    activeEnvironment?: string;
     updatedAt?: string;
 }
 

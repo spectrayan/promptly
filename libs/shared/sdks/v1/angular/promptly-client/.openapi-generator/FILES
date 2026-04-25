@@ -35,9 +35,10 @@ model/create-project-request.model.ts
 model/create-prompt-request.model.ts
 model/delivery-response.model.ts
 model/duplicate-check-response.model.ts
-model/environment.model.ts
 model/finding-response.model.ts
 model/finding-type.model.ts
+model/generate-from-idea-request.model.ts
+model/generate-from-idea-response.model.ts
 model/improvement-response.model.ts
 model/login-request.model.ts
 model/models.ts
@@ -56,6 +57,7 @@ model/search-response.model.ts
 model/severity.model.ts
 model/step-action.model.ts
 model/submit-review-request.model.ts
+model/update-member-request.model.ts
 model/update-prompt-request.model.ts
 model/user-response.model.ts
 model/user-status.model.ts
@@ -65,6 +67,7 @@ model/workflow-response.model.ts
 model/workflow-status.model.ts
 model/workflow-step-response.model.ts
 ng-package.json
+package.json
 param.ts
 provide-api.ts
 query.params.ts

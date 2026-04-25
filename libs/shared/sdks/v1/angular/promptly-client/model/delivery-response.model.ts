@@ -17,7 +17,6 @@ export interface DeliveryResponse {
      */
     content?: string;
     version?: number;
-    environment?: string;
     contentFormat?: string;
 }
 

@@ -30,6 +30,7 @@ export interface GetWorkflowRequestParams {
 }
 
 export interface ListWorkflowsRequestParams {
+    projectId?: string;
     promptId?: string;
     pendingOnly?: boolean;
 }
@@ -66,7 +67,7 @@ export interface WorkflowsServiceInterface {
 
     /**
      * List workflows
-     * Returns workflows, optionally filtered by prompt ID or pending status.
+     * Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
      * @endpoint get /api/v1/workflows
 * @param requestParameters
      */

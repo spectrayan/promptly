@@ -109,7 +109,7 @@ export class AuditService extends BaseService implements AuditServiceInterface {
 
     /**
      * Query audit logs
-     * Returns immutable audit trail entries. Filter by resource ID, user ID, or action type. If no filter is provided, returns all entries. 
+     * Returns immutable audit trail entries. Filter by project ID, resource ID, user ID, or action type. If no filter is provided, returns all entries. 
      * @endpoint get /api/v1/audit-logs
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -120,11 +120,21 @@ export class AuditService extends BaseService implements AuditServiceInterface {
     public getAuditLogs(requestParameters?: GetAuditLogsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<AuditResponse>>>;
     public getAuditLogs(requestParameters?: GetAuditLogsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<AuditResponse>>>;
     public getAuditLogs(requestParameters?: GetAuditLogsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const projectId = requestParameters?.projectId;
         const resourceId = requestParameters?.resourceId;
         const userId = requestParameters?.userId;
         const action = requestParameters?.action;
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'projectId',
+            <any>projectId,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,

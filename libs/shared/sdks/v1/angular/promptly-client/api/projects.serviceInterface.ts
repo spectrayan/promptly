@@ -16,6 +16,7 @@ import { CreateProjectRequest } from '../model/models';
 import { ProblemDetails } from '../model/models';
 import { ProjectMemberResponse } from '../model/models';
 import { ProjectResponse } from '../model/models';
+import { UpdateMemberRequest } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -36,6 +37,17 @@ export interface GetProjectRequestParams {
 
 export interface ListProjectMembersRequestParams {
     projectId: string;
+}
+
+export interface RemoveProjectMemberRequestParams {
+    projectId: string;
+    userId: string;
+}
+
+export interface UpdateProjectMemberRequestParams {
+    projectId: string;
+    userId: string;
+    updateMemberRequest: UpdateMemberRequest;
 }
 
 
@@ -81,5 +93,21 @@ export interface ProjectsServiceInterface {
      * @endpoint get /api/v1/projects
 */
     listProjects(extraHttpRequestParams?: any): Observable<Array<ProjectResponse>>;
+
+    /**
+     * Remove a member from a project
+     * 
+     * @endpoint delete /api/v1/projects/{projectId}/members/{userId}
+* @param requestParameters
+     */
+    removeProjectMember(requestParameters: RemoveProjectMemberRequestParams, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Update a project member\&#39;s role
+     * 
+     * @endpoint put /api/v1/projects/{projectId}/members/{userId}
+* @param requestParameters
+     */
+    updateProjectMember(requestParameters: UpdateProjectMemberRequestParams, extraHttpRequestParams?: any): Observable<ProjectMemberResponse>;
 
 }

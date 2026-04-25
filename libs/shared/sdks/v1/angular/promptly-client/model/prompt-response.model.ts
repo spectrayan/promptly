@@ -8,7 +8,6 @@
  * Do not edit the class manually.
  */
 import { ContentFormat } from './content-format.model';
-import { Environment } from './environment.model';
 
 
 export interface PromptResponse { 
@@ -24,7 +23,6 @@ export interface PromptResponse {
      * Latest version number
      */
     currentVersion?: number;
-    activeEnvironment?: Environment;
     /**
      * Content of the latest version
      */

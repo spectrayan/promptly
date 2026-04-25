@@ -22,6 +22,7 @@ export interface ExportAuditLogsRequestParams {
 }
 
 export interface GetAuditLogsRequestParams {
+    projectId?: string;
     resourceId?: string;
     userId?: string;
     action?: string;
@@ -42,7 +43,7 @@ export interface AuditServiceInterface {
 
     /**
      * Query audit logs
-     * Returns immutable audit trail entries. Filter by resource ID, user ID, or action type. If no filter is provided, returns all entries. 
+     * Returns immutable audit trail entries. Filter by project ID, resource ID, user ID, or action type. If no filter is provided, returns all entries. 
      * @endpoint get /api/v1/audit-logs
 * @param requestParameters
      */

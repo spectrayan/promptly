@@ -183,7 +183,7 @@ export class WorkflowsService extends BaseService implements WorkflowsServiceInt
 
     /**
      * List workflows
-     * Returns workflows, optionally filtered by prompt ID or pending status.
+     * Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
      * @endpoint get /api/v1/workflows
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -194,10 +194,20 @@ export class WorkflowsService extends BaseService implements WorkflowsServiceInt
     public listWorkflows(requestParameters?: ListWorkflowsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<WorkflowResponse>>>;
     public listWorkflows(requestParameters?: ListWorkflowsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<WorkflowResponse>>>;
     public listWorkflows(requestParameters?: ListWorkflowsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const projectId = requestParameters?.projectId;
         const promptId = requestParameters?.promptId;
         const pendingOnly = requestParameters?.pendingOnly;
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'projectId',
+            <any>projectId,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         localVarQueryParameters = this.addToHttpParams(
             localVarQueryParameters,

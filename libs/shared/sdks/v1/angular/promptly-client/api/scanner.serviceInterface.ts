@@ -18,6 +18,10 @@ import { ScanResponse } from '../model/models';
 import { Configuration }                                     from '../configuration';
 
 
+export interface GetAllScansRequestParams {
+    projectId?: string;
+}
+
 export interface GetLatestScanResultRequestParams {
     promptId: string;
 }
@@ -33,10 +37,11 @@ export interface ScannerServiceInterface {
 
     /**
      * List all scan results
-     * Returns all scan results across all prompts.
+     * Returns all scan results across all prompts. Optionally filter by project ID.
      * @endpoint get /api/v1/scans
-*/
-    getAllScans(extraHttpRequestParams?: any): Observable<Array<ScanResponse>>;
+* @param requestParameters
+     */
+    getAllScans(requestParameters: GetAllScansRequestParams, extraHttpRequestParams?: any): Observable<Array<ScanResponse>>;
 
     /**
      * Get latest scan result

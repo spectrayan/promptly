@@ -12,6 +12,8 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { CreatePromptRequest } from '../model/models';
+import { GenerateFromIdeaRequest } from '../model/models';
+import { GenerateFromIdeaResponse } from '../model/models';
 import { ProblemDetails } from '../model/models';
 import { PromptResponse } from '../model/models';
 import { PromptSummaryResponse } from '../model/models';
@@ -28,6 +30,10 @@ export interface CreatePromptRequestParams {
 
 export interface DeletePromptRequestParams {
     id: string;
+}
+
+export interface GenerateFromIdeaRequestParams {
+    generateFromIdeaRequest: GenerateFromIdeaRequest;
 }
 
 export interface GetPromptRequestParams {
@@ -78,6 +84,14 @@ export interface PromptsServiceInterface {
 * @param requestParameters
      */
     deletePrompt(requestParameters: DeletePromptRequestParams, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Generate a prompt from a natural-language idea
+     * Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. 
+     * @endpoint post /api/v1/prompts/generate
+* @param requestParameters
+     */
+    generateFromIdea(requestParameters: GenerateFromIdeaRequestParams, extraHttpRequestParams?: any): Observable<GenerateFromIdeaResponse>;
 
     /**
      * Get prompt details

@@ -19,6 +19,10 @@ import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 // @ts-ignore
 import { CreatePromptRequest } from '../model/create-prompt-request.model';
 // @ts-ignore
+import { GenerateFromIdeaRequest } from '../model/generate-from-idea-request.model';
+// @ts-ignore
+import { GenerateFromIdeaResponse } from '../model/generate-from-idea-response.model';
+// @ts-ignore
 import { ProblemDetails } from '../model/problem-details.model';
 // @ts-ignore
 import { PromptResponse } from '../model/prompt-response.model';
@@ -37,6 +41,7 @@ import {
     PromptsServiceInterface,
     CreatePromptRequestParams,
     DeletePromptRequestParams,
+    GenerateFromIdeaRequestParams,
     GetPromptRequestParams,
     GetSpecificVersionRequestParams,
     GetVersionHistoryRequestParams,
@@ -173,6 +178,75 @@ export class PromptsService extends BaseService implements PromptsServiceInterfa
         return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Generate a prompt from a natural-language idea
+     * Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. 
+     * @endpoint post /api/v1/prompts/generate
+     * @param requestParameters
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public generateFromIdea(requestParameters: GenerateFromIdeaRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<GenerateFromIdeaResponse>;
+    public generateFromIdea(requestParameters: GenerateFromIdeaRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<GenerateFromIdeaResponse>>;
+    public generateFromIdea(requestParameters: GenerateFromIdeaRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<GenerateFromIdeaResponse>>;
+    public generateFromIdea(requestParameters: GenerateFromIdeaRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json' | 'application/problem+json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const generateFromIdeaRequest = requestParameters?.generateFromIdeaRequest;
+        if (generateFromIdeaRequest === null || generateFromIdeaRequest === undefined) {
+            throw new Error('Required parameter generateFromIdeaRequest was null or undefined when calling generateFromIdea.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/json',
+            'application/problem+json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/v1/prompts/generate`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<GenerateFromIdeaResponse>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: generateFromIdeaRequest,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

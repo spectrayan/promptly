@@ -8,7 +8,6 @@
  * Do not edit the class manually.
  */
 import { WorkflowStepResponse } from './workflow-step-response.model';
-import { Environment } from './environment.model';
 import { WorkflowStatus } from './workflow-status.model';
 
 
@@ -17,13 +16,11 @@ export interface WorkflowResponse {
     promptId?: string;
     promptVersion?: number;
     /**
-     * Workflow type (e.g., approval, promotion)
+     * Workflow type (e.g., approval)
      */
     type?: string;
     status?: WorkflowStatus;
     currentStep?: number;
-    sourceEnvironment?: Environment;
-    targetEnvironment?: Environment;
     requestedBy?: string;
     steps?: Array<WorkflowStepResponse>;
     createdAt?: string;

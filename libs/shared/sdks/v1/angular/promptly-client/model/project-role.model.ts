@@ -13,11 +13,9 @@
  * Project-level RBAC role
  */
 export const ProjectRole = {
-    Viewer: 'VIEWER',
-    Author: 'AUTHOR',
-    Reviewer: 'REVIEWER',
-    Approver: 'APPROVER',
-    Admin: 'ADMIN'
+    Owner: 'OWNER',
+    Editor: 'EDITOR',
+    Viewer: 'VIEWER'
 } as const;
 export type ProjectRole = typeof ProjectRole[keyof typeof ProjectRole];
 
