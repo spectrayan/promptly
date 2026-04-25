@@ -1,5 +1,8 @@
 package com.promptly.shared.exception;
 
+import com.mongodb.MongoWriteException;
+import com.mongodb.ServerAddress;
+import com.mongodb.WriteError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -31,6 +34,28 @@ public class GlobalExceptionHandler {
         return Mono.just(problem);
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public Mono<ProblemDetail> handleDuplicate(DuplicateResourceException ex, ServerWebExchange exchange) {
+        log.warn("Duplicate resource: {}", ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Duplicate Resource");
+        problem.setType(URI.create("https://promptly.dev/errors/conflict"));
+        problem.setProperty("timestamp", Instant.now());
+        problem.setInstance(URI.create(exchange.getRequest().getPath().value()));
+        return Mono.just(problem);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public Mono<ProblemDetail> handleIllegalState(IllegalStateException ex, ServerWebExchange exchange) {
+        log.warn("Business rule violation: {}", ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Business Rule Violation");
+        problem.setType(URI.create("https://promptly.dev/errors/conflict"));
+        problem.setProperty("timestamp", Instant.now());
+        problem.setInstance(URI.create(exchange.getRequest().getPath().value()));
+        return Mono.just(problem);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public Mono<ProblemDetail> handleBadRequest(IllegalArgumentException ex, ServerWebExchange exchange) {
         log.warn("Bad request: {}", ex.getMessage());
@@ -40,6 +65,23 @@ public class GlobalExceptionHandler {
         problem.setProperty("timestamp", Instant.now());
         problem.setInstance(URI.create(exchange.getRequest().getPath().value()));
         return Mono.just(problem);
+    }
+
+    @ExceptionHandler(MongoWriteException.class)
+    public Mono<ProblemDetail> handleMongoWrite(MongoWriteException ex, ServerWebExchange exchange) {
+        // Duplicate key error code = 11000
+        if (ex.getError().getCode() == 11000) {
+            log.warn("MongoDB duplicate key on {}: {}", exchange.getRequest().getPath(), ex.getError().getMessage());
+            ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                    HttpStatus.CONFLICT, "A resource with the same unique key already exists");
+            problem.setTitle("Duplicate Resource");
+            problem.setType(URI.create("https://promptly.dev/errors/conflict"));
+            problem.setProperty("timestamp", Instant.now());
+            problem.setInstance(URI.create(exchange.getRequest().getPath().value()));
+            return Mono.just(problem);
+        }
+        // For other Mongo write errors, fall through to generic handler behavior
+        return handleGenericException(ex, exchange);
     }
 
     @ExceptionHandler(Exception.class)

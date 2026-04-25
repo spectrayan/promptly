@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PromptsService } from '@promptly/client';
 import * as PromptsActions from './prompts.actions';
 
@@ -9,6 +10,7 @@ import * as PromptsActions from './prompts.actions';
 export class PromptsEffects {
   private readonly actions$ = inject(Actions);
   private readonly api = inject(PromptsService);
+  private readonly snackBar = inject(MatSnackBar);
 
   loadPrompts$ = createEffect(() =>
     this.actions$.pipe(
@@ -92,5 +94,20 @@ export class PromptsEffects {
         )
       )
     )
+  );
+
+  showErrorSnackbar$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(
+        PromptsActions.createPromptFailure,
+        PromptsActions.updatePromptFailure,
+        PromptsActions.deletePromptFailure,
+        PromptsActions.rollbackPromptFailure,
+      ),
+      tap(({ error }) => {
+        this.snackBar.open(error, 'Dismiss', { duration: 5000, panelClass: 'snackbar-error' });
+      })
+    ),
+    { dispatch: false }
   );
 }

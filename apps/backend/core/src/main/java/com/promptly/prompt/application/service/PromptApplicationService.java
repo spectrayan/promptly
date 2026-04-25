@@ -11,6 +11,7 @@ import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.prompt.domain.model.PromptSpecifications;
 import com.promptly.prompt.domain.model.PromptStatus;
 import com.promptly.prompt.domain.model.PromptVersion;
+import com.promptly.shared.exception.DuplicateResourceException;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,25 +46,33 @@ public class PromptApplicationService implements
     public Mono<Prompt> createPrompt(CreatePromptCommand command) {
         log.info("Creating prompt: {}", command.name());
 
-        Prompt prompt = Prompt.builder()
-                .name(command.name())
-                .description(command.description())
-                .projectId(command.projectId())
-                .contentFormat(command.contentFormat() != null ? ContentFormat.valueOf(command.contentFormat()) : ContentFormat.TEXT)
-                .tags(new HashSet<>())
-                .currentVersion(0)
-                .status(PromptStatus.DRAFT)
-                .build();
+        return promptRepository.existsByNameAndProjectId(command.name(), command.projectId())
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.<Prompt>error(new DuplicateResourceException(
+                                "A prompt named '" + command.name() + "' already exists in this project"));
+                    }
 
-        // createNewVersion checks isEditable — DRAFT status is always allowed
-        prompt.createNewVersion(command.content(), "Initial version", command.author());
+                    Prompt prompt = Prompt.builder()
+                            .name(command.name())
+                            .description(command.description())
+                            .projectId(command.projectId())
+                            .contentFormat(command.contentFormat() != null ? ContentFormat.valueOf(command.contentFormat()) : ContentFormat.TEXT)
+                            .tags(new HashSet<>())
+                            .currentVersion(0)
+                            .status(PromptStatus.DRAFT)
+                            .build();
 
-        return promptRepository.save(prompt)
-                .doOnSuccess(saved -> {
-                    log.info("Prompt created: id={}, name={}", saved.getId(), saved.getName());
-                    eventPublisher.publishEvent(
-                            new PromptCreated(saved.getId(), saved.getName(), saved.getProjectId(), saved.getCurrentVersion())
-                    );
+                    // createNewVersion checks isEditable — DRAFT status is always allowed
+                    prompt.createNewVersion(command.content(), "Initial version", command.author());
+
+                    return promptRepository.save(prompt)
+                            .doOnSuccess(saved -> {
+                                log.info("Prompt created: id={}, name={}", saved.getId(), saved.getName());
+                                eventPublisher.publishEvent(
+                                        new PromptCreated(saved.getId(), saved.getName(), saved.getProjectId(), saved.getCurrentVersion())
+                                );
+                            });
                 });
     }
 
