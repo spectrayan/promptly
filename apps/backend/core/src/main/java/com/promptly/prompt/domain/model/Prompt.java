@@ -81,10 +81,17 @@ public class Prompt extends AggregateRoot {
     }
 
     /**
-     * Resets status to DRAFT (e.g., after a review is rejected).
+     * Resets status to DRAFT (e.g., when re-editing after rejection).
      */
     public void resetToDraft() {
         this.status = PromptStatus.DRAFT;
+    }
+
+    /**
+     * Marks this prompt as rejected (called after workflow rejection).
+     */
+    public void markRejected() {
+        this.status = PromptStatus.REJECTED;
     }
 
     /**
