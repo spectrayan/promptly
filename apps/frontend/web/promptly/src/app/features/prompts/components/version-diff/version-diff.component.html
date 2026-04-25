@@ -1,0 +1,63 @@
+<mat-card class="diff-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>compare_arrows</mat-icon>
+      Version Diff
+    </mat-card-title>
+    <div class="diff-controls">
+      <button mat-icon-button
+              [matTooltip]="inline ? 'Switch to side-by-side' : 'Switch to inline'"
+              (click)="toggleLayout()"
+              class="layout-toggle">
+        <mat-icon>{{ inline ? 'view_column' : 'view_stream' }}</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="diff-selectors">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="diff-select">
+        <mat-label>From</mat-label>
+        <mat-select [(ngModel)]="leftVersion" (selectionChange)="updateDiff()">
+          @for (v of versions; track v.versionNumber) {
+            <mat-option [value]="v.versionNumber">v{{ v.versionNumber }} — {{ v.changeMessage ?? 'Initial' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-icon class="diff-arrow">arrow_forward</mat-icon>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="diff-select">
+        <mat-label>To</mat-label>
+        <mat-select [(ngModel)]="rightVersion" (selectionChange)="updateDiff()">
+          @for (v of versions; track v.versionNumber) {
+            <mat-option [value]="v.versionNumber">v{{ v.versionNumber }} — {{ v.changeMessage ?? 'Initial' }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    @if (leftVersion && rightVersion && leftVersion !== rightVersion) {
+      <div class="diff-stats">
+        <span class="stat-added">
+          <mat-icon>add</mat-icon>
+          {{ addedCount }} added
+        </span>
+        <span class="stat-removed">
+          <mat-icon>remove</mat-icon>
+          {{ removedCount }} removed
+        </span>
+      </div>
+      <div #diffContainer class="diff-editor-container"></div>
+    } @else if (leftVersion && rightVersion && leftVersion === rightVersion) {
+      <div class="diff-identical">
+        <mat-icon>check_circle</mat-icon>
+        <span>Versions are identical</span>
+      </div>
+    } @else {
+      <div class="diff-hint">
+        <mat-icon>compare</mat-icon>
+        Select two versions to compare
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

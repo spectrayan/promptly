@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -32,6 +33,7 @@ export class ScanResultsPage implements OnInit {
   readonly facade = inject(ScannerFacade);
   readonly promptsFacade = inject(PromptsFacade);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly route = inject(ActivatedRoute);
 
   displayedColumns = ['prompt', 'status', 'findings', 'scannedAt'];
 
@@ -69,8 +71,11 @@ export class ScanResultsPage implements OnInit {
   readonly hasActiveFilters = computed(() => this.statusFilter().length > 0);
 
   ngOnInit(): void {
-    this.facade.loadAllScans();
-    this.promptsFacade.loadPrompts();
+    const projectId = this.route.parent?.snapshot.paramMap.get('projectId')
+      ?? this.route.snapshot.paramMap.get('projectId')
+      ?? undefined;
+    this.facade.loadAllScans(projectId);
+    this.promptsFacade.loadPrompts(projectId);
   }
 
   getPromptName(promptId: string): string {

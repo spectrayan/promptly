@@ -77,6 +77,27 @@
   color: var(--info);
 }
 
+// ── Monaco Wrapper (view & edit) ───────────────────────────────────
+.monaco-editor-wrapper {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-2);
+  animation: fadeInUp var(--duration-fast) var(--ease-out);
+
+  promptly-monaco-editor {
+    border-color: var(--mat-sys-outline-variant);
+    transition: border-color var(--transition-base);
+
+    &:focus-within {
+      border-color: var(--mat-sys-primary);
+    }
+  }
+
+  &.view-mode promptly-monaco-editor {
+    border-color: transparent;
+  }
+}
+
 .prop-list {
   display: grid;
   grid-template-columns: 100px 1fr;

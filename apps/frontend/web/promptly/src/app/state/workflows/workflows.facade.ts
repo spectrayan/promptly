@@ -20,7 +20,7 @@ export class WorkflowsFacade {
   readonly error     = this.store.selectSignal(selectWorkflowsError);
   readonly count     = this.store.selectSignal(selectWorkflowCount);
 
-  loadWorkflows(): void { this.store.dispatch(WfActions.loadWorkflows()); }
+  loadWorkflows(projectId?: string): void { this.store.dispatch(WfActions.loadWorkflows({ projectId })); }
 
   submitForReview(request: SubmitReviewRequest): void {
     this.store.dispatch(WfActions.submitForReview({ request }));

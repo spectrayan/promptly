@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -24,7 +24,14 @@ import { SearchFacade } from '../../state/search/search.facade';
 })
 export class SearchPage {
   readonly facade = inject(SearchFacade);
+  private readonly route = inject(ActivatedRoute);
   searchQuery = '';
+  projectPrefix = '';
+
+  constructor() {
+    const pid = this.route.snapshot.paramMap.get('projectId');
+    this.projectPrefix = pid ? `/projects/${pid}` : '';
+  }
 
   onSearch(): void {
     this.facade.search(this.searchQuery);

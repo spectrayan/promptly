@@ -8,7 +8,7 @@ import {
 } from '@promptly/client';
 
 // ── Load All ────────────────────────────────────────────────────────
-export const loadPrompts = createAction('[Prompts] Load Prompts');
+export const loadPrompts = createAction('[Prompts] Load Prompts', props<{ projectId?: string }>());
 export const loadPromptsSuccess = createAction('[Prompts] Load Prompts Success', props<{ prompts: PromptSummaryResponse[] }>());
 export const loadPromptsFailure = createAction('[Prompts] Load Prompts Failure', props<{ error: string }>());
 

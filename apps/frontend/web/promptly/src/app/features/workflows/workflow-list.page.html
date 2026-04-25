@@ -50,20 +50,6 @@
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="targetEnvironment">
-        <th mat-header-cell *matHeaderCellDef>
-          <div class="header-with-filter">
-            <span mat-sort-header="targetEnvironment">Target</span>
-            <mat-form-field appearance="outline" class="column-filter column-filter-select" subscriptSizing="dynamic">
-              <mat-select [ngModel]="targetEnvFilter()" (ngModelChange)="onEnvFilterChange($event)" multiple placeholder="All">
-                <mat-option value="STAGING">Staging</mat-option>
-                <mat-option value="PRODUCTION">Production</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </th>
-        <td mat-cell *matCellDef="let w"><mat-chip>{{ w.targetEnvironment }}</mat-chip></td>
-      </ng-container>
 
       <ng-container matColumnDef="requestedBy">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Requested By</th>

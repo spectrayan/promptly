@@ -23,7 +23,7 @@ export class DashboardFacade {
   readonly loading         = this.store.selectSignal(selectDashboardLoading);
   readonly error           = this.store.selectSignal(selectDashboardError);
 
-  loadDashboard(): void {
-    this.store.dispatch(loadDashboard());
+  loadDashboard(projectId?: string): void {
+    this.store.dispatch(loadDashboard({ projectId }));
   }
 }

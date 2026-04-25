@@ -15,7 +15,7 @@
   <div class="loading-center"><mat-spinner diameter="40" /></div>
 } @else {
   <div class="stat-grid">
-    <mat-card class="stat-card" routerLink="/prompts" id="stat-prompts">
+    <mat-card class="stat-card" [routerLink]="projectPrefix + '/prompts'" id="stat-prompts">
       <mat-card-content>
         <div class="stat-icon-wrap gradient-purple">
           <mat-icon>edit_note</mat-icon>
@@ -25,7 +25,7 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" routerLink="/workflows" id="stat-workflows">
+    <mat-card class="stat-card" [routerLink]="projectPrefix + '/workflows'" id="stat-workflows">
       <mat-card-content>
         <div class="stat-icon-wrap gradient-blue">
           <mat-icon>approval</mat-icon>
@@ -35,7 +35,7 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card accent" routerLink="/workflows" id="stat-pending">
+    <mat-card class="stat-card accent" [routerLink]="projectPrefix + '/workflows'" id="stat-pending">
       <mat-card-content>
         <div class="stat-icon-wrap gradient-amber">
           <mat-icon>pending_actions</mat-icon>
@@ -45,7 +45,7 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" routerLink="/scanner" id="stat-scans">
+    <mat-card class="stat-card" [routerLink]="projectPrefix + '/scanner'" id="stat-scans">
       <mat-card-content>
         <div class="stat-icon-wrap gradient-green">
           <mat-icon>security</mat-icon>
@@ -55,7 +55,7 @@
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="stat-card" routerLink="/audit" id="stat-audit">
+    <mat-card class="stat-card" [routerLink]="projectPrefix + '/audit'" id="stat-audit">
       <mat-card-content>
         <div class="stat-icon-wrap gradient-red">
           <mat-icon>history</mat-icon>
@@ -80,19 +80,19 @@
   <div class="quick-actions">
     <h3>Quick Actions</h3>
     <div class="action-grid">
-      <a routerLink="/prompts" class="action-card" id="action-create-prompt">
+      <a [routerLink]="projectPrefix + '/prompts'" class="action-card" id="action-create-prompt">
         <mat-icon>add_circle</mat-icon>
         <span>Create Prompt</span>
       </a>
-      <a routerLink="/workflows" class="action-card" id="action-review">
+      <a [routerLink]="projectPrefix + '/workflows'" class="action-card" id="action-review">
         <mat-icon>rate_review</mat-icon>
         <span>Review Workflows</span>
       </a>
-      <a routerLink="/search" class="action-card" id="action-search">
+      <a [routerLink]="projectPrefix + '/search'" class="action-card" id="action-search">
         <mat-icon>search</mat-icon>
         <span>Search Prompts</span>
       </a>
-      <a routerLink="/audit" class="action-card" id="action-audit">
+      <a [routerLink]="projectPrefix + '/audit'" class="action-card" id="action-audit">
         <mat-icon>assignment</mat-icon>
         <span>Audit Trail</span>
       </a>

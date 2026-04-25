@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -31,6 +32,7 @@ import { AuditFacade } from '../../state/audit/audit.facade';
 })
 export class AuditLogPage implements OnInit {
   readonly facade = inject(AuditFacade);
+  private readonly route = inject(ActivatedRoute);
   displayedColumns = ['action', 'resourceType', 'resourceId', 'actorUserId', 'timestamp'];
 
   // ── Filter signals ────────────────────────────────────────────
@@ -115,7 +117,10 @@ export class AuditLogPage implements OnInit {
   );
 
   ngOnInit(): void {
-    this.facade.loadLogs();
+    const projectId = this.route.parent?.snapshot.paramMap.get('projectId')
+      ?? this.route.snapshot.paramMap.get('projectId')
+      ?? undefined;
+    this.facade.loadLogs(projectId);
   }
 
   actionClass(action: string | undefined): string {

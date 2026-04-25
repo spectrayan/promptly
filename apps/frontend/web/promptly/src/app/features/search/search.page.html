@@ -19,7 +19,7 @@
   <mat-card>
     <mat-nav-list>
       @for (result of facade.results(); track result.promptId) {
-        <a mat-list-item [routerLink]="['/prompts', result.promptId]">
+        <a mat-list-item [routerLink]="[projectPrefix + '/prompts', result.promptId]">
           <mat-icon matListItemIcon>description</mat-icon>
           <span matListItemTitle>{{ result.name }}</span>
           <span matListItemLine>{{ result.description }}</span>

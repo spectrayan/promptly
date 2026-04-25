@@ -13,8 +13,8 @@ export class PromptsEffects {
   loadPrompts$ = createEffect(() =>
     this.actions$.pipe(
       ofType(PromptsActions.loadPrompts),
-      switchMap(() =>
-        this.api.listPrompts().pipe(
+      switchMap(({ projectId }) =>
+        this.api.listPrompts({ projectId }).pipe(
           map(prompts => PromptsActions.loadPromptsSuccess({ prompts })),
           catchError(err => of(PromptsActions.loadPromptsFailure({ error: err?.error?.detail ?? 'Failed to load prompts' })))
         )

@@ -2,7 +2,7 @@
   <div class="loading-center"><mat-spinner diameter="40" /></div>
 } @else if (facade.selected(); as p) {
   <div class="page-header">
-    <a routerLink="/prompts" class="back-link">
+    <a routerLink="../" class="back-link">
       <mat-icon>arrow_back</mat-icon> Back to Prompts
     </a>
     <h1>{{ p.name }}</h1>
@@ -31,7 +31,15 @@
         <mat-card-content>
           <!-- View mode -->
           @if (!editing()) {
-            <pre class="content-block">{{ p.latestContent }}</pre>
+            <div class="monaco-editor-wrapper view-mode">
+              <promptly-monaco-editor
+                [value]="p.latestContent ?? ''"
+                [language]="p.contentFormat ?? 'TEXT'"
+                [height]="'350px'"
+                [readOnly]="true"
+                [minimap]="false"
+              />
+            </div>
           }
 
           <!-- Edit mode -->

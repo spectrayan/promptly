@@ -22,42 +22,64 @@ export const routes: Routes = [
     title: 'Dashboard — Promptly',
     canActivate: [authGuard],
   },
+
+  // ── Project-scoped routes ──
   {
-    path: 'prompts',
-    loadComponent: () => import('./features/prompts/prompt-list.page').then(m => m.PromptListPage),
+    path: 'projects/:projectId/dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard.page').then(m => m.DashboardPage),
+    title: 'Dashboard — Promptly',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects/:projectId/prompts',
+    loadComponent: () => import('./features/prompts/prompt-list/prompt-list.page').then(m => m.PromptListPage),
     title: 'Prompts — Promptly',
     canActivate: [authGuard],
   },
   {
-    path: 'prompts/create',
-    loadComponent: () => import('./features/prompts/prompt-create.page').then(m => m.PromptCreatePage),
+    path: 'projects/:projectId/prompts/create',
+    loadComponent: () => import('./features/prompts/prompt-create/prompt-create.page').then(m => m.PromptCreatePage),
     title: 'Create Prompt — Promptly',
     canActivate: [authGuard],
   },
   {
-    path: 'prompts/:id',
-    loadComponent: () => import('./features/prompts/prompt-detail.page').then(m => m.PromptDetailPage),
+    path: 'projects/:projectId/prompts/:id',
+    loadComponent: () => import('./features/prompts/prompt-detail/prompt-detail.page').then(m => m.PromptDetailPage),
     title: 'Prompt Detail — Promptly',
     canActivate: [authGuard],
   },
   {
-    path: 'workflows',
+    path: 'projects/:projectId/workflows',
     loadComponent: () => import('./features/workflows/workflow-list.page').then(m => m.WorkflowListPage),
     title: 'Workflows — Promptly',
     canActivate: [authGuard],
   },
   {
-    path: 'scanner',
+    path: 'projects/:projectId/scanner',
     loadComponent: () => import('./features/scanner/scan-results.page').then(m => m.ScanResultsPage),
     title: 'Security Scans — Promptly',
     canActivate: [authGuard],
   },
   {
-    path: 'audit',
+    path: 'projects/:projectId/audit',
     loadComponent: () => import('./features/audit/audit-log.page').then(m => m.AuditLogPage),
     title: 'Audit Logs — Promptly',
     canActivate: [authGuard],
   },
+  {
+    path: 'projects/:projectId/search',
+    loadComponent: () => import('./features/search/search.page').then(m => m.SearchPage),
+    title: 'Search — Promptly',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects/:projectId/settings',
+    loadComponent: () => import('./features/projects/project-settings.page').then(m => m.ProjectSettingsPage),
+    title: 'Project Settings — Promptly',
+    canActivate: [authGuard],
+  },
+
+  // ── Global routes ──
   {
     path: 'search',
     loadComponent: () => import('./features/search/search.page').then(m => m.SearchPage),
@@ -70,4 +92,12 @@ export const routes: Routes = [
     title: 'Settings — Promptly',
     canActivate: [authGuard],
   },
+
+  // ── Legacy redirects (backward compat) ──
+  { path: 'prompts', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'workflows', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'scanner', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'audit', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'projects/settings', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
+

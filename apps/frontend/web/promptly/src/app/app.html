@@ -10,29 +10,41 @@
       </button>
 
       <!-- Brand / Logo -->
-      <a routerLink="/dashboard" class="topbar-brand">
+      <a [routerLink]="dashboardNavItem().path" class="topbar-brand">
         <span class="topbar-logo-icon">⚡</span>
         <span class="topbar-logo-text">Promptly</span>
       </a>
 
       <div class="topbar-divider"></div>
 
-      <!-- Project Selector (GCP-style) -->
-      @if (projectsFacade.projects().length > 0) {
-        <button class="project-picker-btn" [matMenuTriggerFor]="projectMenu" id="project-selector">
-          <mat-icon class="project-picker-icon">folder</mat-icon>
-          <span class="project-picker-name">{{ projectsFacade.selectedProject()?.name ?? 'Select project' }}</span>
-          <mat-icon class="project-picker-arrow">arrow_drop_down</mat-icon>
-        </button>
+      <!-- Project Selector (GCP-style) — navigates on select -->
+      <button class="project-picker-btn" [matMenuTriggerFor]="projectMenu" id="project-selector">
+        <mat-icon class="project-picker-icon">folder</mat-icon>
+        <span class="project-picker-name">{{ projectsFacade.selectedProject()?.name ?? 'Select project' }}</span>
+        <mat-icon class="project-picker-arrow">arrow_drop_down</mat-icon>
+      </button>
 
-        <mat-menu #projectMenu="matMenu" class="project-menu-panel">
-          <div class="project-menu-header" (click)="$event.stopPropagation()">
-            <span class="project-menu-title">Select a project</span>
+      <mat-menu #projectMenu="matMenu" class="project-menu-panel">
+        <div class="project-menu-header" (click)="$event.stopPropagation()">
+          <span class="project-menu-title">Select a project</span>
+          <!-- Search filter for scale -->
+          <div class="project-search-wrapper">
+            <mat-icon class="project-search-icon">search</mat-icon>
+            <input class="project-search-input"
+                   placeholder="Filter projects..."
+                   [value]="projectSearch()"
+                   (input)="projectSearch.set($any($event.target).value)"
+                   (click)="$event.stopPropagation()"
+                   (keydown)="$event.stopPropagation()"
+                   autocomplete="off"
+                   id="project-search-input">
           </div>
-          <mat-divider></mat-divider>
-          @for (proj of projectsFacade.projects(); track proj.id) {
+        </div>
+        <mat-divider></mat-divider>
+        @if (filteredProjects().length > 0) {
+          @for (proj of filteredProjects(); track proj.id) {
             <button mat-menu-item
-                    (click)="projectsFacade.selectProject(proj.id!)"
+                    (click)="onProjectSelect(proj.id!)"
                     [class.active-project]="proj.id === projectsFacade.selectedId()">
               <mat-icon>{{ proj.id === projectsFacade.selectedId() ? 'radio_button_checked' : 'radio_button_unchecked' }}</mat-icon>
               <div class="project-menu-item-content">
@@ -41,8 +53,25 @@
               </div>
             </button>
           }
-        </mat-menu>
-      }
+          <mat-divider></mat-divider>
+        } @else {
+          <div class="project-menu-empty" (click)="$event.stopPropagation()">
+            <mat-icon>search_off</mat-icon>
+            <span>No matching projects</span>
+          </div>
+          <mat-divider></mat-divider>
+        }
+        <button mat-menu-item (click)="openCreateProjectModal()" id="create-project-btn">
+          <mat-icon>add</mat-icon>
+          <span>Create new project</span>
+        </button>
+        @if (activeProjectId()) {
+          <button mat-menu-item [routerLink]="'/projects/' + activeProjectId() + '/settings'" id="project-settings-btn">
+            <mat-icon>settings</mat-icon>
+            <span>Project settings</span>
+          </button>
+        }
+      </mat-menu>
 
       <div class="topbar-spacer"></div>
 
@@ -84,7 +113,46 @@
       <aside class="sidebar">
 
         <mat-nav-list class="nav-list">
-          @for (item of navItems; track item.path) {
+          <!-- Dashboard (always visible, project-scoped when active) -->
+          <a mat-list-item [routerLink]="dashboardNavItem().path" routerLinkActive="active-link"
+             [routerLinkActiveOptions]="{ exact: true }"
+             class="nav-item" [matTooltip]="sidebarCollapsed ? 'Dashboard' : ''" matTooltipPosition="right">
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            @if (!sidebarCollapsed) {
+              <span matListItemTitle>Dashboard</span>
+            }
+          </a>
+
+          <!-- Section divider -->
+          @if (activeProjectId()) {
+            @if (!sidebarCollapsed) {
+              <div class="nav-section-label">Project</div>
+            }
+
+            <!-- Project-scoped nav items -->
+            @for (item of projectNavItems(); track item.path) {
+              <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link"
+                 class="nav-item" [matTooltip]="sidebarCollapsed ? item.label : ''" matTooltipPosition="right">
+                <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+                @if (!sidebarCollapsed) {
+                  <span matListItemTitle>{{ item.label }}</span>
+                }
+              </a>
+            }
+          } @else {
+            @if (!sidebarCollapsed) {
+              <div class="nav-section-hint">
+                <mat-icon>info_outline</mat-icon>
+                <span>Select a project to see more options</span>
+              </div>
+            }
+          }
+
+          <!-- Bottom section divider -->
+          <div class="nav-spacer"></div>
+
+          <!-- Bottom nav items (Search, Settings) -->
+          @for (item of bottomNavItems(); track item.path) {
             <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link"
                class="nav-item" [matTooltip]="sidebarCollapsed ? item.label : ''" matTooltipPosition="right">
               <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>

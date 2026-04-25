@@ -14,11 +14,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { PromptsFacade } from '../../state/prompts/prompts.facade';
-import { ScannerFacade } from '../../state/scanner/scanner.facade';
-import { VersionDiffComponent } from './version-diff.component';
-import { CloneDialogComponent } from './clone-dialog.component';
-import { MonacoEditorComponent } from '../../shared/components/monaco-editor/monaco-editor.component';
+import { PromptsFacade } from '../../../state/prompts/prompts.facade';
+import { ScannerFacade } from '../../../state/scanner/scanner.facade';
+import { ImproverFacade } from '../../../state/improver/improver.facade';
+import { VersionDiffComponent } from '../components/version-diff/version-diff.component';
+import { CloneDialogComponent } from '../components/clone-dialog/clone-dialog.component';
+import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
 
 @Component({
   selector: 'promptly-prompt-detail',
@@ -37,11 +38,13 @@ import { MonacoEditorComponent } from '../../shared/components/monaco-editor/mon
 export class PromptDetailPage implements OnInit, OnDestroy {
   readonly facade = inject(PromptsFacade);
   readonly scannerFacade = inject(ScannerFacade);
+  readonly improverFacade = inject(ImproverFacade);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
 
+  private projectId: string | null = null;
   versionColumns = ['versionNumber', 'changeMessage', 'createdBy', 'createdAt', 'actions'];
 
   // ── Edit mode state ───────────────────────────────────────────
@@ -53,33 +56,22 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   // Business rules computed from prompt state (mirrors backend specs)
   // ═══════════════════════════════════════════════════════════════════
 
-  readonly isInDev = computed(() => {
-    const p = this.facade.selected();
-    return p?.activeEnvironment?.toUpperCase() === 'DEV';
-  });
-
-  readonly canEdit = computed(() => this.isInDev());
-  readonly canDelete = computed(() => this.isInDev());
-  readonly canSubmitReview = computed(() => this.isInDev());
+  readonly canEdit = computed(() => true);
+  readonly canDelete = computed(() => true);
+  readonly canSubmitReview = computed(() => true);
 
   readonly canRollback = computed(() => {
     const p = this.facade.selected();
-    return this.isInDev() && (p?.currentVersion ?? 0) > 1;
+    return (p?.currentVersion ?? 0) > 1;
   });
 
   readonly canClone = computed(() => !!this.facade.selected());
-  readonly canImprove = computed(() => this.isInDev());
+  readonly canImprove = computed(() => true);
 
-  readonly lockReason = computed(() => {
-    const p = this.facade.selected();
-    if (!p) return '';
-    const env = p.activeEnvironment?.toUpperCase();
-    if (env === 'STAGING') return 'This prompt is in STAGING. Clone it to make changes.';
-    if (env === 'PRODUCTION') return 'This prompt is in PRODUCTION. Clone it to make changes.';
-    return '';
-  });
+  readonly lockReason = computed(() => '');
 
   ngOnInit(): void {
+    this.projectId = this.route.snapshot.paramMap.get('projectId');
     const id = this.route.snapshot.paramMap.get('id')!;
     this.facade.loadPrompt(id);
     this.scannerFacade.loadScanResult(id);
@@ -87,6 +79,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.facade.clearSelection();
+    this.improverFacade.clearSuggestion();
   }
 
   copyId(): void {
@@ -153,7 +146,11 @@ export class PromptDetailPage implements OnInit, OnDestroy {
         author: 'current-user',
       });
       this.snackBar.open(`Cloned as "${result.name}" — redirecting...`, 'OK', { duration: 3000 });
-      setTimeout(() => this.router.navigate(['/prompts']), 1500);
+      setTimeout(() => {
+        if (this.projectId) {
+          this.router.navigate(['/projects', this.projectId, 'prompts']);
+        }
+      }, 1500);
     });
   }
 
@@ -163,8 +160,29 @@ export class PromptDetailPage implements OnInit, OnDestroy {
     this.snackBar.open('Security scan triggered...', 'OK', { duration: 3000 });
   }
 
+  // ── AI Improve ────────────────────────────────────────────────
   onImprove(): void {
-    this.snackBar.open('Improvement request sent to Gemini...', 'OK', { duration: 3000 });
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    this.improverFacade.improvePrompt(id);
+    this.snackBar.open('Requesting AI improvement...', 'OK', { duration: 2000 });
+  }
+
+  onAcceptImprovement(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    const suggestion = this.improverFacade.suggestion();
+    if (!id || !suggestion?.improvedContent) return;
+
+    this.improverFacade.applyImprovement(id, suggestion.improvedContent, 'current-user');
+    this.snackBar.open('Improvement applied as new version!', 'OK', { duration: 3000 });
+
+    // Reload prompt to reflect the new version
+    setTimeout(() => this.facade.loadPrompt(id), 500);
+  }
+
+  onDismissImprovement(): void {
+    this.improverFacade.clearSuggestion();
   }
 
   onRollback(version: number): void {
@@ -181,6 +199,8 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   onDelete(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.facade.deletePrompt(id);
-    this.router.navigate(['/prompts']);
+    if (this.projectId) {
+      this.router.navigate(['/projects', this.projectId, 'prompts']);
+    }
   }
 }

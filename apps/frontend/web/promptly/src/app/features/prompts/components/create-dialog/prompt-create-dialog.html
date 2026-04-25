@@ -53,14 +53,17 @@
             <mat-icon>lightbulb</mat-icon>&nbsp;Generate
           </ng-template>
           <div class="ai-tab-content">
+            @if (!form.projectId) {
+              <p class="ai-warning"><mat-icon>info</mat-icon> Select a project first.</p>
+            }
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Describe your prompt idea</mat-label>
-              <textarea matInput [(ngModel)]="aiPromptIdea" rows="3"
+              <textarea matInput #ideaInput rows="3"
                         placeholder="e.g. classify customer support tickets into billing, technical, account categories"></textarea>
             </mat-form-field>
-            <button mat-flat-button color="primary" (click)="generateFromIdea()"
-                    [disabled]="aiGenerating || !aiPromptIdea.trim()" id="ai-generate-btn">
-              @if (aiGenerating) {
+            <button mat-flat-button color="primary" (click)="generateFromIdea(ideaInput.value)"
+                    [disabled]="aiGenerating() || !ideaInput.value?.trim() || !form.projectId" id="ai-generate-btn">
+              @if (aiGenerating()) {
                 <mat-spinner diameter="18"></mat-spinner> Generating...
               } @else {
                 <mat-icon>auto_awesome</mat-icon> Generate Prompt
@@ -76,9 +79,12 @@
           </ng-template>
           <div class="ai-tab-content">
             <p class="ai-hint">Refine your current content with AI-suggested improvements and safety guards.</p>
+            @if (!form.projectId) {
+              <p class="ai-warning"><mat-icon>info</mat-icon> Select a project first.</p>
+            }
             <button mat-flat-button color="primary" (click)="refineContent()"
-                    [disabled]="aiRefining || !form.content" id="ai-refine-btn">
-              @if (aiRefining) {
+                    [disabled]="aiRefining() || !form.content || !form.projectId" id="ai-refine-btn">
+              @if (aiRefining()) {
                 <mat-spinner diameter="18"></mat-spinner> Refining...
               } @else {
                 <mat-icon>tune</mat-icon> Refine Content
@@ -88,17 +94,34 @@
         </mat-tab>
       </mat-tab-group>
 
+      <!-- AI Error -->
+      @if (aiError()) {
+        <div class="ai-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ aiError() }}</span>
+          <button mat-icon-button (click)="dismissSuggestion()" matTooltip="Dismiss">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
       <!-- AI Suggestion Result -->
-      @if (aiSuggestion) {
+      @if (aiSuggestion()) {
         <div class="ai-suggestion">
           <div class="ai-suggestion-header">
             <mat-icon>auto_awesome</mat-icon>
             <span>AI Suggestion</span>
+            <button mat-icon-button class="dismiss-btn" (click)="dismissSuggestion()" matTooltip="Dismiss">
+              <mat-icon>close</mat-icon>
+            </button>
             <button mat-flat-button color="accent" (click)="acceptSuggestion()" class="accept-btn" id="ai-accept-btn">
               <mat-icon>check</mat-icon> Accept
             </button>
           </div>
-          <pre class="ai-suggestion-content">{{ aiSuggestion }}</pre>
+          @if (aiSummary()) {
+            <div class="ai-summary">{{ aiSummary() }}</div>
+          }
+          <pre class="ai-suggestion-content">{{ aiSuggestion() }}</pre>
         </div>
       }
     </div>

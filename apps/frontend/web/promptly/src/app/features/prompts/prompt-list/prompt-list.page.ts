@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -11,7 +11,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
-import { PromptsFacade } from '../../state/prompts/prompts.facade';
+import { Subscription } from 'rxjs';
+import { PromptsFacade } from '../../../state/prompts/prompts.facade';
 
 @Component({
   selector: 'promptly-prompt-list',
@@ -25,10 +26,14 @@ import { PromptsFacade } from '../../state/prompts/prompts.facade';
   templateUrl: './prompt-list.page.html',
   styleUrl: './prompt-list.page.scss',
 })
-export class PromptListPage implements OnInit {
+export class PromptListPage implements OnInit, OnDestroy {
   readonly facade = inject(PromptsFacade);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
+
+  private paramSub?: Subscription;
+  private projectId: string | null = null;
 
   displayedColumns = ['name', 'currentVersion', 'updatedAt'];
 
@@ -59,15 +64,27 @@ export class PromptListPage implements OnInit {
   });
 
   ngOnInit(): void {
-    this.facade.loadPrompts();
+    // React to route param changes (project switching)
+    this.paramSub = this.route.paramMap.subscribe(params => {
+      this.projectId = params.get('projectId');
+      this.facade.loadPrompts(this.projectId ?? undefined);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.paramSub?.unsubscribe();
   }
 
   goToPrompt(id: string): void {
-    this.router.navigate(['/prompts', id]);
+    if (this.projectId) {
+      this.router.navigate(['/projects', this.projectId, 'prompts', id]);
+    }
   }
 
   openCreatePage(): void {
-    this.router.navigate(['/prompts/create']);
+    if (this.projectId) {
+      this.router.navigate(['/projects', this.projectId, 'prompts', 'create']);
+    }
   }
 
   copyId(id: string, event: Event): void {

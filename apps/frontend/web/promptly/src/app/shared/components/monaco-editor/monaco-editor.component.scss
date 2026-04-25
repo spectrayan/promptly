@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  border: 1px solid var(--mat-sys-outline-variant, #3d3b44);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+  transition: border-color 200ms ease;
+}
+
+:host:focus-within {
+  border-color: var(--mat-sys-primary, #7c4dff);
+  box-shadow: 0 0 0 1px var(--mat-sys-primary, #7c4dff);
+}
+
+.monaco-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: var(--mat-sys-surface-container, #211f26);
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #3d3b44);
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 12px;
+  user-select: none;
+}
+
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--mat-sys-primary-container, #4a3580);
+  color: var(--mat-sys-on-primary-container, #e8ddff);
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: transparent;
+  border: 1px solid var(--mat-sys-outline-variant, #3d3b44);
+  border-radius: 6px;
+  color: var(--mat-sys-on-surface-variant, #cac4d0);
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high, #2b2930);
+    border-color: var(--mat-sys-primary, #7c4dff);
+    color: var(--mat-sys-primary, #7c4dff);
+  }
+}
+
+.toolbar-icon {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.monaco-host {
+  width: 100%;
+}

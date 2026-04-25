@@ -28,7 +28,7 @@ export class PromptsFacade {
   readonly count = this.store.selectSignal(selectPromptCount);
 
   // ── Commands ──────────────────────────────────────────────────
-  loadPrompts(): void          { this.store.dispatch(PromptsActions.loadPrompts()); }
+  loadPrompts(projectId?: string): void { this.store.dispatch(PromptsActions.loadPrompts({ projectId })); }
   loadPrompt(id: string): void { this.store.dispatch(PromptsActions.loadPrompt({ id })); }
 
   createPrompt(request: CreatePromptRequest): void {

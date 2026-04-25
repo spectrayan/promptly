@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { SubmitReviewRequest, ApproveRejectRequest, WorkflowResponse } from '@promptly/client';
 
-export const loadWorkflows = createAction('[Workflows] Load Workflows');
+export const loadWorkflows = createAction('[Workflows] Load Workflows', props<{ projectId?: string }>());
 export const loadWorkflowsSuccess = createAction('[Workflows] Load Workflows Success', props<{ workflows: WorkflowResponse[] }>());
 export const loadWorkflowsFailure = createAction('[Workflows] Load Workflows Failure', props<{ error: string }>());
 

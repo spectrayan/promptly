@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -32,12 +33,12 @@ export class WorkflowListPage implements OnInit {
   readonly facade = inject(WorkflowsFacade);
   readonly promptsFacade = inject(PromptsFacade);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly route = inject(ActivatedRoute);
 
-  displayedColumns = ['prompt', 'status', 'targetEnvironment', 'requestedBy', 'createdAt', 'actions'];
+  displayedColumns = ['prompt', 'status', 'requestedBy', 'createdAt', 'actions'];
 
   // ── Filters / sort / pagination ───────────────────────────────
   readonly statusFilter = signal<string[]>([]);
-  readonly targetEnvFilter = signal<string[]>([]);
   readonly sortState = signal<Sort>({ active: 'createdAt', direction: 'desc' });
   readonly pageIndex = signal(0);
   readonly pageSize = signal(10);
@@ -45,13 +46,9 @@ export class WorkflowListPage implements OnInit {
   readonly filteredWorkflows = computed(() => {
     let data = [...this.facade.workflows()];
     const statuses = this.statusFilter();
-    const envs = this.targetEnvFilter();
 
     if (statuses.length) {
       data = data.filter(w => statuses.includes(w.status ?? ''));
-    }
-    if (envs.length) {
-      data = data.filter(w => envs.includes(w.targetEnvironment ?? ''));
     }
 
     // Sort
@@ -74,11 +71,14 @@ export class WorkflowListPage implements OnInit {
     return all.slice(start, start + this.pageSize());
   });
 
-  readonly hasActiveFilters = computed(() => this.statusFilter().length > 0 || this.targetEnvFilter().length > 0);
+  readonly hasActiveFilters = computed(() => this.statusFilter().length > 0);
 
   ngOnInit(): void {
-    this.facade.loadWorkflows();
-    this.promptsFacade.loadPrompts();
+    const projectId = this.route.parent?.snapshot.paramMap.get('projectId')
+      ?? this.route.snapshot.paramMap.get('projectId')
+      ?? undefined;
+    this.facade.loadWorkflows(projectId);
+    this.promptsFacade.loadPrompts(projectId);
   }
 
   getPromptName(promptId: string): string {
@@ -114,8 +114,7 @@ export class WorkflowListPage implements OnInit {
   }
 
   onStatusFilterChange(values: string[]): void { this.statusFilter.set(values); this.pageIndex.set(0); }
-  onEnvFilterChange(values: string[]): void { this.targetEnvFilter.set(values); this.pageIndex.set(0); }
   onSortChange(sort: Sort): void { this.sortState.set(sort); }
-  clearFilters(): void { this.statusFilter.set([]); this.targetEnvFilter.set([]); this.pageIndex.set(0); }
+  clearFilters(): void { this.statusFilter.set([]); this.pageIndex.set(0); }
   onPageChange(e: PageEvent): void { this.pageIndex.set(e.pageIndex); this.pageSize.set(e.pageSize); }
 }
