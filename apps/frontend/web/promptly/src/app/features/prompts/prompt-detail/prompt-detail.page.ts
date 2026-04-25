@@ -21,6 +21,7 @@ import { VersionDiffComponent } from '../components/version-diff/version-diff.co
 import { CloneDialogComponent } from '../components/clone-dialog/clone-dialog.component';
 import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
 import { AuthFacade } from '../../../state/auth/auth.facade';
+import { WorkflowsFacade } from '../../../state/workflows/workflows.facade';
 import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
 
 @Component({
@@ -42,6 +43,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   readonly scannerFacade = inject(ScannerFacade);
   readonly improverFacade = inject(ImproverFacade);
   readonly auth = inject(AuthFacade);
+  private readonly workflowsFacade = inject(WorkflowsFacade);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
@@ -210,7 +212,20 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   }
 
   onSubmitReview(): void {
-    this.snackBar.open('Use the Workflows page to submit for review', 'OK', { duration: 3000 });
+    const p = this.facade.selected();
+    if (!p?.id) return;
+
+    const userId = this.auth.user()?.id ?? 'current-user';
+    this.workflowsFacade.submitForReview({
+      promptId: p.id,
+      promptVersion: p.currentVersion ?? 1,
+      requestedBy: userId,
+    });
+
+    this.snackBar.open('Submitted for review — status will change to In Review', 'OK', { duration: 4000 });
+
+    // Reload prompt to reflect the updated status
+    setTimeout(() => this.facade.loadPrompt(p.id!), 1000);
   }
 
   onDelete(): void {
