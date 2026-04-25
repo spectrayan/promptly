@@ -60,6 +60,27 @@ promptly:
 server:
   port: 8080
 
+# ── Spectrayan SSE Server Library ──
+spectrayan:
+  sse:
+    server:
+      enabled: true
+      base-path: /api/v1/sse
+      stream:
+        heartbeat-enabled: true
+        heartbeat-interval: 15s
+        connected-event-enabled: true
+        retry-enabled: true
+        retry: 3s
+      cors:
+        enabled: true
+        allowed-origins:
+          - "http://localhost:4200"
+          - "http://localhost:8080"
+        allowed-methods:
+          - GET
+        allow-credentials: true
+
 management:
   endpoints:
     web:

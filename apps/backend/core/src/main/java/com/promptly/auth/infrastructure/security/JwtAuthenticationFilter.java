@@ -22,13 +22,20 @@ public class JwtAuthenticationFilter {
     private final JwtService jwtService;
 
     public Mono<Authentication> authenticate(ServerHttpRequest request) {
+        String token = null;
+
+        // 1. Try Authorization header first
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return Mono.empty();
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
         }
 
-        String token = authHeader.substring(7);
-        if (!jwtService.isTokenValid(token)) {
+        // 2. Fallback: query parameter (needed for SSE EventSource which can't set headers)
+        if (token == null) {
+            token = request.getQueryParams().getFirst("token");
+        }
+
+        if (token == null || !jwtService.isTokenValid(token)) {
             return Mono.empty();
         }
 

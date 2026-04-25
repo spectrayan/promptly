@@ -7,6 +7,7 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideApi } from '@promptly/client';
 import { provideMockApi, mockApiInterceptor } from '@promptly/mock-assets';
+import { provideSseClient } from '@spectrayan-sse/ng-sse-client';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
@@ -47,5 +48,8 @@ export const appConfig: ApplicationConfig = {
 
     // Generated API SDK — base path to the backend
     provideApi({ basePath: environment.apiBasePath }),
+
+    // Spectrayan SSE Client
+    provideSseClient(),
   ],
 };

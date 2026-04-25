@@ -80,6 +80,13 @@
             <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
         </dependency>
 
+        <!-- ==================== SSE Server (Spectrayan) ==================== -->
+        <dependency>
+            <groupId>com.spectrayan.health</groupId>
+            <artifactId>sse-server</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- ==================== Libraries ==================== -->
         <dependency>
             <groupId>org.projectlombok</groupId>
