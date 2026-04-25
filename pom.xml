@@ -12,10 +12,23 @@
     <description>Enterprise AI Prompt Governance Platform</description>
 
     <modules>
-        <module>libs/shared/openapi-spec</module>
         <module>libs/shared/apis/v1/promptly-apis</module>
         <module>apps/backend/core</module>
     </modules>
+
+    <profiles>
+        <!-- ══════════════════════════════════════════════════════════════
+             Profile: generate-openapi
+             Activate manually to regenerate APIs & SDKs from the
+             OpenAPI spec.  Usage:  mvn clean install -Pgenerate-openapi
+             ══════════════════════════════════════════════════════════════ -->
+        <profile>
+            <id>generate-openapi</id>
+            <modules>
+                <module>libs/shared/openapi-spec</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <properties>
         <java.version>21</java.version>
