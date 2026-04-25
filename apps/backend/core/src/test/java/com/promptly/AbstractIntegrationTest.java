@@ -17,13 +17,15 @@ public abstract class AbstractIntegrationTest {
 
     @Container
     static final MongoDBContainer MONGODB = new MongoDBContainer(
-            DockerImageName.parse("mongodb/mongodb-atlas-local:8.0")
-                    .asCompatibleSubstituteFor("mongo")
+            DockerImageName.parse("mongo:8.0")
     );
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", MONGODB::getReplicaSetUrl);
+        registry.add("spring.data.mongodb.host", MONGODB::getHost);
+        registry.add("spring.data.mongodb.port", () -> MONGODB.getMappedPort(27017));
+        
         // Disable Vertex AI for unit/integration tests
         registry.add("spring.ai.vertex.ai.gemini.project-id", () -> "test-project");
         registry.add("spring.ai.vertex.ai.gemini.location", () -> "us-central1");

@@ -3,6 +3,7 @@ package com.promptly.workflow;
 import com.promptly.AbstractIntegrationTest;
 import com.promptly.prompt.application.port.in.CreatePromptUseCase;
 import com.promptly.workflow.application.port.in.*;
+import com.promptly.workflow.domain.model.Workflow;
 import com.promptly.workflow.domain.model.WorkflowStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private CreatePromptUseCase createPromptUseCase;
-
-    @Autowired
     private SubmitReviewUseCase submitReviewUseCase;
 
     @Autowired
@@ -32,20 +30,11 @@ class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldSubmitForReview() {
-        var promptCmd = new CreatePromptUseCase.CreatePromptCommand(
-                "Workflow Test Prompt", "For workflow testing",
-                "wf-project", "TEXT", "Content", "test-user"
+        var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
+                "dummy-prompt-id", 1, "test-user"
         );
 
-        StepVerifier.create(
-                createPromptUseCase.createPrompt(promptCmd)
-                        .flatMap(prompt -> {
-                            var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
-                                    prompt.getId(), 1, "test-user", "STAGING"
-                            );
-                            return submitReviewUseCase.submitForReview(cmd);
-                        })
-        )
+        StepVerifier.create(submitReviewUseCase.submitForReview(cmd))
         .assertNext(workflow -> {
             assertThat(workflow.getStatus()).isEqualTo(WorkflowStatus.PENDING);
             assertThat(workflow.getSteps()).isNotEmpty();
@@ -55,19 +44,12 @@ class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldApproveAllStepsAndCompleteWorkflow() {
-        var promptCmd = new CreatePromptUseCase.CreatePromptCommand(
-                "Approval Test Prompt", "For approval testing",
-                "wf-project", "TEXT", "Content", "test-user"
+        var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
+                "dummy-prompt-id", 1, "test-user"
         );
 
         StepVerifier.create(
-                createPromptUseCase.createPrompt(promptCmd)
-                        .flatMap(prompt -> {
-                            var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
-                                    prompt.getId(), 1, "test-user", "STAGING"
-                            );
-                            return submitReviewUseCase.submitForReview(cmd);
-                        })
+                submitReviewUseCase.submitForReview(cmd)
                         .flatMap(wf -> approveWorkflowUseCase.approveWorkflow(wf.getId(), "reviewer", "LGTM"))
                         .flatMap(wf -> approveWorkflowUseCase.approveWorkflow(wf.getId(), "admin", "Approved"))
         )
@@ -79,19 +61,12 @@ class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void shouldRejectWorkflow() {
-        var promptCmd = new CreatePromptUseCase.CreatePromptCommand(
-                "Rejection Test Prompt", "For rejection testing",
-                "wf-project", "TEXT", "Content", "test-user"
+        var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
+                "dummy-prompt-id", 1, "test-user"
         );
 
         StepVerifier.create(
-                createPromptUseCase.createPrompt(promptCmd)
-                        .flatMap(prompt -> {
-                            var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
-                                    prompt.getId(), 1, "test-user", "STAGING"
-                            );
-                            return submitReviewUseCase.submitForReview(cmd);
-                        })
+                submitReviewUseCase.submitForReview(cmd)
                         .flatMap(wf -> rejectWorkflowUseCase.rejectWorkflow(wf.getId(), "reviewer", "Not ready"))
         )
         .assertNext(workflow -> {

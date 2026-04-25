@@ -2,6 +2,8 @@ package com.promptly.prompt;
 
 import com.promptly.AbstractIntegrationTest;
 import com.promptly.prompt.application.port.in.*;
+import com.promptly.prompt.infrastructure.persistence.repository.PromptReactiveMongoRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.modulith.test.ApplicationModuleTest;
@@ -16,6 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ApplicationModuleTest
 class PromptModuleIntegrationTest extends AbstractIntegrationTest {
+
+    @Autowired
+    private PromptReactiveMongoRepository promptRepository;
+
+    @BeforeEach
+    void setUp() {
+        promptRepository.deleteAll().block();
+    }
 
     @Autowired
     private CreatePromptUseCase createPromptUseCase;
