@@ -13,8 +13,8 @@ export class WorkflowsEffects {
   loadWorkflows$ = createEffect(() =>
     this.actions$.pipe(
       ofType(WfActions.loadWorkflows),
-      switchMap(() =>
-        this.api.listWorkflows().pipe(
+      switchMap(({ projectId }) =>
+        this.api.listWorkflows({ projectId }).pipe(
           map(workflows => WfActions.loadWorkflowsSuccess({ workflows })),
           catchError(err => of(WfActions.loadWorkflowsFailure({ error: err?.error?.detail ?? 'Failed to load workflows' })))
         )

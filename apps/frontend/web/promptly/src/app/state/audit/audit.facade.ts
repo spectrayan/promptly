@@ -13,11 +13,11 @@ export class AuditFacade {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  loadLogs(): void {
+  loadLogs(projectId?: string): void {
     this.loading.set(true);
     this.error.set(null);
 
-    this.api.getAuditLogs().subscribe({
+    this.api.getAuditLogs({ projectId }).subscribe({
       next: logs => {
         this.logs.set(logs);
         this.loading.set(false);

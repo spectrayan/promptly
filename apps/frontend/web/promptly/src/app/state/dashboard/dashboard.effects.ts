@@ -21,12 +21,12 @@ export class DashboardEffects {
   loadDashboard$ = createEffect(() =>
     this.actions$.pipe(
       ofType(DashboardActions.loadDashboard),
-      switchMap(() =>
+      switchMap(({ projectId }) =>
         forkJoin({
-          prompts: this.promptsApi.listPrompts().pipe(catchError(() => of([]))),
-          workflows: this.workflowsApi.listWorkflows().pipe(catchError(() => of([]))),
-          scans: this.scannerApi.getAllScans().pipe(catchError(() => of([]))),
-          audit: this.auditApi.getAuditLogs().pipe(catchError(() => of([]))),
+          prompts: this.promptsApi.listPrompts({ projectId }).pipe(catchError(() => of([]))),
+          workflows: this.workflowsApi.listWorkflows({ projectId }).pipe(catchError(() => of([]))),
+          scans: this.scannerApi.getAllScans({ projectId }).pipe(catchError(() => of([]))),
+          audit: this.auditApi.getAuditLogs({ projectId }).pipe(catchError(() => of([]))),
         }).pipe(
           map(({ prompts, workflows, scans, audit }) =>
             DashboardActions.loadDashboardSuccess({

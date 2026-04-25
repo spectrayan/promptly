@@ -14,8 +14,8 @@ export class ScannerFacade {
   readonly scanning = signal(false);
   readonly error = signal<string | null>(null);
 
-  loadAllScans(): void {
-    this.api.getAllScans().subscribe({
+  loadAllScans(projectId?: string): void {
+    this.api.getAllScans({ projectId }).subscribe({
       next: scans => this.scans.set(scans),
       error: err => this.error.set(err?.error?.detail ?? 'Failed to load scans'),
     });
