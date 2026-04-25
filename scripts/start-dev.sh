@@ -2,9 +2,12 @@
 # ═══════════════════════════════════════════════════════════════════════
 # Promptly — Dev Startup Script
 # Starts MongoDB (Docker), Spring Boot backend, and Angular frontend.
+# Press Ctrl+C to gracefully stop all services.
 # ═══════════════════════════════════════════════════════════════════════
 
-set -euo pipefail
+# Don't use set -e — it causes the script to exit on Ctrl+C before
+# the trap handler can run. We handle errors explicitly.
+set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -15,37 +18,106 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 log()  { echo -e "${CYAN}[promptly]${NC} $1"; }
 ok()   { echo -e "${GREEN}[promptly]${NC} $1"; }
 warn() { echo -e "${YELLOW}[promptly]${NC} $1"; }
 err()  { echo -e "${RED}[promptly]${NC} $1"; }
 
-# ── Cleanup on exit ──
+# ── Track child PIDs ──
 BACKEND_PID=""
 FRONTEND_PID=""
+SHUTTING_DOWN=0
 
+# ── Kill a process and all its children ──
+kill_tree() {
+  local pid=$1
+  # Get all child PIDs recursively
+  local children
+  children=$(pgrep -P "$pid" 2>/dev/null || true)
+  for child in $children; do
+    kill_tree "$child"
+  done
+  kill "$pid" 2>/dev/null || true
+}
+
+# ── Port-based kill (fallback — catches orphaned processes) ──
+kill_port() {
+  local port=$1
+  local label=$2
+  local pids
+
+  # Try multiple methods to find processes on the port
+  if command -v lsof &>/dev/null; then
+    pids=$(lsof -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true)
+  elif command -v ss &>/dev/null; then
+    pids=$(ss -tlnp "sport = :$port" 2>/dev/null | grep -oP 'pid=\K\d+' || true)
+  elif command -v netstat &>/dev/null; then
+    pids=$(netstat -tlnp 2>/dev/null | grep ":$port " | grep -oP '\d+(?=/)' || true)
+  fi
+
+  if [[ -n "$pids" ]]; then
+    for pid in $pids; do
+      kill_tree "$pid"
+      log "Stopped $label (PID $pid, port $port)"
+    done
+  fi
+}
+
+# ── Cleanup on exit ──
 cleanup() {
+  # Prevent re-entry
+  [[ "$SHUTTING_DOWN" -eq 1 ]] && return
+  SHUTTING_DOWN=1
+
   echo ""
   log "Shutting down..."
-  [[ -n "$FRONTEND_PID" ]] && kill "$FRONTEND_PID" 2>/dev/null && log "Stopped frontend (PID $FRONTEND_PID)"
-  [[ -n "$BACKEND_PID" ]]  && kill "$BACKEND_PID"  2>/dev/null && log "Stopped backend  (PID $BACKEND_PID)"
+
+  # First: kill tracked PIDs and their process trees
+  if [[ -n "$FRONTEND_PID" ]]; then
+    kill_tree "$FRONTEND_PID"
+    log "Stopped frontend (PID $FRONTEND_PID)"
+  fi
+  if [[ -n "$BACKEND_PID" ]]; then
+    kill_tree "$BACKEND_PID"
+    log "Stopped backend (PID $BACKEND_PID)"
+  fi
+
+  # Second: port-based fallback to catch anything the tree-kill missed
+  sleep 1
+  kill_port 4200 "frontend (port cleanup)"
+  kill_port 8080 "backend (port cleanup)"
+
   ok "All services stopped."
 }
-trap cleanup EXIT INT TERM
+
+# Trap SIGINT (Ctrl+C), SIGTERM, and EXIT
+trap cleanup INT TERM EXIT
 
 cd "$ROOT_DIR"
 
 # ── Java ──────────────────────────────────────────────────────────────
-# Project requires Java 21 — override JAVA_HOME if system default differs
-JAVA21_HOME="/home/linuxbrew/.linuxbrew/opt/openjdk@21"
-if [[ -d "$JAVA21_HOME" ]]; then
-  export JAVA_HOME="$JAVA21_HOME"
-  export PATH="$JAVA_HOME/bin:$PATH"
-  ok "Using Java 21 from $JAVA_HOME"
+# Project requires Java 21 — auto-detect or override
+if [[ -n "${JAVA_HOME:-}" ]] && "$JAVA_HOME/bin/java" -version 2>&1 | grep -q "21\."; then
+  ok "Using Java 21 from JAVA_HOME=$JAVA_HOME"
 else
-  warn "Java 21 not found at $JAVA21_HOME — using system default: ${JAVA_HOME:-not set}"
+  # Try common Java 21 locations
+  for candidate in \
+    "/home/linuxbrew/.linuxbrew/opt/openjdk@21" \
+    "/usr/lib/jvm/java-21-openjdk-amd64" \
+    "/usr/lib/jvm/java-21" \
+    "$HOME/.sdkman/candidates/java/current"; do
+    if [[ -d "$candidate" ]]; then
+      export JAVA_HOME="$candidate"
+      export PATH="$JAVA_HOME/bin:$PATH"
+      ok "Using Java 21 from $JAVA_HOME"
+      break
+    fi
+  done
+  if ! java -version 2>&1 | grep -q "21\."; then
+    warn "Java 21 not detected — using system default: $(java -version 2>&1 | head -1)"
+  fi
 fi
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -53,7 +125,19 @@ fi
 # ═══════════════════════════════════════════════════════════════════════
 MONGO_PORT=27017
 
-if ss -tlnp 2>/dev/null | grep -q ":${MONGO_PORT} " || lsof -iTCP:"$MONGO_PORT" -sTCP:LISTEN &>/dev/null; then
+is_port_open() {
+  if command -v ss &>/dev/null; then
+    ss -tlnp 2>/dev/null | grep -q ":${1} "
+  elif command -v lsof &>/dev/null; then
+    lsof -iTCP:"$1" -sTCP:LISTEN &>/dev/null
+  elif command -v netstat &>/dev/null; then
+    netstat -tlnp 2>/dev/null | grep -q ":${1} "
+  else
+    return 1
+  fi
+}
+
+if is_port_open "$MONGO_PORT"; then
   ok "MongoDB already running on port ${MONGO_PORT} — skipping Docker."
 else
   log "MongoDB not detected on port ${MONGO_PORT}. Starting via Docker..."
@@ -90,7 +174,7 @@ FRONTEND_PID=$!
 ok "Frontend starting (PID $FRONTEND_PID) — http://localhost:4200"
 
 # ═══════════════════════════════════════════════════════════════════════
-# Wait
+# Wait — Ctrl+C triggers the trap which runs cleanup()
 # ═══════════════════════════════════════════════════════════════════════
 echo ""
 echo -e "${BOLD}═══════════════════════════════════════════════════════════${NC}"
@@ -102,4 +186,6 @@ echo -e "${BOLD}═════════════════════�
 echo -e "  Press ${YELLOW}Ctrl+C${NC} to stop all services"
 echo ""
 
-wait
+# Wait for both background processes. The || true prevents
+# set -u/pipefail from aborting on the signal interrupt.
+wait $BACKEND_PID $FRONTEND_PID 2>/dev/null || true

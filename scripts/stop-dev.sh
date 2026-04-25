@@ -4,7 +4,7 @@
 # Kills processes running on frontend (4200) and backend (8080) ports.
 # ═══════════════════════════════════════════════════════════════════════
 
-set -euo pipefail
+set -uo pipefail
 
 # ── Colors ──
 RED='\033[0;31m'
@@ -18,20 +18,37 @@ log()  { echo -e "${CYAN}[promptly]${NC} $1"; }
 ok()   { echo -e "${GREEN}[promptly]${NC} $1"; }
 warn() { echo -e "${YELLOW}[promptly]${NC} $1"; }
 
+# ── Kill a process tree (parent + all children) ──
+kill_tree() {
+  local pid=$1
+  local children
+  children=$(pgrep -P "$pid" 2>/dev/null || true)
+  for child in $children; do
+    kill_tree "$child"
+  done
+  kill "$pid" 2>/dev/null || true
+}
+
 # ── Kill processes on a given port ──
 kill_port() {
   local port=$1
   local label=$2
-  local pids
+  local pids=""
 
-  pids=$(lsof -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true)
+  if command -v lsof &>/dev/null; then
+    pids=$(lsof -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true)
+  elif command -v ss &>/dev/null; then
+    pids=$(ss -tlnp "sport = :$port" 2>/dev/null | grep -oP 'pid=\K\d+' || true)
+  elif command -v netstat &>/dev/null; then
+    pids=$(netstat -tlnp 2>/dev/null | grep ":$port " | grep -oP '\d+(?=/)' || true)
+  fi
 
   if [[ -z "$pids" ]]; then
     warn "${label} — nothing running on port ${port}."
   else
     for pid in $pids; do
-      kill "$pid" 2>/dev/null && ok "${label} — killed PID ${pid} (port ${port})." \
-        || warn "${label} — failed to kill PID ${pid}."
+      kill_tree "$pid"
+      ok "${label} — killed PID ${pid} (port ${port})."
     done
   fi
 }
