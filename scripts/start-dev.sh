@@ -168,7 +168,7 @@ ok "Backend starting (PID $BACKEND_PID) — http://localhost:8080"
 # ═══════════════════════════════════════════════════════════════════════
 log "Starting frontend (Angular)..."
 
-npx nx serve promptly &
+node_modules/.bin/nx serve promptly &
 FRONTEND_PID=$!
 
 ok "Frontend starting (PID $FRONTEND_PID) — http://localhost:4200"

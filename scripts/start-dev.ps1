@@ -77,7 +77,7 @@ try {
     Log "Starting frontend (Angular)..."
 
     $frontendProc = Start-Process -FilePath "cmd.exe" `
-        -ArgumentList "/c", "npx nx serve promptly" `
+        -ArgumentList "/c", "node_modules\.bin\nx serve promptly" `
         -NoNewWindow -PassThru
 
     Ok "Frontend starting (PID $($frontendProc.Id)) - http://localhost:4200"
