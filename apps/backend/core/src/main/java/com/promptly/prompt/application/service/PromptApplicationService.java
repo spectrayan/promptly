@@ -49,14 +49,13 @@ public class PromptApplicationService implements
                 .name(command.name())
                 .description(command.description())
                 .projectId(command.projectId())
-                .contentFormat(ContentFormat.valueOf(command.contentFormat()))
+                .contentFormat(command.contentFormat() != null ? ContentFormat.valueOf(command.contentFormat()) : ContentFormat.TEXT)
                 .tags(new HashSet<>())
                 .currentVersion(0)
-                .activeEnvironment("DEV")
                 .status(PromptStatus.DRAFT)
                 .build();
 
-        // createNewVersion checks isEditable — DRAFT+DEV is always allowed
+        // createNewVersion checks isEditable — DRAFT status is always allowed
         prompt.createNewVersion(command.content(), "Initial version", command.author());
 
         return promptRepository.save(prompt)
@@ -70,7 +69,7 @@ public class PromptApplicationService implements
 
     /**
      * Updates a prompt by creating a new version.
-     * Business rule: only DEV prompts not in review can be edited.
+     * Business rule: only DRAFT prompts not in review can be edited.
      * Enforcement is done inside Prompt.createNewVersion() via PromptSpecifications.isEditable().
      */
     @Override
@@ -98,8 +97,8 @@ public class PromptApplicationService implements
     }
 
     /**
-     * Clones a prompt into a new DEV prompt with the source's latest content.
-     * Always allowed — any prompt can be cloned regardless of environment/status.
+     * Clones a prompt into a new DRAFT prompt with the source's latest content.
+     * Always allowed — any prompt can be cloned regardless of status.
      */
     @Override
     public Mono<Prompt> clonePrompt(String sourcePromptId, ClonePromptCommand command) {
@@ -122,7 +121,6 @@ public class PromptApplicationService implements
                             .tags(source.getTags() != null ? new HashSet<>(source.getTags()) : new HashSet<>())
                             .metadata(source.getMetadata())
                             .currentVersion(0)
-                            .activeEnvironment("DEV")
                             .status(PromptStatus.DRAFT)
                             .build();
 
@@ -178,7 +176,7 @@ public class PromptApplicationService implements
 
     /**
      * Rolls back a prompt to a previous version.
-     * Business rule: only DEV prompts not in review can be rolled back.
+     * Business rule: only DRAFT prompts not in review can be rolled back.
      */
     @Override
     public Mono<Prompt> rollbackToVersion(String id, int targetVersion, String author) {
@@ -192,8 +190,7 @@ public class PromptApplicationService implements
                     int fromVersion = prompt.getCurrentVersion();
                     PromptVersion target = prompt.getVersion(targetVersion);
 
-                    // Temporarily allow version creation for rollback
-                    // (createNewVersion checks isEditable, which is satisfied for DEV+DRAFT)
+                    // createNewVersion checks isEditable, which is satisfied for DRAFT status
                     prompt.createNewVersion(
                             target.getContent(),
                             "Rollback to version " + targetVersion,
@@ -211,7 +208,7 @@ public class PromptApplicationService implements
 
     /**
      * Deletes a prompt.
-     * Business rule: only DEV prompts not in review can be deleted.
+     * Business rule: only DRAFT prompts not in review can be deleted.
      */
     @Override
     public Mono<Void> deletePrompt(String id) {

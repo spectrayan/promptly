@@ -29,7 +29,6 @@ public class Prompt extends AggregateRoot {
     private Set<String> tags;
     private PromptMetadata metadata;
     private int currentVersion;
-    private String activeEnvironment;
 
     @lombok.Builder.Default
     private PromptStatus status = PromptStatus.DRAFT;
@@ -45,7 +44,7 @@ public class Prompt extends AggregateRoot {
      * Creates a new version of this prompt with the given content.
      *
      * @throws IllegalStateException if the prompt is not editable
-     *         (not in DEV or currently in review)
+     *         (currently in review)
      */
     public PromptVersion createNewVersion(String content, String changeMessage, String author) {
         assertSatisfies(PromptSpecifications.isEditable(),
@@ -78,15 +77,6 @@ public class Prompt extends AggregateRoot {
      * Marks this prompt as approved (called after workflow approval).
      */
     public void markApproved() {
-        this.status = PromptStatus.APPROVED;
-    }
-
-    /**
-     * Promotes this prompt to the given environment.
-     * Only called after workflow approval.
-     */
-    public void promoteTo(String environment) {
-        this.activeEnvironment = environment;
         this.status = PromptStatus.APPROVED;
     }
 

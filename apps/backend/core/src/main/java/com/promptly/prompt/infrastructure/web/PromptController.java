@@ -2,6 +2,8 @@ package com.promptly.prompt.infrastructure.web;
 
 import com.promptly.infrastructure.in.web.api.PromptsApi;
 import com.promptly.infrastructure.in.web.dto.CreatePromptRequest;
+import com.promptly.infrastructure.in.web.dto.GenerateFromIdeaRequest;
+import com.promptly.infrastructure.in.web.dto.GenerateFromIdeaResponse;
 import com.promptly.infrastructure.in.web.dto.PromptResponse;
 import com.promptly.infrastructure.in.web.dto.PromptSummaryResponse;
 import com.promptly.infrastructure.in.web.dto.UpdatePromptRequest;
@@ -111,6 +113,13 @@ public class PromptController implements PromptsApi {
             String id, ServerWebExchange exchange) {
         return deletePromptUseCase.deletePrompt(id)
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()));
+    }
+
+    @Override
+    public Mono<ResponseEntity<GenerateFromIdeaResponse>> generateFromIdea(
+            Mono<GenerateFromIdeaRequest> generateFromIdeaRequest, ServerWebExchange exchange) {
+        // TODO: Implement AI-powered prompt generation from an idea
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build());
     }
 
 }

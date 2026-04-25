@@ -1,4 +1,4 @@
 @org.springframework.modulith.ApplicationModule(
-        allowedDependencies = {"shared"}
+        allowedDependencies = {"shared", "infrastructure"}
 )
 package com.promptly.prompt;

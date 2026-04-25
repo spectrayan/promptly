@@ -48,9 +48,6 @@ public class PromptDocument {
     @Field("currentVersion")
     private int currentVersion;
 
-    @Field("activeEnvironment")
-    private String activeEnvironment;
-
     @Field("status")
     private String status;
 

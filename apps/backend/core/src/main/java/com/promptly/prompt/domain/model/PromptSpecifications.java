@@ -7,11 +7,11 @@ import com.promptly.shared.domain.Specification;
  * <p>
  * Rules:
  * <ul>
- *   <li>Only DEV prompts can be edited, deleted, improved, rolled back, or submitted for review</li>
- *   <li>STAGING and PROD prompts are immutable — changes require cloning a new version</li>
+ *   <li>Only DRAFT prompts can be edited, deleted, improved, rolled back, or submitted for review</li>
  *   <li>A prompt that is IN_REVIEW (has a pending workflow) cannot be edited or re-submitted</li>
- *   <li>Any prompt can be cloned regardless of environment</li>
- *   <li>Any prompt can be scanned regardless of environment</li>
+ *   <li>APPROVED prompts are immutable — changes require cloning a new version</li>
+ *   <li>Any prompt can be cloned regardless of status</li>
+ *   <li>Any prompt can be scanned regardless of status</li>
  * </ul>
  */
 public final class PromptSpecifications {
@@ -19,23 +19,23 @@ public final class PromptSpecifications {
     private PromptSpecifications() {} // utility class
 
     // ═══════════════════════════════════════════════════════════════════
-    // Environment-based Specifications
+    // Status-based Specifications
     // ═══════════════════════════════════════════════════════════════════
 
     /**
-     * Prompt is in the DEV environment.
+     * Prompt is in DRAFT status.
      */
-    public static Specification<Prompt> isInDev() {
+    public static Specification<Prompt> isDraft() {
         return new Specification<>() {
             @Override
             public boolean isSatisfiedBy(Prompt prompt) {
-                return "DEV".equalsIgnoreCase(prompt.getActiveEnvironment());
+                return PromptStatus.DRAFT.equals(prompt.getStatus());
             }
 
             @Override
             public String unsatisfiedReason(Prompt prompt) {
-                return "Prompt is in " + prompt.getActiveEnvironment()
-                        + " environment. Only DEV prompts can be modified.";
+                return "Prompt status is " + prompt.getStatus()
+                        + ". Only DRAFT prompts can be modified.";
             }
         };
     }
@@ -62,44 +62,44 @@ public final class PromptSpecifications {
     // ═══════════════════════════════════════════════════════════════════
 
     /**
-     * Prompt can be edited (new version created) — must be DEV and not in review.
+     * Prompt can be edited (new version created) — must be DRAFT and not in review.
      */
     public static Specification<Prompt> isEditable() {
-        return isInDev().and(isNotInReview());
+        return isDraft().and(isNotInReview());
     }
 
     /**
-     * Prompt can be deleted — must be DEV and not in review.
+     * Prompt can be deleted — must be DRAFT and not in review.
      */
     public static Specification<Prompt> isDeletable() {
-        return isInDev().and(isNotInReview());
+        return isDraft().and(isNotInReview());
     }
 
     /**
-     * Prompt can be submitted for review — must be DEV, not already in review,
+     * Prompt can be submitted for review — must be DRAFT, not already in review,
      * and must have at least one version.
      */
     public static Specification<Prompt> isSubmittable() {
-        return isInDev().and(isNotInReview()).and(hasAtLeastOneVersion());
+        return isDraft().and(isNotInReview()).and(hasAtLeastOneVersion());
     }
 
     /**
-     * Prompt can be rolled back — must be DEV, not in review,
+     * Prompt can be rolled back — must be DRAFT, not in review,
      * and must have more than one version.
      */
     public static Specification<Prompt> isRollbackable() {
-        return isInDev().and(isNotInReview()).and(hasMultipleVersions());
+        return isDraft().and(isNotInReview()).and(hasMultipleVersions());
     }
 
     /**
-     * Prompt can always be cloned regardless of environment or review status.
+     * Prompt can always be cloned regardless of status.
      */
     public static Specification<Prompt> isClonable() {
         return prompt -> true; // Always allowed
     }
 
     /**
-     * Prompt can always be scanned regardless of environment.
+     * Prompt can always be scanned regardless of status.
      */
     public static Specification<Prompt> isScannable() {
         return prompt -> true; // Always allowed

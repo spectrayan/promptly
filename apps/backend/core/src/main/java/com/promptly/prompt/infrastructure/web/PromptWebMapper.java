@@ -1,7 +1,6 @@
 package com.promptly.prompt.infrastructure.web;
 
 import com.promptly.infrastructure.in.web.dto.ContentFormat;
-import com.promptly.infrastructure.in.web.dto.Environment;
 import com.promptly.infrastructure.in.web.dto.PromptResponse;
 import com.promptly.infrastructure.in.web.dto.PromptSummaryResponse;
 import com.promptly.infrastructure.in.web.dto.VersionResponse;
@@ -34,9 +33,6 @@ public class PromptWebMapper {
                 ? ContentFormat.fromValue(prompt.getContentFormat().name())
                 : null);
         response.setCurrentVersion(prompt.getCurrentVersion());
-        response.setActiveEnvironment(prompt.getActiveEnvironment() != null
-                ? Environment.fromValue(prompt.getActiveEnvironment())
-                : null);
         response.setLatestContent(latestContent);
         response.setTags(prompt.getTags() != null ? new java.util.ArrayList<>(prompt.getTags()) : null);
         response.setCreatedAt(toOffsetDateTime(prompt.getCreatedAt()));
@@ -51,7 +47,6 @@ public class PromptWebMapper {
         response.setDescription(prompt.getDescription());
         response.setProjectId(prompt.getProjectId());
         response.setCurrentVersion(prompt.getCurrentVersion());
-        response.setActiveEnvironment(prompt.getActiveEnvironment());
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
         return response;
     }

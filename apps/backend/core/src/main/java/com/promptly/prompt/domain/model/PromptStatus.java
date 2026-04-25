@@ -1,11 +1,10 @@
 package com.promptly.prompt.domain.model;
 
 /**
- * Lifecycle status of a prompt, independent of deployment environment.
+ * Lifecycle status of a prompt.
  * <p>
- * This tracks whether the prompt is actively being modified, under review,
- * or has been approved/deployed. The environment field ({@code activeEnvironment})
- * tracks WHERE it is deployed; this status tracks its review state.
+ * Tracks whether the prompt is actively being modified, under review,
+ * or has been approved.
  */
 public enum PromptStatus {
 
