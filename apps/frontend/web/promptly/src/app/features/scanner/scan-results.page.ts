@@ -1,5 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -29,11 +30,12 @@ import { PromptsFacade } from '../../state/prompts/prompts.facade';
   templateUrl: './scan-results.page.html',
   styleUrl: './scan-results.page.scss',
 })
-export class ScanResultsPage implements OnInit {
+export class ScanResultsPage implements OnInit, OnDestroy {
   readonly facade = inject(ScannerFacade);
   readonly promptsFacade = inject(PromptsFacade);
   private readonly snackBar = inject(MatSnackBar);
   private readonly route = inject(ActivatedRoute);
+  private paramSub?: Subscription;
 
   displayedColumns = ['prompt', 'status', 'findings', 'scannedAt'];
 
@@ -71,11 +73,15 @@ export class ScanResultsPage implements OnInit {
   readonly hasActiveFilters = computed(() => this.statusFilter().length > 0);
 
   ngOnInit(): void {
-    const projectId = this.route.parent?.snapshot.paramMap.get('projectId')
-      ?? this.route.snapshot.paramMap.get('projectId')
-      ?? undefined;
-    this.facade.loadAllScans(projectId);
-    this.promptsFacade.loadPrompts(projectId);
+    this.paramSub = this.route.paramMap.subscribe(params => {
+      const projectId = params.get('projectId') ?? undefined;
+      this.facade.loadAllScans(projectId);
+      this.promptsFacade.loadPrompts(projectId);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.paramSub?.unsubscribe();
   }
 
   getPromptName(promptId: string): string {
