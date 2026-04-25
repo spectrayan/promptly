@@ -39,8 +39,6 @@ components:
     # ── Common / Enums ──
     ContentFormat:
       $ref: 'v1/components/schemas/common/enums/ContentFormat.yaml'
-    Environment:
-      $ref: 'v1/components/schemas/common/enums/Environment.yaml'
     WorkflowStatus:
       $ref: 'v1/components/schemas/common/enums/WorkflowStatus.yaml'
     StepAction:
@@ -81,6 +79,8 @@ components:
       $ref: 'v1/components/schemas/project/ProjectResponse.yaml'
     AddMemberRequest:
       $ref: 'v1/components/schemas/project/AddMemberRequest.yaml'
+    UpdateMemberRequest:
+      $ref: 'v1/components/schemas/project/UpdateMemberRequest.yaml'
     ProjectMemberResponse:
       $ref: 'v1/components/schemas/project/ProjectMemberResponse.yaml'
 
@@ -117,6 +117,10 @@ components:
       $ref: 'v1/components/schemas/improver/ImprovementResponse.yaml'
     ApplyImprovementRequest:
       $ref: 'v1/components/schemas/improver/ApplyImprovementRequest.yaml'
+    GenerateFromIdeaRequest:
+      $ref: 'v1/components/schemas/improver/GenerateFromIdeaRequest.yaml'
+    GenerateFromIdeaResponse:
+      $ref: 'v1/components/schemas/improver/GenerateFromIdeaResponse.yaml'
 
     # ── Runtime Delivery ──
     DeliveryResponse:
@@ -196,6 +200,8 @@ paths:
     $ref: 'v1/paths/project/projects_by_id.yaml'
   /api/v1/projects/{projectId}/members:
     $ref: 'v1/paths/project/project_members.yaml'
+  /api/v1/projects/{projectId}/members/{userId}:
+    $ref: 'v1/paths/project/project_member_by_id.yaml'
 
   # ── Prompt Registry ──
   /api/v1/prompts:
@@ -208,6 +214,8 @@ paths:
     $ref: 'v1/paths/prompt/prompt_versions_by_number.yaml'
   /api/v1/prompts/{id}/rollback/{targetVersion}:
     $ref: 'v1/paths/prompt/prompt_rollback.yaml'
+  /api/v1/prompts/generate:
+    $ref: 'v1/paths/prompt/generate_from_idea.yaml'
 
   # ── Workflow Engine ──
   /api/v1/workflows:

@@ -1,5 +1,5 @@
 type: object
-required: [promptId, promptVersion, requestedBy, targetEnvironment]
+required: [promptId, promptVersion, requestedBy]
 properties:
   promptId:
     type: string
@@ -7,5 +7,3 @@ properties:
     type: integer
   requestedBy:
     type: string
-  targetEnvironment:
-    $ref: '../common/enums/Environment.yaml'

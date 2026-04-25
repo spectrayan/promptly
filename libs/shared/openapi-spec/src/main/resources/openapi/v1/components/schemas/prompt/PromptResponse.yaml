@@ -14,8 +14,6 @@ properties:
   currentVersion:
     type: integer
     description: Latest version number
-  activeEnvironment:
-    $ref: '../common/enums/Environment.yaml'
   latestContent:
     type: string
     description: Content of the latest version

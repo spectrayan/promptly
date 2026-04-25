@@ -8,15 +8,11 @@ properties:
     type: integer
   type:
     type: string
-    description: "Workflow type (e.g., approval, promotion)"
+    description: "Workflow type (e.g., approval)"
   status:
     $ref: '../common/enums/WorkflowStatus.yaml'
   currentStep:
     type: integer
-  sourceEnvironment:
-    $ref: '../common/enums/Environment.yaml'
-  targetEnvironment:
-    $ref: '../common/enums/Environment.yaml'
   requestedBy:
     type: string
   steps:

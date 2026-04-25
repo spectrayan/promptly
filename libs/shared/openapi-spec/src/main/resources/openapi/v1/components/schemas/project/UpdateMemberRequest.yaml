@@ -1,0 +1,5 @@
+type: object
+required: [role]
+properties:
+  role:
+    $ref: '../common/enums/ProjectRole.yaml'

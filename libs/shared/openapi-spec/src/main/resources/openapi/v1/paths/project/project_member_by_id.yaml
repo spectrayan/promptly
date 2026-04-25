@@ -1,0 +1,57 @@
+put:
+  operationId: updateProjectMember
+  summary: Update a project member's role
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/project/UpdateMemberRequest.yaml'
+  responses:
+    '200':
+      description: Member updated
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/project/ProjectMemberResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'
+
+delete:
+  operationId: removeProjectMember
+  summary: Remove a member from a project
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Member removed
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

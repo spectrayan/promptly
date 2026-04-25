@@ -1,6 +1,0 @@
-type: string
-description: Deployment environment for prompt promotion
-enum:
-  - DEV
-  - STAGING
-  - PRODUCTION

@@ -12,7 +12,10 @@ properties:
     example: bob@promptly.ai
   role:
     $ref: '../common/enums/ProjectRole.yaml'
-  joinedAt:
+  addedBy:
+    type: string
+    example: usr-001
+  addedAt:
     type: string
     format: date-time
     example: "2025-07-15T10:00:00Z"

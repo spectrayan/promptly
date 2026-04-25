@@ -1,0 +1,23 @@
+post:
+  operationId: generateFromIdea
+  summary: Generate a prompt from a natural-language idea
+  description: |
+    Uses a dedicated LLM system prompt to transform a short idea description into a
+    fully-structured AI prompt. Unlike the improve endpoint, this does not require an
+    existing prompt — it creates content from scratch.
+  tags: [Prompts]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/improver/GenerateFromIdeaRequest.yaml'
+  responses:
+    '200':
+      description: Generated prompt content
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/improver/GenerateFromIdeaResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
