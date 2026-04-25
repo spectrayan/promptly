@@ -38,6 +38,8 @@ $collections = [ordered]@{
     "workflows"       = "workflows/workflows.json"
     "scan_results"    = "scan_results/scan_results.json"
     "audit_logs"      = "audit_logs/audit_logs.json"
+    "notifications"   = "notifications/notifications.json"
+    "notification_project_settings" = "notification_project_settings/notification_project_settings.json"
 }
 
 # ── Import each collection ──

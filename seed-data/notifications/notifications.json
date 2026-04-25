@@ -1,0 +1,74 @@
+[
+  {
+    "_id": "notif-001",
+    "userId": "usr-001",
+    "projectId": "proj-001",
+    "type": "workflow.approved",
+    "title": "Workflow Approved",
+    "message": "Prompt 'Email Assistant' approved by bob@promptly.ai",
+    "icon": "check_circle",
+    "payload": { "eventType": "workflow.approved", "promptId": "p-001", "approvedBy": "bob@promptly.ai" },
+    "read": false,
+    "createdAt": { "$date": "2026-04-24T10:00:00Z" }
+  },
+  {
+    "_id": "notif-002",
+    "userId": "usr-001",
+    "projectId": "proj-001",
+    "type": "scan.critical",
+    "title": "Critical Findings",
+    "message": "Critical findings detected! Score: 35",
+    "icon": "warning",
+    "payload": { "eventType": "scan.critical", "promptId": "p-001", "status": "COMPLETED", "score": 35 },
+    "read": false,
+    "createdAt": { "$date": "2026-04-24T09:30:00Z" }
+  },
+  {
+    "_id": "notif-003",
+    "userId": "usr-001",
+    "projectId": "proj-002",
+    "type": "prompt.created",
+    "title": "Prompt Created",
+    "message": "Prompt \"SQL Query Generator\" was created",
+    "icon": "edit_note",
+    "payload": { "eventType": "prompt.created", "promptId": "p-002", "name": "SQL Query Generator" },
+    "read": true,
+    "createdAt": { "$date": "2026-04-23T15:00:00Z" }
+  },
+  {
+    "_id": "notif-004",
+    "userId": "usr-002",
+    "projectId": "proj-001",
+    "type": "workflow.approved",
+    "title": "Workflow Approved",
+    "message": "Prompt 'Email Assistant' approved by bob@promptly.ai",
+    "icon": "check_circle",
+    "payload": { "eventType": "workflow.approved", "promptId": "p-001", "approvedBy": "bob@promptly.ai" },
+    "read": false,
+    "createdAt": { "$date": "2026-04-24T10:00:00Z" }
+  },
+  {
+    "_id": "notif-005",
+    "userId": "usr-001",
+    "projectId": "proj-001",
+    "type": "prompt.updated",
+    "title": "Prompt Updated",
+    "message": "Prompt updated to version 3",
+    "icon": "update",
+    "payload": { "eventType": "prompt.updated", "promptId": "p-001", "version": 3 },
+    "read": true,
+    "createdAt": { "$date": "2026-04-22T08:00:00Z" }
+  },
+  {
+    "_id": "notif-006",
+    "userId": "usr-001",
+    "projectId": "proj-002",
+    "type": "scan.completed",
+    "title": "Scan Completed",
+    "message": "Scan finished with score 92",
+    "icon": "verified",
+    "payload": { "eventType": "scan.completed", "promptId": "p-002", "status": "COMPLETED", "score": 92 },
+    "read": false,
+    "createdAt": { "$date": "2026-04-24T14:00:00Z" }
+  }
+]

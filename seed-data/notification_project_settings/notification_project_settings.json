@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "nps-001",
+    "projectId": "proj-001",
+    "enabledEvents": ["prompt.created", "prompt.updated", "workflow.approved", "workflow.rejected", "scan.completed", "scan.critical"],
+    "updatedAt": { "$date": "2026-04-20T00:00:00Z" }
+  },
+  {
+    "_id": "nps-002",
+    "projectId": "proj-002",
+    "enabledEvents": ["prompt.created", "prompt.updated", "workflow.approved", "workflow.rejected", "scan.completed", "scan.critical"],
+    "updatedAt": { "$date": "2026-04-20T00:00:00Z" }
+  },
+  {
+    "_id": "nps-003",
+    "projectId": "proj-003",
+    "enabledEvents": ["prompt.created", "prompt.updated", "workflow.approved", "workflow.rejected", "scan.completed", "scan.critical"],
+    "updatedAt": { "$date": "2026-04-20T00:00:00Z" }
+  }
+]

@@ -67,6 +67,16 @@ const indexes = {
   project_members: [
     { keys: { projectId: 1, userId: 1 }, options: { unique: true, name: "idx_project_user" } },
     { keys: { userId: 1 }, options: { name: "idx_member_user" } }
+  ],
+  notifications: [
+    { keys: { userId: 1, projectId: 1, read: 1, createdAt: -1 }, options: { name: "idx_user_project_read_time" } },
+    { keys: { createdAt: 1 }, options: { expireAfterSeconds: 2592000, name: "ttl_30d" } }
+  ],
+  notification_preferences: [
+    { keys: { userId: 1, projectId: 1 }, options: { unique: true, name: "idx_notif_pref_user_project" } }
+  ],
+  notification_project_settings: [
+    { keys: { projectId: 1 }, options: { unique: true, name: "idx_notif_settings_project" } }
   ]
 };
 
@@ -87,3 +97,5 @@ print("   Prompts:         " + db.prompts.countDocuments());
 print("   Workflows:       " + db.workflows.countDocuments());
 print("   Scan Results:    " + db.scan_results.countDocuments());
 print("   Audit Logs:      " + db.audit_logs.countDocuments());
+print("   Notifications:   " + db.notifications.countDocuments());
+print("   Notif Settings:  " + db.notification_project_settings.countDocuments());

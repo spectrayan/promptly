@@ -1,5 +1,7 @@
 package com.promptly.shared.notification;
 
+import com.promptly.notification.application.port.in.NotificationUseCase;
+import com.promptly.notification.domain.model.NotificationEventType;
 import com.promptly.prompt.PromptCreated;
 import com.promptly.prompt.PromptUpdated;
 import com.promptly.scanner.ScanCompleted;
@@ -16,55 +18,67 @@ import java.util.Map;
 /**
  * Central notification event listener.
  * <p>
- * Subscribes to domain events from all modules and dispatches
- * notifications via SSE (real-time UI) and email (async, best-effort).
+ * Subscribes to domain events from all modules and delegates to
+ * {@link NotificationUseCase} which handles:
+ * - Project settings check (is this event type enabled?)
+ * - Member lookup (who should receive this notification?)
+ * - User preference check (has this user muted this event type?)
+ * - Persist to MongoDB
+ * - SSE real-time push
+ * - Email (when SMTP is configured)
  * <p>
- * Both channels are fire-and-forget — failures never impact the originating business logic.
+ * All operations are fire-and-forget — failures never impact the originating business logic.
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationEventListener {
 
-    private final SseNotificationPort sse;
+    private final NotificationUseCase notificationUseCase;
     private final EmailNotificationPort email;
 
     @EventListener
     void on(PromptCreated event) {
         if (event.projectId() == null) {
-            log.warn("PromptCreated event missing projectId, skipping SSE");
+            log.warn("PromptCreated event missing projectId, skipping notification");
             return;
         }
-        sse.emit("project-" + event.projectId(), "prompt.created",
-                payload("prompt.created",
-                        "promptId", event.promptId(),
-                        "name", event.name()));
+        notificationUseCase.createForProject(
+                event.projectId(),
+                NotificationEventType.PROMPT_CREATED,
+                "Prompt \"" + event.name() + "\" was created",
+                payload("promptId", event.promptId(), "name", event.name())
+        ).subscribe();
     }
 
     @EventListener
     void on(PromptUpdated event) {
         if (event.projectId() == null) {
-            log.warn("PromptUpdated event missing projectId, skipping SSE");
+            log.warn("PromptUpdated event missing projectId, skipping notification");
             return;
         }
-        sse.emit("project-" + event.projectId(), "prompt.updated",
-                payload("prompt.updated",
-                        "promptId", event.promptId(),
-                        "version", event.version()));
+        notificationUseCase.createForProject(
+                event.projectId(),
+                NotificationEventType.PROMPT_UPDATED,
+                "Prompt updated to version " + event.version(),
+                payload("promptId", event.promptId(), "version", event.version())
+        ).subscribe();
     }
 
     @EventListener
     void on(WorkflowApproved event) {
         if (event.projectId() == null) {
-            log.warn("WorkflowApproved event missing projectId, skipping SSE");
+            log.warn("WorkflowApproved event missing projectId, skipping notification");
             return;
         }
-        sse.emit("project-" + event.projectId(), "workflow.approved",
-                payload("workflow.approved",
-                        "promptId", event.promptId(),
-                        "approvedBy", event.approvedBy()));
+        notificationUseCase.createForProject(
+                event.projectId(),
+                NotificationEventType.WORKFLOW_APPROVED,
+                "Approved by " + (event.approvedBy() != null ? event.approvedBy() : "unknown"),
+                payload("promptId", event.promptId(), "approvedBy", event.approvedBy())
+        ).subscribe();
 
-        // Email the requester
+        // Email the requester directly (outside the fan-out)
         if (event.requesterEmail() != null) {
             email.send(event.requesterEmail(),
                     "Prompt Approved: " + event.promptName(),
@@ -76,16 +90,19 @@ public class NotificationEventListener {
     @EventListener
     void on(WorkflowRejected event) {
         if (event.projectId() == null) {
-            log.warn("WorkflowRejected event missing projectId, skipping SSE");
+            log.warn("WorkflowRejected event missing projectId, skipping notification");
             return;
         }
-        sse.emit("project-" + event.projectId(), "workflow.rejected",
-                payload("workflow.rejected",
-                        "promptId", event.promptId(),
-                        "rejectedBy", event.rejectedBy(),
-                        "reason", event.reason() != null ? event.reason() : ""));
+        notificationUseCase.createForProject(
+                event.projectId(),
+                NotificationEventType.WORKFLOW_REJECTED,
+                "Rejected by " + (event.rejectedBy() != null ? event.rejectedBy() : "unknown") +
+                        (event.reason() != null ? ": " + event.reason() : ""),
+                payload("promptId", event.promptId(), "rejectedBy", event.rejectedBy(),
+                        "reason", event.reason() != null ? event.reason() : "")
+        ).subscribe();
 
-        // Email the requester
+        // Email the requester directly
         if (event.requesterEmail() != null) {
             email.send(event.requesterEmail(),
                     "Prompt Rejected: " + event.promptName(),
@@ -98,24 +115,31 @@ public class NotificationEventListener {
     @EventListener
     void on(ScanCompleted event) {
         if (event.projectId() == null) {
-            log.warn("ScanCompleted event missing projectId, skipping SSE");
+            log.warn("ScanCompleted event missing projectId, skipping notification");
             return;
         }
-        String eventName = event.hasCriticalFindings() ? "scan.critical" : "scan.completed";
-        sse.emit("project-" + event.projectId(), eventName,
-                payload(eventName,
-                        "promptId", event.promptId(),
-                        "status", event.status(),
-                        "score", event.overallScore()));
+        NotificationEventType type = event.hasCriticalFindings()
+                ? NotificationEventType.SCAN_CRITICAL
+                : NotificationEventType.SCAN_COMPLETED;
+
+        String message = event.hasCriticalFindings()
+                ? "Critical findings detected! Score: " + event.overallScore()
+                : "Scan finished with score " + event.overallScore();
+
+        notificationUseCase.createForProject(
+                event.projectId(),
+                type,
+                message,
+                payload("promptId", event.promptId(), "status", event.status(),
+                        "score", event.overallScore())
+        ).subscribe();
     }
 
     /**
-     * Build a null-safe payload map with eventType included.
-     * Map.of() throws on null values, so we use HashMap.
+     * Build a null-safe payload map.
      */
-    private Map<String, Object> payload(String eventType, Object... kvPairs) {
+    private Map<String, Object> payload(Object... kvPairs) {
         var map = new HashMap<String, Object>();
-        map.put("eventType", eventType);
         for (int i = 0; i < kvPairs.length - 1; i += 2) {
             String key = String.valueOf(kvPairs[i]);
             Object val = kvPairs[i + 1];

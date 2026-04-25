@@ -9,9 +9,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DatePipe } from '@angular/common';
 import {
   Notification,
-  markAsRead,
-  markAllAsRead,
-  dismissNotification,
+  markAsReadApi,
+  markAllAsReadApi,
+  dismissApi,
   clearAll,
 } from '../../../state/notifications/notifications.actions';
 import { NotificationsState } from '../../../state/notifications/notifications.reducer';
@@ -187,22 +187,26 @@ export class NotificationBellComponent {
   );
 
   readonly unreadCount = computed(() =>
-    this.items().filter((n: Notification) => !n.read).length
+    (this.store.selectSignal((s: any) => s.notifications?.unreadCount ?? 0))()
   );
 
   onRead(n: Notification): void {
     if (!n.read) {
-      this.store.dispatch(markAsRead({ id: n.id }));
+      this.store.dispatch(markAsReadApi({ id: n.id }));
     }
   }
 
   onDismiss(event: Event, id: string): void {
     event.stopPropagation();
-    this.store.dispatch(dismissNotification({ id }));
+    this.store.dispatch(dismissApi({ id }));
   }
 
   onMarkAllRead(): void {
-    this.store.dispatch(markAllAsRead());
+    // We need projectId — get from the first notification or current state
+    const firstItem = this.items()[0];
+    if (firstItem?.projectId) {
+      this.store.dispatch(markAllAsReadApi({ projectId: firstItem.projectId }));
+    }
   }
 
   onClearAll(): void {

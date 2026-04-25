@@ -45,9 +45,11 @@ declare -A COLLECTIONS=(
   [workflows]="workflows/workflows.json"
   [scan_results]="scan_results/scan_results.json"
   [audit_logs]="audit_logs/audit_logs.json"
+  [notifications]="notifications/notifications.json"
+  [notification_project_settings]="notification_project_settings/notification_project_settings.json"
 )
 
-ORDER=(users projects project_members prompts workflows scan_results audit_logs)
+ORDER=(users projects project_members prompts workflows scan_results audit_logs notifications notification_project_settings)
 
 for collection in "${ORDER[@]}"; do
   json_file="${COLLECTIONS[$collection]}"

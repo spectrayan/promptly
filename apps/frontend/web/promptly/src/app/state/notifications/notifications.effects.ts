@@ -1,14 +1,27 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SseService } from '../../shared/services/sse.service';
 import {
   addNotification,
   connectSse,
   disconnectSse,
+  loadNotifications,
+  loadNotificationsSuccess,
+  loadMore,
+  loadMoreSuccess,
+  loadUnreadCount,
+  loadUnreadCountSuccess,
+  markAsReadApi,
+  markAsRead,
+  markAllAsReadApi,
+  markAllAsRead,
+  dismissApi,
+  dismissNotification,
   Notification,
 } from './notifications.actions';
-import { EMPTY, Subject, switchMap, map, tap, takeUntil } from 'rxjs';
+import { EMPTY, Subject, switchMap, map, tap, takeUntil, catchError, mergeMap } from 'rxjs';
 
 /** Maps SSE event types to human-readable notification details */
 const EVENT_META: Record<string, { icon: string; title: string }> = {
@@ -33,19 +46,36 @@ interface SseEvent {
   [key: string]: unknown;
 }
 
+interface NotificationListResponse {
+  items: Array<{
+    id: string;
+    type: string;
+    title: string;
+    message: string;
+    icon: string;
+    read: boolean;
+    createdAt: string;
+    projectId: string;
+    payload: Record<string, unknown>;
+  }>;
+  hasMore: boolean;
+  oldestTimestamp?: string;
+}
+
 @Injectable()
 export class NotificationsEffects {
   private readonly actions$ = inject(Actions);
+  private readonly http = inject(HttpClient);
   private readonly sse = inject(SseService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly disconnect$ = new Subject<void>();
 
-  /** Connect to SSE on project selection */
+  /** Connect to SSE and simultaneously load persisted notifications */
   readonly connectSse$ = createEffect(() =>
     this.actions$.pipe(
       ofType(connectSse),
       switchMap(({ projectId }) => {
-        this.disconnect$.next(); // Close any previous connection
+        this.disconnect$.next();
 
         const topic = `project-${projectId}`;
         const events = Object.keys(EVENT_META);
@@ -75,6 +105,101 @@ export class NotificationsEffects {
     ),
   );
 
+  /** Load persisted notifications on project switch */
+  readonly loadOnConnect$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(connectSse),
+      switchMap(({ projectId }) => [
+        loadNotifications({ projectId }),
+        loadUnreadCount({ projectId }),
+      ]),
+    ),
+  );
+
+  /** Fetch notifications from API */
+  readonly loadNotifications$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadNotifications),
+      switchMap(({ projectId }) =>
+        this.http.get<NotificationListResponse>(
+          `/api/v1/notifications?projectId=${projectId}&limit=20`
+        ).pipe(
+          map(res => loadNotificationsSuccess({
+            notifications: res.items.map(item => this.mapApiNotification(item)),
+            hasMore: res.hasMore,
+          })),
+          catchError(() => EMPTY),
+        ),
+      ),
+    ),
+  );
+
+  /** Load more (infinite scroll) */
+  readonly loadMore$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadMore),
+      switchMap(({ projectId, before }) =>
+        this.http.get<NotificationListResponse>(
+          `/api/v1/notifications?projectId=${projectId}&before=${before}&limit=20`
+        ).pipe(
+          map(res => loadMoreSuccess({
+            notifications: res.items.map(item => this.mapApiNotification(item)),
+            hasMore: res.hasMore,
+          })),
+          catchError(() => EMPTY),
+        ),
+      ),
+    ),
+  );
+
+  /** Load unread count for badge */
+  readonly loadUnreadCount$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(loadUnreadCount),
+      switchMap(({ projectId }) =>
+        this.http.get<{ unread: number }>(
+          `/api/v1/notifications/count?projectId=${projectId}`
+        ).pipe(
+          map(res => loadUnreadCountSuccess({ count: res.unread })),
+          catchError(() => EMPTY),
+        ),
+      ),
+    ),
+  );
+
+  /** Mark as read — optimistic UI + backend sync */
+  readonly markAsReadApi$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(markAsReadApi),
+      mergeMap(({ id }) => {
+        this.http.patch(`/api/v1/notifications/${id}/read`, {}).subscribe();
+        return [markAsRead({ id })];
+      }),
+    ),
+  );
+
+  /** Mark all as read — optimistic UI + backend sync */
+  readonly markAllAsReadApi$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(markAllAsReadApi),
+      mergeMap(({ projectId }) => {
+        this.http.post(`/api/v1/notifications/mark-all-read?projectId=${projectId}`, {}).subscribe();
+        return [markAllAsRead()];
+      }),
+    ),
+  );
+
+  /** Dismiss — optimistic UI + backend sync */
+  readonly dismissApi$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(dismissApi),
+      mergeMap(({ id }) => {
+        this.http.delete(`/api/v1/notifications/${id}`).subscribe();
+        return [dismissNotification({ id })];
+      }),
+    ),
+  );
+
   /** Disconnect SSE */
   readonly disconnectSse$ = createEffect(() =>
     this.actions$.pipe(
@@ -84,7 +209,7 @@ export class NotificationsEffects {
     { dispatch: false },
   );
 
-  /** Show snackbar for new notifications */
+  /** Show snackbar for new SSE notifications */
   readonly toast$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addNotification),
@@ -103,6 +228,21 @@ export class NotificationsEffects {
     ),
     { dispatch: false },
   );
+
+  /** Map API response to frontend Notification */
+  private mapApiNotification(item: NotificationListResponse['items'][0]): Notification {
+    return {
+      id: item.id,
+      type: item.type,
+      title: item.title,
+      message: item.message,
+      icon: item.icon,
+      timestamp: item.createdAt,
+      read: item.read,
+      projectId: item.projectId,
+      payload: item.payload,
+    };
+  }
 
   private buildMessage(eventType: string, event: SseEvent): string {
     switch (eventType) {
