@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, Renderer2, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, Renderer2, computed, signal, effect } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,10 +7,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Store } from '@ngrx/store';
 import { Subscription, filter } from 'rxjs';
 import { AuthFacade } from './state/auth/auth.facade';
 import { ProjectsFacade } from './state/projects/projects.facade';
+import { connectSse, disconnectSse } from './state/notifications/notifications.actions';
 import { ProjectCreationModalComponent } from './features/projects/components/project-creation-modal.component';
+import { NotificationBellComponent } from './shared/components/notification-bell/notification-bell.component';
 
 @Component({
   selector: 'promptly-root',
@@ -18,6 +21,7 @@ import { ProjectCreationModalComponent } from './features/projects/components/pr
     RouterOutlet, RouterLink, RouterLinkActive,
     MatListModule, MatIconModule, MatButtonModule,
     MatTooltipModule, MatMenuModule, MatDividerModule, MatDialogModule,
+    NotificationBellComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -28,6 +32,7 @@ export class App implements OnInit, OnDestroy {
   private readonly renderer = inject(Renderer2);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
+  private readonly store = inject(Store);
 
   private routerSub?: Subscription;
 
@@ -112,6 +117,10 @@ export class App implements OnInit, OnDestroy {
       if (pid) {
         this.projectsFacade.selectProject(pid);
         localStorage.setItem('promptly-last-project', pid);
+        // Connect SSE for this project
+        this.store.dispatch(connectSse({ projectId: pid }));
+      } else {
+        this.store.dispatch(disconnectSse());
       }
     }
   }

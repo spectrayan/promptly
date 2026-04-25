@@ -81,6 +81,9 @@
         <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
 
+      <!-- Notifications Bell -->
+      <promptly-notification-bell />
+
       <!-- User Avatar (top-right) -->
       <button class="topbar-user-btn" [matMenuTriggerFor]="userMenu" id="user-menu-btn">
         <div class="topbar-avatar">{{ getInitials() }}</div>

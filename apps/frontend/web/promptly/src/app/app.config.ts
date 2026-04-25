@@ -16,11 +16,13 @@ import { promptsReducer } from './state/prompts/prompts.reducer';
 import { projectsReducer } from './state/projects/projects.reducer';
 import { workflowsReducer } from './state/workflows/workflows.reducer';
 import { dashboardReducer } from './state/dashboard/dashboard.reducer';
+import { notificationsReducer } from './state/notifications/notifications.reducer';
 import { AuthEffects } from './state/auth/auth.effects';
 import { ProjectsEffects } from './state/projects/projects.effects';
 import { PromptsEffects } from './state/prompts/prompts.effects';
 import { WorkflowsEffects } from './state/workflows/workflows.effects';
 import { DashboardEffects } from './state/dashboard/dashboard.effects';
+import { NotificationsEffects } from './state/notifications/notifications.effects';
 
 import { environment } from '../environments/environment';
 
@@ -42,8 +44,9 @@ export const appConfig: ApplicationConfig = {
       prompts: promptsReducer,
       workflows: workflowsReducer,
       dashboard: dashboardReducer,
+      notifications: notificationsReducer,
     }),
-    provideEffects(AuthEffects, ProjectsEffects, PromptsEffects, WorkflowsEffects, DashboardEffects),
+    provideEffects(AuthEffects, ProjectsEffects, PromptsEffects, WorkflowsEffects, DashboardEffects, NotificationsEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: false }),
 
     // Generated API SDK — base path to the backend
