@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SseService } from '../../shared/services/sse.service';
 import {
-  addNotification,
   connectSse,
   disconnectSse,
   loadNotifications,
@@ -70,40 +69,52 @@ export class NotificationsEffects {
   private readonly snackBar = inject(MatSnackBar);
   private readonly disconnect$ = new Subject<void>();
 
-  /** Connect to SSE and simultaneously load persisted notifications */
+  /**
+   * Connect to SSE — when an event arrives, refresh from the API.
+   * The backend already persists the notification during fan-out,
+   * so we just reload to get properly formatted data with real IDs.
+   */
   readonly connectSse$ = createEffect(() =>
     this.actions$.pipe(
       ofType(connectSse),
       switchMap(({ projectId }) => {
         this.disconnect$.next();
+        this.currentProjectId = projectId;
 
         const topic = `project-${projectId}`;
         const events = Object.keys(EVENT_META);
 
         return this.sse.connect<SseEvent>(topic, events).pipe(
           takeUntil(this.disconnect$),
-          map(event => {
+          switchMap(event => {
             const eventType = (event as any)?.eventType ?? 'notification';
             const meta = EVENT_META[eventType] ?? { icon: 'notifications', title: 'Notification' };
 
-            const notification: Notification = {
-              id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-              type: eventType,
-              title: meta.title,
-              message: this.buildMessage(eventType, event),
-              icon: meta.icon,
-              timestamp: new Date().toISOString(),
-              read: false,
-              projectId,
-              payload: event as Record<string, unknown>,
-            };
+            // Show snackbar for real-time feedback
+            const message = this.buildMessage(eventType, event);
+            this.snackBar.open(
+              `${meta.title}: ${message}`,
+              'Dismiss',
+              {
+                duration: 5000,
+                horizontalPosition: 'end',
+                verticalPosition: 'bottom',
+                panelClass: [`snack-${eventType.split('.')[0]}`],
+              },
+            );
 
-            return addNotification({ notification });
+            // Reload persisted notifications from the API
+            return [
+              loadNotifications({ projectId }),
+              loadUnreadCount({ projectId }),
+            ];
           }),
         );
       }),
     ),
   );
+
+  private currentProjectId = '';
 
   /** Load persisted notifications on project switch */
   readonly loadOnConnect$ = createEffect(() =>
@@ -209,25 +220,7 @@ export class NotificationsEffects {
     { dispatch: false },
   );
 
-  /** Show snackbar for new SSE notifications */
-  readonly toast$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(addNotification),
-      tap(({ notification }) => {
-        this.snackBar.open(
-          `${notification.title}: ${notification.message}`,
-          'Dismiss',
-          {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: [`snack-${notification.type.split('.')[0]}`],
-          },
-        );
-      }),
-    ),
-    { dispatch: false },
-  );
+
 
   /** Map API response to frontend Notification */
   private mapApiNotification(item: NotificationListResponse['items'][0]): Notification {

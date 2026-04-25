@@ -38,68 +38,103 @@ import { NotificationsState } from '../../../state/notifications/notifications.r
     <mat-menu #notifMenu="matMenu" class="notification-menu" xPosition="before">
       <div class="notif-header" (click)="$event.stopPropagation()">
         <span class="notif-title">Notifications</span>
-        @if (unreadCount() > 0) {
-          <button mat-button color="primary" (click)="onMarkAllRead()">
-            Mark all read
-          </button>
-        }
-        @if (items().length > 0) {
-          <button mat-icon-button matTooltip="Clear all" (click)="onClearAll()">
-            <mat-icon>delete_sweep</mat-icon>
-          </button>
-        }
+        <div class="notif-header-actions">
+          @if (unreadCount() > 0) {
+            <button mat-button class="notif-mark-all" (click)="onMarkAllRead()">
+              Mark all read
+            </button>
+          }
+          @if (items().length > 0) {
+            <button mat-icon-button matTooltip="Clear all" (click)="onClearAll()" class="notif-clear-btn">
+              <mat-icon>delete_sweep</mat-icon>
+            </button>
+          }
+        </div>
       </div>
       <mat-divider />
 
-      @if (items().length === 0) {
-        <div class="notif-empty" (click)="$event.stopPropagation()">
-          <mat-icon>notifications_none</mat-icon>
-          <span>No notifications</span>
-        </div>
-      }
-
-      @for (n of items(); track n.id) {
-        <button mat-menu-item
-                class="notif-item"
-                [class.unread]="!n.read"
-                (click)="onRead(n)">
-          <mat-icon [class]="'notif-icon notif-icon-' + n.type.split('.')[0]">
-            {{ n.icon }}
-          </mat-icon>
-          <div class="notif-content">
-            <span class="notif-item-title">{{ n.title }}</span>
-            <span class="notif-msg">{{ n.message }}</span>
-            <span class="notif-time">{{ n.timestamp | date:'short' }}</span>
+      <div class="notif-scroll" (click)="$event.stopPropagation()">
+        @if (items().length === 0) {
+          <div class="notif-empty">
+            <mat-icon class="notif-empty-icon">notifications_none</mat-icon>
+            <span>No notifications yet</span>
           </div>
-          <button mat-icon-button
-                  class="notif-dismiss"
-                  (click)="onDismiss($event, n.id)"
-                  matTooltip="Dismiss">
-            <mat-icon>close</mat-icon>
-          </button>
-        </button>
-      }
+        }
+
+        @for (n of items(); track n.id) {
+          <div class="notif-item" [class.unread]="!n.read" (click)="onRead(n)">
+            <div class="notif-icon-wrap" [class]="'notif-icon-' + n.type.split('.')[0]">
+              <mat-icon>{{ n.icon }}</mat-icon>
+            </div>
+            <div class="notif-content">
+              <span class="notif-item-title">{{ n.title }}</span>
+              <span class="notif-msg">{{ n.message }}</span>
+              <span class="notif-time">{{ n.timestamp | date:'medium' }}</span>
+            </div>
+            <button mat-icon-button
+                    class="notif-dismiss"
+                    (click)="onDismiss($event, n.id)"
+                    matTooltip="Dismiss">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
     </mat-menu>
   `,
   styles: [`
     :host { display: inline-flex; }
 
-    .notification-menu {
-      max-width: 400px !important;
-      min-width: 340px !important;
+    /* Force the menu panel wider via global selector */
+    ::ng-deep .mat-mdc-menu-panel.notification-menu {
+      max-width: 460px !important;
+      min-width: 400px !important;
     }
 
     .notif-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
+      justify-content: space-between;
+      padding: 12px 16px;
     }
 
     .notif-title {
-      flex: 1;
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+    }
+
+    .notif-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .notif-mark-all {
+      font-size: 12px !important;
+      line-height: 1 !important;
+      padding: 4px 12px !important;
+      min-height: 28px !important;
+      height: 28px !important;
+      border-radius: 14px !important;
+      color: var(--mat-sys-primary, #b39ddb) !important;
+    }
+
+    .notif-clear-btn {
+      width: 32px !important;
+      height: 32px !important;
+      padding: 0 !important;
+    }
+
+    .notif-clear-btn mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .notif-scroll {
+      max-height: 420px;
+      overflow-y: auto;
     }
 
     .notif-empty {
@@ -107,71 +142,110 @@ import { NotificationsState } from '../../../state/notifications/notifications.r
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      padding: 24px 16px;
-      opacity: 0.5;
+      padding: 40px 16px;
+      opacity: 0.4;
       font-size: 14px;
+    }
+
+    .notif-empty-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      opacity: 0.5;
     }
 
     .notif-item {
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      padding: 10px 16px;
-      height: auto !important;
-      min-height: 56px;
-      white-space: normal;
-      line-height: 1.4;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .notif-item:hover {
+      background: rgba(255,255,255,0.04);
     }
 
     .notif-item.unread {
       background: rgba(var(--mat-sys-primary-rgb, 103, 80, 164), 0.08);
     }
 
-    .notif-icon {
+    .notif-item.unread:hover {
+      background: rgba(var(--mat-sys-primary-rgb, 103, 80, 164), 0.12);
+    }
+
+    .notif-icon-wrap {
       flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.06);
       margin-top: 2px;
     }
 
-    .notif-icon-prompt { color: var(--mat-sys-primary, #6750A4); }
-    .notif-icon-workflow { color: var(--mat-sys-tertiary, #7D5260); }
-    .notif-icon-scan { color: var(--mat-sys-error, #B3261E); }
+    .notif-icon-wrap mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .notif-icon-prompt { color: var(--mat-sys-primary, #b39ddb); }
+    .notif-icon-workflow { color: #66bb6a; }
+    .notif-icon-scan { color: #ef5350; }
 
     .notif-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       min-width: 0;
+      overflow: hidden;
     }
 
     .notif-item-title {
       font-weight: 600;
       font-size: 13px;
+      line-height: 1.3;
     }
 
     .notif-msg {
       font-size: 12px;
-      opacity: 0.8;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.45;
+      opacity: 0.75;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .notif-time {
       font-size: 11px;
-      opacity: 0.5;
+      opacity: 0.4;
+      margin-top: 2px;
     }
 
     .notif-dismiss {
       flex-shrink: 0;
       width: 28px !important;
       height: 28px !important;
-      font-size: 16px;
+      padding: 0 !important;
       opacity: 0;
       transition: opacity 0.2s;
+      margin-top: 4px;
+    }
+
+    .notif-dismiss mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
 
     .notif-item:hover .notif-dismiss {
-      opacity: 0.6;
+      opacity: 0.5;
     }
 
     .notif-dismiss:hover {
@@ -202,7 +276,6 @@ export class NotificationBellComponent {
   }
 
   onMarkAllRead(): void {
-    // We need projectId — get from the first notification or current state
     const firstItem = this.items()[0];
     if (firstItem?.projectId) {
       this.store.dispatch(markAllAsReadApi({ projectId: firstItem.projectId }));
