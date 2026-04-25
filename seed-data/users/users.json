@@ -1,0 +1,50 @@
+[
+  {
+    "_id": "usr-001",
+    "email": "alice@promptly.ai",
+    "displayName": "Alice Johnson",
+    "passwordHash": "$2a$10$vDvcD1ZTMmpAGUAVadGr.uYImHEJYemROSgZfeWRDR9WNaNYZsSMO",
+    "avatarUrl": null,
+    "orgRole": "ORG_ADMIN",
+    "status": "ACTIVE",
+    "lastLoginAt": { "$date": "2026-04-23T08:00:00Z" },
+    "createdAt": { "$date": "2025-06-01T08:00:00Z" },
+    "updatedAt": { "$date": "2026-04-23T08:00:00Z" }
+  },
+  {
+    "_id": "usr-002",
+    "email": "bob@promptly.ai",
+    "displayName": "Bob Chen",
+    "passwordHash": "$2a$10$vDvcD1ZTMmpAGUAVadGr.uYImHEJYemROSgZfeWRDR9WNaNYZsSMO",
+    "avatarUrl": null,
+    "orgRole": "ORG_USER",
+    "status": "ACTIVE",
+    "lastLoginAt": { "$date": "2026-04-22T14:30:00Z" },
+    "createdAt": { "$date": "2025-07-15T10:00:00Z" },
+    "updatedAt": { "$date": "2026-04-22T14:30:00Z" }
+  },
+  {
+    "_id": "usr-003",
+    "email": "carol@promptly.ai",
+    "displayName": "Carol Diaz",
+    "passwordHash": "$2a$10$vDvcD1ZTMmpAGUAVadGr.uYImHEJYemROSgZfeWRDR9WNaNYZsSMO",
+    "avatarUrl": null,
+    "orgRole": "ORG_USER",
+    "status": "ACTIVE",
+    "lastLoginAt": { "$date": "2026-04-21T09:15:00Z" },
+    "createdAt": { "$date": "2025-10-01T11:00:00Z" },
+    "updatedAt": { "$date": "2026-04-21T09:15:00Z" }
+  },
+  {
+    "_id": "usr-004",
+    "email": "dave@promptly.ai",
+    "displayName": "Dave Kim",
+    "passwordHash": "$2a$10$vDvcD1ZTMmpAGUAVadGr.uYImHEJYemROSgZfeWRDR9WNaNYZsSMO",
+    "avatarUrl": null,
+    "orgRole": "ORG_USER",
+    "status": "ACTIVE",
+    "lastLoginAt": { "$date": "2026-04-20T16:45:00Z" },
+    "createdAt": { "$date": "2025-12-10T13:00:00Z" },
+    "updatedAt": { "$date": "2026-04-20T16:45:00Z" }
+  }
+]

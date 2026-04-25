@@ -1,0 +1,102 @@
+[
+  {
+    "_id": "p-001",
+    "name": "Customer Support Classifier",
+    "description": "Classifies customer support tickets into categories: billing, technical, account, general",
+    "projectId": "proj-001",
+    "contentFormat": "TEXT",
+    "tags": ["classification", "support", "nlp"],
+    "metadata": { "model": "gemini-1.5-pro", "temperature": 0.1, "maxTokens": 50, "systemContext": "Customer support automation" },
+    "currentVersion": 3,
+    "activeEnvironment": "STAGING",
+    "status": "APPROVED",
+    "versions": [
+      { "versionNumber": 1, "content": "Classify the ticket into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.", "changeMessage": "Initial version", "createdBy": "alice@promptly.ai", "createdAt": { "$date": "2025-11-15T09:30:00Z" } },
+      { "versionNumber": 2, "content": "You are a customer support classifier (v2). Classify into: BILLING, TECHNICAL, ACCOUNT, GENERAL.", "changeMessage": "Improved accuracy for technical tickets", "createdBy": "bob@promptly.ai", "createdAt": { "$date": "2026-02-10T09:15:00Z" } },
+      { "versionNumber": 3, "content": "You are a customer support classifier. Given a support ticket, classify it into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.\n\nRules:\n- BILLING: payment issues, invoices, refunds, subscriptions\n- TECHNICAL: bugs, errors, performance, integrations\n- ACCOUNT: login, password, profile, permissions\n- GENERAL: everything else\n\nRespond with ONLY the category name.", "changeMessage": "Added edge case handling for subscription queries", "createdBy": "alice@promptly.ai", "createdAt": { "$date": "2026-03-20T14:22:00Z" } }
+    ],
+    "createdBy": "alice@promptly.ai",
+    "updatedBy": "alice@promptly.ai",
+    "createdAt": { "$date": "2025-11-15T09:30:00Z" },
+    "updatedAt": { "$date": "2026-03-20T14:22:00Z" }
+  },
+  {
+    "_id": "p-002",
+    "name": "SQL Query Generator",
+    "description": "Generates safe, read-only SQL queries from natural language descriptions",
+    "projectId": "proj-002",
+    "contentFormat": "MARKDOWN",
+    "tags": ["sql", "data", "generation"],
+    "metadata": { "model": "gemini-1.5-pro", "temperature": 0.3, "maxTokens": 2000, "systemContext": "Data analytics platform" },
+    "currentVersion": 5,
+    "activeEnvironment": "PRODUCTION",
+    "status": "APPROVED",
+    "versions": [
+      { "versionNumber": 1, "content": "Convert the user query to SQL.", "changeMessage": "Initial version", "createdBy": "bob@promptly.ai", "createdAt": { "$date": "2025-09-01T12:00:00Z" } },
+      { "versionNumber": 5, "content": "# SQL Query Generator\n\nYou are a SQL query generator. Convert natural language to safe, read-only PostgreSQL queries.\n\n## Rules\n- ONLY generate SELECT statements\n- NEVER generate INSERT, UPDATE, DELETE, DROP, or ALTER\n- Always include LIMIT 1000 unless user specifies\n- Use table aliases for readability", "changeMessage": "Production-ready with full safety guardrails", "createdBy": "bob@promptly.ai", "createdAt": { "$date": "2026-04-10T08:15:00Z" } }
+    ],
+    "createdBy": "bob@promptly.ai",
+    "updatedBy": "bob@promptly.ai",
+    "createdAt": { "$date": "2025-09-01T12:00:00Z" },
+    "updatedAt": { "$date": "2026-04-10T08:15:00Z" }
+  },
+  {
+    "_id": "p-003",
+    "name": "Code Review Assistant",
+    "description": "Reviews pull requests for security vulnerabilities, best practices, and code quality",
+    "projectId": "proj-003",
+    "contentFormat": "JSON",
+    "tags": ["code-review", "security", "devops"],
+    "metadata": { "model": "gemini-1.5-pro", "temperature": 0.2, "maxTokens": 4000, "systemContext": "Developer tooling" },
+    "currentVersion": 2,
+    "activeEnvironment": "DEV",
+    "status": "DRAFT",
+    "versions": [
+      { "versionNumber": 1, "content": "Review this code.", "changeMessage": "Initial version", "createdBy": "carol@promptly.ai", "createdAt": { "$date": "2026-01-10T16:45:00Z" } },
+      { "versionNumber": 2, "content": "{\"system\":\"You are a senior code reviewer\",\"rules\":[\"Flag SQL injection risks\",\"Identify missing null checks\",\"Suggest performance improvements\",\"Check for hardcoded secrets\"]}", "changeMessage": "Added structured output format", "createdBy": "carol@promptly.ai", "createdAt": { "$date": "2026-04-05T11:30:00Z" } }
+    ],
+    "createdBy": "carol@promptly.ai",
+    "updatedBy": "carol@promptly.ai",
+    "createdAt": { "$date": "2026-01-10T16:45:00Z" },
+    "updatedAt": { "$date": "2026-04-05T11:30:00Z" }
+  },
+  {
+    "_id": "p-004",
+    "name": "Meeting Summarizer",
+    "description": "Generates concise meeting summaries with action items and decisions",
+    "projectId": "proj-004",
+    "contentFormat": "TEXT",
+    "tags": ["summarization", "productivity", "meetings"],
+    "metadata": { "model": "gemini-1.5-flash", "temperature": 0.4, "maxTokens": 1500, "systemContext": "Internal productivity tools" },
+    "currentVersion": 1,
+    "activeEnvironment": "DEV",
+    "status": "DRAFT",
+    "versions": [
+      { "versionNumber": 1, "content": "Summarize the following meeting transcript. Include: 1. Key Discussion Points 2. Decisions Made 3. Action Items 4. Open Questions", "changeMessage": "Initial version", "createdBy": "alice@promptly.ai", "createdAt": { "$date": "2026-04-01T10:00:00Z" } }
+    ],
+    "createdBy": "alice@promptly.ai",
+    "updatedBy": "alice@promptly.ai",
+    "createdAt": { "$date": "2026-04-01T10:00:00Z" },
+    "updatedAt": { "$date": "2026-04-01T10:00:00Z" }
+  },
+  {
+    "_id": "p-005",
+    "name": "Content Moderation Filter",
+    "description": "Evaluates user-generated content for policy compliance and toxicity",
+    "projectId": "proj-005",
+    "contentFormat": "YAML",
+    "tags": ["moderation", "trust-safety", "compliance"],
+    "metadata": { "model": "gemini-1.5-pro", "temperature": 0.0, "maxTokens": 500, "systemContext": "Trust & safety platform" },
+    "currentVersion": 7,
+    "activeEnvironment": "PRODUCTION",
+    "status": "APPROVED",
+    "versions": [
+      { "versionNumber": 1, "content": "Check if this content is safe.", "changeMessage": "Initial version", "createdBy": "dave@promptly.ai", "createdAt": { "$date": "2025-06-20T08:00:00Z" } },
+      { "versionNumber": 7, "content": "role: content_moderator\nversion: 7\nthresholds:\n  toxicity: 0.7\n  spam: 0.8\n  pii_detection: true", "changeMessage": "Added misinformation detection category", "createdBy": "dave@promptly.ai", "createdAt": { "$date": "2026-04-18T16:40:00Z" } }
+    ],
+    "createdBy": "dave@promptly.ai",
+    "updatedBy": "dave@promptly.ai",
+    "createdAt": { "$date": "2025-06-20T08:00:00Z" },
+    "updatedAt": { "$date": "2026-04-18T16:40:00Z" }
+  }
+]

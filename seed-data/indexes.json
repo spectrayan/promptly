@@ -1,0 +1,27 @@
+{
+  "prompts": [
+    { "keys": { "projectId": 1, "name": 1 }, "options": { "unique": true, "name": "idx_project_name" } }
+  ],
+  "workflows": [
+    { "keys": { "promptId": 1 }, "options": { "name": "idx_workflow_prompt" } },
+    { "keys": { "status": 1 }, "options": { "name": "idx_workflow_status" } }
+  ],
+  "scan_results": [
+    { "keys": { "promptId": 1, "promptVersion": -1 }, "options": { "name": "idx_prompt_version" } }
+  ],
+  "audit_logs": [
+    { "keys": { "resourceId": 1, "timestamp": -1 }, "options": { "name": "idx_resource_timestamp" } },
+    { "keys": { "actorUserId": 1, "timestamp": -1 }, "options": { "name": "idx_actor_timestamp" } },
+    { "keys": { "action": 1, "timestamp": -1 }, "options": { "name": "idx_action_timestamp" } }
+  ],
+  "users": [
+    { "keys": { "email": 1 }, "options": { "unique": true, "name": "idx_user_email" } }
+  ],
+  "projects": [
+    { "keys": { "name": 1 }, "options": { "unique": true, "name": "idx_project_name_unique" } }
+  ],
+  "project_members": [
+    { "keys": { "projectId": 1, "userId": 1 }, "options": { "unique": true, "name": "idx_project_user" } },
+    { "keys": { "userId": 1 }, "options": { "name": "idx_member_user" } }
+  ]
+}

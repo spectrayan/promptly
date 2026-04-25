@@ -1,0 +1,81 @@
+[
+  {
+    "_id": "scan-001",
+    "projectId": "proj-001",
+    "promptId": "p-001",
+    "promptVersion": 3,
+    "overallScore": 0.95,
+    "status": "pass",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": { "$date": "2026-04-22T08:00:00Z" },
+    "findings": [],
+    "createdAt": { "$date": "2026-04-22T08:00:00Z" }
+  },
+  {
+    "_id": "scan-002",
+    "projectId": "proj-002",
+    "promptId": "p-002",
+    "promptVersion": 5,
+    "overallScore": 0.90,
+    "status": "pass",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": { "$date": "2026-04-20T10:30:00Z" },
+    "findings": [
+      {
+        "type": "missing_guardrail",
+        "severity": "LOW",
+        "title": "PII Detection Guardrail",
+        "description": "No explicit PII filtering guardrail configured — content passes through without redaction",
+        "remediation": "Add a PII redaction layer before output to prevent accidental leakage"
+      }
+    ],
+    "createdAt": { "$date": "2026-04-20T10:30:00Z" }
+  },
+  {
+    "_id": "scan-003",
+    "projectId": "proj-003",
+    "promptId": "p-003",
+    "promptVersion": 2,
+    "overallScore": 0.65,
+    "status": "warn",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": { "$date": "2026-04-19T14:00:00Z" },
+    "findings": [
+      {
+        "type": "injection_risk",
+        "severity": "MEDIUM",
+        "title": "Prompt Injection Vector",
+        "description": "Output format specification could be manipulated to inject instructions via structured JSON input",
+        "remediation": "Add output format validation and sandboxing to prevent instruction injection"
+      },
+      {
+        "type": "hallucination_prone",
+        "severity": "LOW",
+        "title": "Ungrounded Code Suggestions",
+        "description": "Code review output may suggest fixes not validated against the actual codebase",
+        "remediation": "Add context grounding by requiring references to specific line numbers"
+      }
+    ],
+    "createdAt": { "$date": "2026-04-19T14:00:00Z" }
+  },
+  {
+    "_id": "scan-004",
+    "projectId": "proj-005",
+    "promptId": "p-005",
+    "promptVersion": 7,
+    "overallScore": 0.98,
+    "status": "pass",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": { "$date": "2026-04-18T16:00:00Z" },
+    "findings": [],
+    "createdAt": { "$date": "2026-04-18T16:00:00Z" }
+  }
+]

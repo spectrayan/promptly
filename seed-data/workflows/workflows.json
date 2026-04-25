@@ -1,0 +1,74 @@
+[
+  {
+    "_id": "wf-001",
+    "projectId": "proj-002",
+    "promptId": "p-002",
+    "promptVersion": 5,
+    "type": "approval",
+    "status": "PENDING",
+    "currentStep": 1,
+    "sourceEnvironment": "STAGING",
+    "targetEnvironment": "PRODUCTION",
+    "requestedBy": "bob@promptly.ai",
+    "steps": [
+      { "step": 1, "role": "reviewer", "assignedTo": "alice@promptly.ai", "action": "pending", "comment": null, "actedAt": null },
+      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "pending", "comment": null, "actedAt": null }
+    ],
+    "createdAt": { "$date": "2026-04-20T10:00:00Z" },
+    "updatedAt": { "$date": "2026-04-20T10:00:00Z" }
+  },
+  {
+    "_id": "wf-002",
+    "projectId": "proj-005",
+    "promptId": "p-005",
+    "promptVersion": 7,
+    "type": "approval",
+    "status": "APPROVED",
+    "currentStep": 2,
+    "sourceEnvironment": "STAGING",
+    "targetEnvironment": "PRODUCTION",
+    "requestedBy": "dave@promptly.ai",
+    "steps": [
+      { "step": 1, "role": "reviewer", "assignedTo": "alice@promptly.ai", "action": "approved", "comment": "Looks good, all tests pass", "actedAt": { "$date": "2026-04-19T14:00:00Z" } },
+      { "step": 2, "role": "approver", "assignedTo": "carol@promptly.ai", "action": "approved", "comment": "Approved for production release", "actedAt": { "$date": "2026-04-19T16:30:00Z" } }
+    ],
+    "createdAt": { "$date": "2026-04-18T14:00:00Z" },
+    "updatedAt": { "$date": "2026-04-19T16:30:00Z" }
+  },
+  {
+    "_id": "wf-003",
+    "projectId": "proj-001",
+    "promptId": "p-001",
+    "promptVersion": 3,
+    "type": "approval",
+    "status": "IN_REVIEW",
+    "currentStep": 1,
+    "sourceEnvironment": "DEV",
+    "targetEnvironment": "STAGING",
+    "requestedBy": "alice@promptly.ai",
+    "steps": [
+      { "step": 1, "role": "reviewer", "assignedTo": "bob@promptly.ai", "action": "pending", "comment": null, "actedAt": null },
+      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "pending", "comment": null, "actedAt": null }
+    ],
+    "createdAt": { "$date": "2026-04-22T09:00:00Z" },
+    "updatedAt": { "$date": "2026-04-22T11:30:00Z" }
+  },
+  {
+    "_id": "wf-004",
+    "projectId": "proj-003",
+    "promptId": "p-003",
+    "promptVersion": 2,
+    "type": "approval",
+    "status": "REJECTED",
+    "currentStep": 1,
+    "sourceEnvironment": "DEV",
+    "targetEnvironment": "STAGING",
+    "requestedBy": "carol@promptly.ai",
+    "steps": [
+      { "step": 1, "role": "reviewer", "assignedTo": "bob@promptly.ai", "action": "rejected", "comment": "Missing test coverage for edge cases", "actedAt": { "$date": "2026-04-16T10:00:00Z" } },
+      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "pending", "comment": null, "actedAt": null }
+    ],
+    "createdAt": { "$date": "2026-04-15T08:00:00Z" },
+    "updatedAt": { "$date": "2026-04-16T10:00:00Z" }
+  }
+]
