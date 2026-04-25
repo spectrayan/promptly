@@ -35,6 +35,7 @@ export class App implements OnInit, OnDestroy {
   private readonly store = inject(Store);
 
   private routerSub?: Subscription;
+  private projectAutoSelected = false; // Guard to prevent repeated auto-selection
 
   sidebarCollapsed = false;
   isDark = true;
@@ -101,7 +102,28 @@ export class App implements OnInit, OnDestroy {
     this.restoreProjectIfNeeded();
     this.routerSub = this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd)
-    ).subscribe(e => this.syncProjectIdFromUrl(e.urlAfterRedirects));
+    ).subscribe(e => {
+      this.syncProjectIdFromUrl(e.urlAfterRedirects);
+      // Re-check after every navigation (e.g. post-login redirect to /dashboard)
+      this.restoreProjectIfNeeded();
+    });
+
+    // Auto-select project when projects load async and no project is active
+    effect(() => {
+      const projects = this.projectsFacade.projects();
+      const active = this.activeProjectId();
+      const authed = this.auth.isAuthenticated();
+
+      if (authed && !active && projects.length > 0 && !this.projectAutoSelected) {
+        this.projectAutoSelected = true;
+        // Use queueMicrotask to avoid writing signals inside effect
+        queueMicrotask(() => this.restoreProjectIfNeeded());
+      }
+      // Reset guard when a project IS active (so it can fire again after logout/login)
+      if (active) {
+        this.projectAutoSelected = true;
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -125,15 +147,38 @@ export class App implements OnInit, OnDestroy {
     }
   }
 
-  /** On initial load, if URL has no project context, redirect to last-used project */
+  /**
+   * On initial load or after login, if URL has no project context,
+   * redirect to the last-used project (from localStorage) or auto-select
+   * the first available project from the loaded list.
+   */
   private restoreProjectIfNeeded(): void {
     if (this.activeProjectId()) return; // URL already has a project
 
+    // Only restore when user is authenticated and on a non-login page
+    if (!this.auth.isAuthenticated() || this.router.url.includes('/login')) return;
+
     const lastPid = localStorage.getItem('promptly-last-project');
-    if (lastPid) {
-      // Derive target segment from current URL path (e.g. /dashboard -> dashboard)
+    const projects = this.projectsFacade.projects();
+
+    let targetPid: string | null = null;
+
+    if (lastPid && projects.some(p => p.id === lastPid)) {
+      // Saved project still exists in the user's project list
+      targetPid = lastPid;
+    } else if (lastPid && projects.length === 0) {
+      // Projects haven't loaded yet — optimistically navigate with the saved ID
+      targetPid = lastPid;
+    } else if (projects.length > 0) {
+      // No saved project (or it no longer exists) — auto-select first
+      targetPid = projects[0].id;
+    }
+
+    if (targetPid) {
       const segment = this.router.url.replace(/^\//, '').split('?')[0] || 'dashboard';
-      this.router.navigate(['/projects', lastPid, segment], { replaceUrl: true });
+      // Avoid re-navigating to login or empty segments
+      const validSegment = ['login', ''].includes(segment) ? 'dashboard' : segment;
+      this.router.navigate(['/projects', targetPid, validSegment], { replaceUrl: true });
     }
   }
 
