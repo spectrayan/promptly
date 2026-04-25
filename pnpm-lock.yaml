@@ -50,6 +50,9 @@ importers:
       '@ngrx/store-devtools':
         specifier: ^21.1.0
         version: 21.1.0(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(@ngrx/store@21.1.0(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(rxjs@7.8.2)
+      '@spectrayan-sse/ng-sse-client':
+        specifier: file:/home/bharat/git/spectrayan-health/libs/shared/sse-client
+        version: file:../spectrayan-health/libs/shared/sse-client(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       monaco-editor:
         specifier: ^0.55.1
         version: 0.55.1
@@ -3107,6 +3110,13 @@ packages:
 
   '@sinonjs/fake-timers@15.3.2':
     resolution: {integrity: sha512-mrn35Jl2pCpns+mE3HaZa1yPN5EYCRgiMI+135COjr2hr8Cls9DXqIZ57vZe2cz7y2XVSq92tcs6kGQcT1J8Rw==}
+
+  '@spectrayan-sse/ng-sse-client@file:../spectrayan-health/libs/shared/sse-client':
+    resolution: {directory: ../spectrayan-health/libs/shared/sse-client, type: directory}
+    peerDependencies:
+      '@angular/common': '>=16 <21 || ^20'
+      '@angular/core': '>=16 <21 || ^20'
+      rxjs: '>=7 <8'
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -11541,6 +11551,12 @@ snapshots:
   '@sinonjs/fake-timers@15.3.2':
     dependencies:
       '@sinonjs/commons': 3.0.1
+
+  '@spectrayan-sse/ng-sse-client@file:../spectrayan-health/libs/shared/sse-client(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
+    dependencies:
+      '@angular/common': 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+      '@angular/core': 21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1)
+      rxjs: 7.8.2
 
   '@standard-schema/spec@1.1.0': {}
 

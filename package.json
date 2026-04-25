@@ -65,6 +65,7 @@
     "@ngrx/entity": "^21.1.0",
     "@ngrx/store": "^21.1.0",
     "@ngrx/store-devtools": "^21.1.0",
+    "@spectrayan-sse/ng-sse-client": "file:/home/bharat/git/spectrayan-health/libs/shared/sse-client",
     "monaco-editor": "^0.55.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
