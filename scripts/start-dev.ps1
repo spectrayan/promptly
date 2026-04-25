@@ -13,40 +13,22 @@ function Ok($msg)   { Write-Host "[promptly] $msg" -ForegroundColor Green }
 function Warn($msg) { Write-Host "[promptly] $msg" -ForegroundColor Yellow }
 function Err($msg)  { Write-Host "[promptly] $msg" -ForegroundColor Red }
 
-# ── Track child processes for cleanup ──
-$script:BackendJob  = $null
-$script:FrontendJob = $null
+# ── Kill everything on a given port ──
+function Stop-Port {
+    param([int]$Port, [string]$Label)
+    $pids = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty OwningProcess -Unique
+    foreach ($p in $pids) {
+        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
+        Log "Stopped $Label (PID $p, port $Port)"
+    }
+}
 
 function Stop-DevServices {
     Write-Host ""
     Log "Shutting down..."
-
-    # Kill frontend (node/ng) on port 4200
-    $feProcs = Get-NetTCPConnection -LocalPort 4200 -State Listen -ErrorAction SilentlyContinue |
-               Select-Object -ExpandProperty OwningProcess -Unique
-    foreach ($p in $feProcs) {
-        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
-        Log "Stopped frontend process (PID $p)"
-    }
-
-    # Kill backend (java) on port 8080
-    $beProcs = Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue |
-               Select-Object -ExpandProperty OwningProcess -Unique
-    foreach ($p in $beProcs) {
-        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
-        Log "Stopped backend process (PID $p)"
-    }
-
-    # Stop PowerShell background jobs
-    if ($script:BackendJob) {
-        Stop-Job -Job $script:BackendJob -ErrorAction SilentlyContinue
-        Remove-Job -Job $script:BackendJob -Force -ErrorAction SilentlyContinue
-    }
-    if ($script:FrontendJob) {
-        Stop-Job -Job $script:FrontendJob -ErrorAction SilentlyContinue
-        Remove-Job -Job $script:FrontendJob -Force -ErrorAction SilentlyContinue
-    }
-
+    Stop-Port -Port 4200 -Label "Frontend"
+    Stop-Port -Port 8080 -Label "Backend"
     Ok "All services stopped."
 }
 
@@ -83,26 +65,22 @@ try {
     # ═══════════════════════════════════════════════════════════════════
     Log "Starting backend (Spring Boot)..."
 
-    $script:BackendJob = Start-Job -ScriptBlock {
-        param($root)
-        Set-Location $root
-        & mvn spring-boot:run -f apps/backend/core/pom.xml "-Dspring-boot.run.profiles=dev" 2>&1
-    } -ArgumentList $RootDir
+    $backendProc = Start-Process -FilePath "mvn" `
+        -ArgumentList "spring-boot:run", "-f", "apps/backend/core/pom.xml", "-Dspring-boot.run.profiles=dev" `
+        -NoNewWindow -PassThru
 
-    Ok "Backend starting (Job $($script:BackendJob.Id)) - http://localhost:8080"
+    Ok "Backend starting (PID $($backendProc.Id)) - http://localhost:8080"
 
     # ═══════════════════════════════════════════════════════════════════
     # 3. Frontend — Angular dev server
     # ═══════════════════════════════════════════════════════════════════
     Log "Starting frontend (Angular)..."
 
-    $script:FrontendJob = Start-Job -ScriptBlock {
-        param($root)
-        Set-Location $root
-        & npx nx serve promptly 2>&1
-    } -ArgumentList $RootDir
+    $frontendProc = Start-Process -FilePath "npx" `
+        -ArgumentList "nx", "serve", "promptly" `
+        -NoNewWindow -PassThru
 
-    Ok "Frontend starting (Job $($script:FrontendJob.Id)) - http://localhost:4200"
+    Ok "Frontend starting (PID $($frontendProc.Id)) - http://localhost:4200"
 
     # ═══════════════════════════════════════════════════════════════════
     # Status Banner
@@ -118,34 +96,17 @@ try {
     Write-Host ""
 
     # ═══════════════════════════════════════════════════════════════════
-    # Stream output and wait — Ctrl+C breaks this loop
+    # Wait for either process to exit — Ctrl+C breaks out to finally
     # ═══════════════════════════════════════════════════════════════════
-    while ($true) {
-        # Stream backend output
-        $beOutput = Receive-Job -Job $script:BackendJob -ErrorAction SilentlyContinue
-        if ($beOutput) {
-            $beOutput | ForEach-Object { Write-Host "[backend]  $_" -ForegroundColor DarkGray }
-        }
+    while (-not $backendProc.HasExited -and -not $frontendProc.HasExited) {
+        Start-Sleep -Seconds 1
+    }
 
-        # Stream frontend output
-        $feOutput = Receive-Job -Job $script:FrontendJob -ErrorAction SilentlyContinue
-        if ($feOutput) {
-            $feOutput | ForEach-Object { Write-Host "[frontend] $_" -ForegroundColor DarkGray }
-        }
-
-        # Check if either job has failed
-        if ($script:BackendJob.State -eq 'Failed') {
-            Err "Backend process exited unexpectedly!"
-            Receive-Job -Job $script:BackendJob -ErrorAction SilentlyContinue | Write-Host
-            break
-        }
-        if ($script:FrontendJob.State -eq 'Failed') {
-            Err "Frontend process exited unexpectedly!"
-            Receive-Job -Job $script:FrontendJob -ErrorAction SilentlyContinue | Write-Host
-            break
-        }
-
-        Start-Sleep -Milliseconds 500
+    if ($backendProc.HasExited) {
+        Warn "Backend exited (code $($backendProc.ExitCode))."
+    }
+    if ($frontendProc.HasExited) {
+        Warn "Frontend exited (code $($frontendProc.ExitCode))."
     }
 }
 catch {
