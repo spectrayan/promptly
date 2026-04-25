@@ -37,6 +37,7 @@ public class PromptWebMapper {
         response.setTags(prompt.getTags() != null ? new java.util.ArrayList<>(prompt.getTags()) : null);
         response.setCreatedAt(toOffsetDateTime(prompt.getCreatedAt()));
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
+        response.setStatus(prompt.getStatus() != null ? prompt.getStatus().name() : "DRAFT");
         return response;
     }
 
@@ -48,6 +49,7 @@ public class PromptWebMapper {
         response.setProjectId(prompt.getProjectId());
         response.setCurrentVersion(prompt.getCurrentVersion());
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
+        response.setStatus(prompt.getStatus() != null ? prompt.getStatus().name() : "DRAFT");
         return response;
     }
 

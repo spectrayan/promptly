@@ -1,0 +1,8 @@
+type: string
+description: Lifecycle status of a prompt
+enum:
+  - DRAFT
+  - IN_REVIEW
+  - APPROVED
+  - REJECTED
+  - DEPRECATED

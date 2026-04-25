@@ -14,7 +14,18 @@ export interface PromptSummaryResponse {
     name?: string;
     description?: string;
     projectId?: string;
+    status?: PromptSummaryResponse.StatusEnum;
     currentVersion?: number;
     updatedAt?: string;
+}
+export namespace PromptSummaryResponse {
+    export type StatusEnum = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'DEPRECATED';
+    export const StatusEnum = {
+        Draft: 'DRAFT' as StatusEnum,
+        InReview: 'IN_REVIEW' as StatusEnum,
+        Approved: 'APPROVED' as StatusEnum,
+        Rejected: 'REJECTED' as StatusEnum,
+        Deprecated: 'DEPRECATED' as StatusEnum,
+    };
 }
 

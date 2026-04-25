@@ -36,6 +36,8 @@ public class PromptResponse {
 
   private @Nullable String projectId;
 
+  private @Nullable String status;
+
   private @Nullable ContentFormat contentFormat;
 
   private @Nullable Integer currentVersion;
@@ -133,6 +135,27 @@ public class PromptResponse {
   @JsonProperty("projectId")
   public void setProjectId(@Nullable String projectId) {
     this.projectId = projectId;
+  }
+
+  public PromptResponse status(@Nullable String status) {
+    this.status = status;
+    return this;
+  }
+
+  /**
+   * Lifecycle status of the prompt
+   * @return status
+   */
+  
+  @Schema(name = "status", description = "Lifecycle status of the prompt", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("status")
+  public @Nullable String getStatus() {
+    return status;
+  }
+
+  @JsonProperty("status")
+  public void setStatus(@Nullable String status) {
+    this.status = status;
   }
 
   public PromptResponse contentFormat(@Nullable ContentFormat contentFormat) {

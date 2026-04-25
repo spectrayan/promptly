@@ -2,6 +2,14 @@
 // Prompt Detail Page
 // ═══════════════════════════════════════════════════════════════════════
 
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  h1 { margin: 0; }
+}
+
 // ── Lock Banner (for non-DEV prompts) ───────────────────────────────
 .lock-banner {
   display: flex;

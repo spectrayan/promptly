@@ -9,6 +9,8 @@ properties:
     type: string
   projectId:
     type: string
+  status:
+    $ref: '../common/enums/PromptStatus.yaml'
   contentFormat:
     $ref: '../common/enums/ContentFormat.yaml'
   currentVersion:

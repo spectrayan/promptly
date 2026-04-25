@@ -1,8 +1,8 @@
 type: string
 description: Category of vulnerability finding
 enum:
-  - phi_exposure
-  - injection_risk
-  - missing_guardrail
-  - hallucination_prone
-  - weak_tool_calling
+  - PHI_EXPOSURE
+  - INJECTION_RISK
+  - MISSING_GUARDRAIL
+  - HALLUCINATION_PRONE
+  - WEAK_TOOL_CALLING

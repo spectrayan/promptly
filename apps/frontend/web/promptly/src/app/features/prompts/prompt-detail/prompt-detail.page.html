@@ -5,7 +5,16 @@
     <a routerLink="../" class="back-link">
       <mat-icon>arrow_back</mat-icon> Back to Prompts
     </a>
-    <h1>{{ p.name }}</h1>
+    <div class="page-title-row">
+      <h1>{{ p.name }}</h1>
+      <span class="badge"
+            [class.badge-success]="p.status === 'APPROVED'"
+            [class.badge-warning]="p.status === 'IN_REVIEW'"
+            [class.badge-danger]="p.status === 'REJECTED'"
+            [class.badge-neutral]="p.status === 'DRAFT' || p.status === 'DEPRECATED' || !p.status">
+        {{ p.status | enumLabel }}
+      </span>
+    </div>
     <p>{{ p.description }}</p>
   </div>
 
@@ -166,7 +175,16 @@
         <mat-card-header><mat-card-title>Properties</mat-card-title></mat-card-header>
         <mat-card-content>
           <dl class="prop-list">
-            <dt>Format</dt><dd>{{ p.contentFormat }}</dd>
+            <dt>Status</dt>
+            <dd>
+              <span class="badge"
+                    [class.badge-success]="p.status === 'APPROVED'"
+                    [class.badge-warning]="p.status === 'IN_REVIEW'"
+                    [class.badge-neutral]="p.status === 'DRAFT' || !p.status">
+                {{ p.status | enumLabel }}
+              </span>
+            </dd>
+            <dt>Format</dt><dd>{{ p.contentFormat | enumLabel }}</dd>
             <dt>Created</dt><dd class="cell-muted">{{ p.createdAt | date:'medium' }}</dd>
             <dt>Updated</dt><dd class="cell-muted">{{ p.updatedAt | date:'medium' }}</dd>
           </dl>
@@ -188,7 +206,7 @@
             </button>
           } @else {
             <button mat-stroked-button disabled
-                    matTooltip="Only DEV prompts can be submitted for review">
+                    matTooltip="Only Draft prompts can be submitted for review">
               <mat-icon>rate_review</mat-icon> Submit for Review
             </button>
           }
@@ -199,7 +217,7 @@
             </button>
           } @else {
             <button mat-stroked-button disabled
-                    matTooltip="Only DEV prompts can be deleted">
+                    matTooltip="Approved prompts can only be deleted by admins">
               <mat-icon>delete</mat-icon> Delete Prompt
             </button>
           }

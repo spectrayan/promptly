@@ -8,6 +8,8 @@ properties:
     type: string
   projectId:
     type: string
+  status:
+    $ref: '../common/enums/PromptStatus.yaml'
   currentVersion:
     type: integer
   updatedAt:

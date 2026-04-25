@@ -31,6 +31,8 @@ public class PromptSummaryResponse {
 
   private @Nullable String projectId;
 
+  private @Nullable String status;
+
   private @Nullable Integer currentVersion;
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -118,6 +120,27 @@ public class PromptSummaryResponse {
   @JsonProperty("projectId")
   public void setProjectId(@Nullable String projectId) {
     this.projectId = projectId;
+  }
+
+  public PromptSummaryResponse status(@Nullable String status) {
+    this.status = status;
+    return this;
+  }
+
+  /**
+   * Lifecycle status of the prompt
+   * @return status
+   */
+  
+  @Schema(name = "status", description = "Lifecycle status of the prompt", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("status")
+  public @Nullable String getStatus() {
+    return status;
+  }
+
+  @JsonProperty("status")
+  public void setStatus(@Nullable String status) {
+    this.status = status;
   }
 
   public PromptSummaryResponse currentVersion(@Nullable Integer currentVersion) {

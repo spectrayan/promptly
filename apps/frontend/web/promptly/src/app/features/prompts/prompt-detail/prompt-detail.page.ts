@@ -20,6 +20,8 @@ import { ImproverFacade } from '../../../state/improver/improver.facade';
 import { VersionDiffComponent } from '../components/version-diff/version-diff.component';
 import { CloneDialogComponent } from '../components/clone-dialog/clone-dialog.component';
 import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
+import { AuthFacade } from '../../../state/auth/auth.facade';
+import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
 
 @Component({
   selector: 'promptly-prompt-detail',
@@ -30,7 +32,7 @@ import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/
     MatIconModule, MatChipsModule, MatTooltipModule,
     MatFormFieldModule, MatInputModule,
     MatProgressSpinnerModule, MatSnackBarModule, MatDialogModule,
-    VersionDiffComponent, MonacoEditorComponent,
+    VersionDiffComponent, MonacoEditorComponent, EnumLabelPipe,
   ],
   templateUrl: './prompt-detail.page.html',
   styleUrl: './prompt-detail.page.scss',
@@ -39,6 +41,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   readonly facade = inject(PromptsFacade);
   readonly scannerFacade = inject(ScannerFacade);
   readonly improverFacade = inject(ImproverFacade);
+  readonly auth = inject(AuthFacade);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
@@ -58,8 +61,21 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   // ═══════════════════════════════════════════════════════════════════
 
   readonly canEdit = computed(() => true);
-  readonly canDelete = computed(() => true);
-  readonly canSubmitReview = computed(() => true);
+
+  /** APPROVED prompts can only be deleted by admins */
+  readonly canDelete = computed(() => {
+    const p = this.facade.selected();
+    if (!p) return false;
+    if (p.status === 'APPROVED') {
+      return this.auth.orgRole() === 'ORG_ADMIN';
+    }
+    return true;
+  });
+
+  readonly canSubmitReview = computed(() => {
+    const p = this.facade.selected();
+    return p?.status === 'DRAFT';
+  });
 
   readonly canRollback = computed(() => {
     const p = this.facade.selected();

@@ -4,7 +4,7 @@ package com.promptly.prompt.domain.model;
  * Lifecycle status of a prompt.
  * <p>
  * Tracks whether the prompt is actively being modified, under review,
- * or has been approved.
+ * approved, rejected, or deprecated.
  */
 public enum PromptStatus {
 
@@ -15,5 +15,11 @@ public enum PromptStatus {
     IN_REVIEW,
 
     /** The latest workflow was approved */
-    APPROVED
+    APPROVED,
+
+    /** The latest workflow was rejected */
+    REJECTED,
+
+    /** Prompt is no longer recommended for use */
+    DEPRECATED
 }

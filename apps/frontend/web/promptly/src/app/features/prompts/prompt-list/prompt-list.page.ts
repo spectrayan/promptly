@@ -13,6 +13,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { Subscription } from 'rxjs';
 import { PromptsFacade } from '../../../state/prompts/prompts.facade';
+import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
 
 @Component({
   selector: 'promptly-prompt-list',
@@ -21,7 +22,7 @@ import { PromptsFacade } from '../../../state/prompts/prompts.facade';
     DatePipe,
     MatCardModule, MatTableModule, MatButtonModule, MatIconModule,
     MatChipsModule, MatTooltipModule, MatProgressSpinnerModule, MatSnackBarModule,
-    MatPaginatorModule, MatSortModule,
+    MatPaginatorModule, MatSortModule, EnumLabelPipe,
   ],
   templateUrl: './prompt-list.page.html',
   styleUrl: './prompt-list.page.scss',
@@ -35,7 +36,7 @@ export class PromptListPage implements OnInit, OnDestroy {
   private paramSub?: Subscription;
   private projectId: string | null = null;
 
-  displayedColumns = ['name', 'currentVersion', 'updatedAt'];
+  displayedColumns = ['name', 'status', 'currentVersion', 'updatedAt'];
 
   readonly sortState = signal<Sort>({ active: 'updatedAt', direction: 'desc' });
   readonly pageIndex = signal(0);
