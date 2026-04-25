@@ -13,8 +13,8 @@ import {
   markAllAsRead,
   dismissNotification,
   clearAll,
-} from '../../state/notifications/notifications.actions';
-import { NotificationsState } from '../../state/notifications/notifications.reducer';
+} from '../../../state/notifications/notifications.actions';
+import { NotificationsState } from '../../../state/notifications/notifications.reducer';
 
 @Component({
   selector: 'promptly-notification-bell',
