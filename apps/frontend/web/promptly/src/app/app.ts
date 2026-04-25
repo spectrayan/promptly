@@ -44,6 +44,21 @@ export class App implements OnInit, OnDestroy {
   /** Extract projectId from current URL (e.g. /projects/proj-001/prompts → proj-001) */
   activeProjectId = signal<string | null>(null);
 
+  /** Auto-select project when projects load async and no project is active */
+  private readonly _autoSelectEffect = effect(() => {
+    const projects = this.projectsFacade.projects();
+    const active = this.activeProjectId();
+    const authed = this.auth.isAuthenticated();
+
+    if (authed && !active && projects.length > 0 && !this.projectAutoSelected) {
+      this.projectAutoSelected = true;
+      queueMicrotask(() => this.restoreProjectIfNeeded());
+    }
+    if (active) {
+      this.projectAutoSelected = true;
+    }
+  });
+
   /** Projects filtered by search input */
   readonly filteredProjects = computed(() => {
     const term = this.projectSearch().toLowerCase().trim();
@@ -106,23 +121,6 @@ export class App implements OnInit, OnDestroy {
       this.syncProjectIdFromUrl(e.urlAfterRedirects);
       // Re-check after every navigation (e.g. post-login redirect to /dashboard)
       this.restoreProjectIfNeeded();
-    });
-
-    // Auto-select project when projects load async and no project is active
-    effect(() => {
-      const projects = this.projectsFacade.projects();
-      const active = this.activeProjectId();
-      const authed = this.auth.isAuthenticated();
-
-      if (authed && !active && projects.length > 0 && !this.projectAutoSelected) {
-        this.projectAutoSelected = true;
-        // Use queueMicrotask to avoid writing signals inside effect
-        queueMicrotask(() => this.restoreProjectIfNeeded());
-      }
-      // Reset guard when a project IS active (so it can fire again after logout/login)
-      if (active) {
-        this.projectAutoSelected = true;
-      }
     });
   }
 
