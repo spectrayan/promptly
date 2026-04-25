@@ -20,12 +20,12 @@ public class ProjectAuthorizationService {
 
     /** Minimum roles needed per action */
     private static final Set<ProjectRole> WRITE_ROLES = Set.of(
-            ProjectRole.AUTHOR, ProjectRole.REVIEWER, ProjectRole.APPROVER, ProjectRole.ADMIN);
+            ProjectRole.EDITOR, ProjectRole.OWNER);
     private static final Set<ProjectRole> REVIEW_ROLES = Set.of(
-            ProjectRole.REVIEWER, ProjectRole.APPROVER, ProjectRole.ADMIN);
+            ProjectRole.EDITOR, ProjectRole.OWNER);
     private static final Set<ProjectRole> APPROVE_ROLES = Set.of(
-            ProjectRole.APPROVER, ProjectRole.ADMIN);
-    private static final Set<ProjectRole> ADMIN_ROLES = Set.of(ProjectRole.ADMIN);
+            ProjectRole.OWNER);
+    private static final Set<ProjectRole> ADMIN_ROLES = Set.of(ProjectRole.OWNER);
 
     /**
      * Check if user has at least VIEWER access to the project.

@@ -10,4 +10,5 @@ public interface ProjectMemberReactiveMongoRepository extends ReactiveMongoRepos
     Flux<ProjectMemberDocument> findByUserId(String userId);
     Mono<ProjectMemberDocument> findByProjectIdAndUserId(String projectId, String userId);
     Mono<Boolean> existsByProjectIdAndUserId(String projectId, String userId);
+    Mono<Void> deleteByProjectIdAndUserId(String projectId, String userId);
 }

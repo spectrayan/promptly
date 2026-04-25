@@ -11,4 +11,5 @@ public interface ProjectMemberRepository {
     Flux<ProjectMember> findByUserId(String userId);
     Mono<ProjectMember> findByProjectIdAndUserId(String projectId, String userId);
     Mono<Boolean> existsByProjectIdAndUserId(String projectId, String userId);
+    Mono<Void> deleteByProjectIdAndUserId(String projectId, String userId);
 }

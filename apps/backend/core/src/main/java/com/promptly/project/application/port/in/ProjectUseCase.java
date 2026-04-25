@@ -11,9 +11,11 @@ public interface ProjectUseCase {
     Mono<Project> createProject(CreateProjectCommand command);
     Mono<Project> getProject(String id);
     Flux<Project> listProjects(String userId);
-    Mono<ProjectMember> addMember(String projectId, String userId, ProjectRole role);
+    Mono<ProjectMember> addMember(String projectId, String userId, ProjectRole role, String addedBy);
     Flux<ProjectMember> listMembers(String projectId);
     Mono<ProjectRole> getUserRole(String projectId, String userId);
+    Mono<ProjectMember> updateMember(String projectId, String userId, ProjectRole role);
+    Mono<Void> removeMember(String projectId, String userId);
 
     record CreateProjectCommand(String name, String description, java.util.List<String> tags, String createdBy) {}
 }

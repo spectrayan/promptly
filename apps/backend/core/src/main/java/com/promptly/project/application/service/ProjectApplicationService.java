@@ -28,6 +28,8 @@ public class ProjectApplicationService implements ProjectUseCase {
         log.info("Creating project: {}", command.name());
 
         return projectRepository.existsByName(command.name())
+                .doOnNext(exists -> log.info("existsByName result for '{}': {}", command.name(), exists))
+                .doOnError(e -> log.error("existsByName error for '{}': {}", command.name(), e.getMessage()))
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new IllegalArgumentException("Project name already exists: " + command.name()));
@@ -42,18 +44,26 @@ public class ProjectApplicationService implements ProjectUseCase {
                             .updatedAt(Instant.now())
                             .build();
 
-                    return projectRepository.save(project);
+                    log.info("Saving project: {}", project.getName());
+                    return projectRepository.save(project)
+                            .doOnNext(p -> log.info("Project saved: id={}", p.getId()))
+                            .doOnError(e -> log.error("Project save error: {}", e.getMessage()));
                 })
                 .flatMap(project -> {
+                    log.info("Creating OWNER membership for project: {}", project.getId());
                     // Creator auto-becomes ADMIN
                     ProjectMember admin = ProjectMember.builder()
                             .projectId(project.getId())
                             .userId(command.createdBy())
-                            .role(ProjectRole.ADMIN)
-                            .joinedAt(Instant.now())
+                            .role(ProjectRole.OWNER)
+                            .addedBy(command.createdBy())
+                            .addedAt(Instant.now())
                             .build();
 
-                    return memberRepository.save(admin).thenReturn(project);
+                    return memberRepository.save(admin)
+                            .doOnNext(m -> log.info("Member saved: id={}", m.getId()))
+                            .doOnError(e -> log.error("Member save error: {}", e.getMessage()))
+                            .thenReturn(project);
                 });
     }
 
@@ -69,7 +79,7 @@ public class ProjectApplicationService implements ProjectUseCase {
     }
 
     @Override
-    public Mono<ProjectMember> addMember(String projectId, String userId, ProjectRole role) {
+    public Mono<ProjectMember> addMember(String projectId, String userId, ProjectRole role, String addedBy) {
         return memberRepository.existsByProjectIdAndUserId(projectId, userId)
                 .flatMap(exists -> {
                     if (exists) {
@@ -80,7 +90,8 @@ public class ProjectApplicationService implements ProjectUseCase {
                             .projectId(projectId)
                             .userId(userId)
                             .role(role)
-                            .joinedAt(Instant.now())
+                            .addedBy(addedBy)
+                            .addedAt(Instant.now())
                             .build();
 
                     return memberRepository.save(member);
@@ -96,5 +107,20 @@ public class ProjectApplicationService implements ProjectUseCase {
     public Mono<ProjectRole> getUserRole(String projectId, String userId) {
         return memberRepository.findByProjectIdAndUserId(projectId, userId)
                 .map(ProjectMember::getRole);
+    }
+
+    @Override
+    public Mono<ProjectMember> updateMember(String projectId, String userId, ProjectRole role) {
+        return memberRepository.findByProjectIdAndUserId(projectId, userId)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("ProjectMember", userId)))
+                .flatMap(member -> {
+                    member.setRole(role);
+                    return memberRepository.save(member);
+                });
+    }
+
+    @Override
+    public Mono<Void> removeMember(String projectId, String userId) {
+        return memberRepository.deleteByProjectIdAndUserId(projectId, userId);
     }
 }

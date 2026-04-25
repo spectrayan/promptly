@@ -4,12 +4,14 @@ import com.promptly.project.application.port.out.ProjectRepository;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.infrastructure.persistence.entity.ProjectDocument;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProjectMongoAdapter implements ProjectRepository {
@@ -29,8 +31,16 @@ public class ProjectMongoAdapter implements ProjectRepository {
 
     @Override
     public Flux<Project> findByMemberUserId(String userId) {
+        log.debug("findByMemberUserId called for userId={}", userId);
         return memberRepo.findByUserId(userId)
-                .flatMap(member -> mongoRepo.findById(member.getProjectId()))
+                .doOnNext(member -> log.debug("Found member: id={}, projectId={}, userId={}", member.getId(), member.getProjectId(), member.getUserId()))
+                .flatMap(member -> mongoRepo.findById(member.getProjectId())
+                        .doOnNext(p -> log.debug("Found project: id={}, name={}", p.getId(), p.getName()))
+                        .switchIfEmpty(Mono.defer(() -> {
+                            log.debug("No project found for projectId={}", member.getProjectId());
+                            return Mono.empty();
+                        }))
+                )
                 .map(this::toDomain);
     }
 

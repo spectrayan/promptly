@@ -40,15 +40,19 @@ public class ProjectMemberMongoAdapter implements ProjectMemberRepository {
         return mongoRepo.existsByProjectIdAndUserId(projectId, userId);
     }
 
+    @Override
+    public Mono<Void> deleteByProjectIdAndUserId(String projectId, String userId) {
+        return mongoRepo.deleteByProjectIdAndUserId(projectId, userId);
+    }
+
     private ProjectMember toDomain(ProjectMemberDocument doc) {
         return ProjectMember.builder()
                 .id(doc.getId())
                 .projectId(doc.getProjectId())
                 .userId(doc.getUserId())
-                .displayName(doc.getDisplayName())
-                .email(doc.getEmail())
                 .role(ProjectRole.valueOf(doc.getRole()))
-                .joinedAt(doc.getJoinedAt())
+                .addedBy(doc.getAddedBy())
+                .addedAt(doc.getAddedAt())
                 .build();
     }
 
@@ -57,10 +61,9 @@ public class ProjectMemberMongoAdapter implements ProjectMemberRepository {
                 .id(m.getId())
                 .projectId(m.getProjectId())
                 .userId(m.getUserId())
-                .displayName(m.getDisplayName())
-                .email(m.getEmail())
                 .role(m.getRole().name())
-                .joinedAt(m.getJoinedAt())
+                .addedBy(m.getAddedBy())
+                .addedAt(m.getAddedAt())
                 .build();
     }
 }

@@ -23,13 +23,16 @@ import java.util.ArrayList;
 public class ProjectController implements ProjectsApi {
 
     private final ProjectUseCase projectUseCase;
+    private final com.promptly.auth.application.port.in.UserQueryUseCase userQueryUseCase;
 
     @Override
     public Mono<ResponseEntity<Flux<ProjectResponse>>> listProjects(ServerWebExchange exchange) {
         return getCurrentUserId()
-                .map(userId -> ResponseEntity.ok(
-                        projectUseCase.listProjects(userId).map(this::toResponse)
-                ));
+                .flatMap(userId -> projectUseCase.listProjects(userId)
+                        .map(this::toResponse)
+                        .collectList()
+                        .map(list -> ResponseEntity.ok(Flux.fromIterable(list)))
+                );
     }
 
     @Override
@@ -55,18 +58,39 @@ public class ProjectController implements ProjectsApi {
     @Override
     public Mono<ResponseEntity<Flux<ProjectMemberResponse>>> listProjectMembers(
             String projectId, ServerWebExchange exchange) {
-        Flux<ProjectMemberResponse> members = projectUseCase.listMembers(projectId)
-                .map(this::toMemberResponse);
-        return Mono.just(ResponseEntity.ok(members));
+        return projectUseCase.listMembers(projectId)
+                .flatMap(this::toMemberResponseAsync)
+                .collectList()
+                .map(list -> ResponseEntity.ok(Flux.fromIterable(list)));
     }
 
     @Override
     public Mono<ResponseEntity<ProjectMemberResponse>> addProjectMember(
             String projectId, Mono<AddMemberRequest> request, ServerWebExchange exchange) {
+        return getCurrentUserId().flatMap(userId ->
+                request.flatMap(req ->
+                        projectUseCase.addMember(projectId, req.getUserId(),
+                                com.promptly.project.domain.model.ProjectRole.valueOf(req.getRole().name()), userId)
+                )
+        ).flatMap(this::toMemberResponseAsync)
+         .map(member -> ResponseEntity.status(HttpStatus.CREATED).body(member));
+    }
+
+    @Override
+    public Mono<ResponseEntity<ProjectMemberResponse>> updateProjectMember(
+            String projectId, String userId, Mono<UpdateMemberRequest> request, ServerWebExchange exchange) {
         return request.flatMap(req ->
-                projectUseCase.addMember(projectId, req.getUserId(),
+                projectUseCase.updateMember(projectId, userId,
                         com.promptly.project.domain.model.ProjectRole.valueOf(req.getRole().name()))
-        ).map(member -> ResponseEntity.status(HttpStatus.CREATED).body(toMemberResponse(member)));
+        ).flatMap(this::toMemberResponseAsync)
+         .map(ResponseEntity::ok);
+    }
+
+    @Override
+    public Mono<ResponseEntity<Void>> removeProjectMember(
+            String projectId, String userId, ServerWebExchange exchange) {
+        return projectUseCase.removeMember(projectId, userId)
+                .thenReturn(ResponseEntity.noContent().build());
     }
 
     private Mono<String> getCurrentUserId() {
@@ -80,24 +104,24 @@ public class ProjectController implements ProjectsApi {
     }
 
     private ProjectResponse toResponse(Project p) {
-        var r = new ProjectResponse();
-        r.setId(p.getId());
-        r.setName(p.getName());
+        var r = new ProjectResponse(p.getId(), p.getName(), p.getCreatedBy(),
+                p.getCreatedAt() != null ? OffsetDateTime.ofInstant(p.getCreatedAt(), ZoneOffset.UTC) : OffsetDateTime.now());
         r.setDescription(p.getDescription());
         r.setTags(p.getTags());
-        r.setCreatedBy(p.getCreatedBy());
-        if (p.getCreatedAt() != null) r.setCreatedAt(OffsetDateTime.ofInstant(p.getCreatedAt(), ZoneOffset.UTC));
         if (p.getUpdatedAt() != null) r.setUpdatedAt(OffsetDateTime.ofInstant(p.getUpdatedAt(), ZoneOffset.UTC));
         return r;
     }
 
-    private ProjectMemberResponse toMemberResponse(ProjectMember m) {
-        var r = new ProjectMemberResponse();
-        r.setUserId(m.getUserId());
-        r.setDisplayName(m.getDisplayName());
-        r.setEmail(m.getEmail());
-        r.setRole(com.promptly.infrastructure.in.web.dto.ProjectRole.valueOf(m.getRole().name()));
-        if (m.getJoinedAt() != null) r.setJoinedAt(OffsetDateTime.ofInstant(m.getJoinedAt(), ZoneOffset.UTC));
-        return r;
+    private Mono<ProjectMemberResponse> toMemberResponseAsync(ProjectMember m) {
+        return userQueryUseCase.getUserById(m.getUserId())
+                .map(user -> {
+                    var r = new ProjectMemberResponse(m.getUserId(), user.getDisplayName(), user.getEmail(),
+                            ProjectRole.fromValue(m.getRole().name()));
+                    if (m.getAddedAt() != null) r.setAddedAt(OffsetDateTime.ofInstant(m.getAddedAt(), ZoneOffset.UTC));
+                    r.setAddedBy(m.getAddedBy());
+                    return r;
+                })
+                .defaultIfEmpty(new ProjectMemberResponse(m.getUserId(), "Unknown User", "unknown@example.com",
+                        ProjectRole.fromValue(m.getRole().name())));
     }
 }
