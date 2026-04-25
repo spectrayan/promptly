@@ -228,7 +228,7 @@
         <mat-card>
           <mat-card-header><mat-card-title>Last Scan</mat-card-title></mat-card-header>
           <mat-card-content>
-            <span class="badge" [class]="scan.status === 'pass' ? 'badge-success' : 'badge-danger'">{{ scan.status }}</span>
+            <span class="badge" [class]="scan.status === 'PASS' ? 'badge-success' : 'badge-danger'">{{ scan.status }}</span>
             <div class="scan-meta">{{ scan.findings?.length ?? 0 }} findings</div>
           </mat-card-content>
         </mat-card>

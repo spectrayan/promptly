@@ -13,9 +13,9 @@
  * Overall scan verdict
  */
 export const ScanStatus = {
-    Pass: 'pass',
-    Warn: 'warn',
-    Fail: 'fail'
+    Pass: 'PASS',
+    Warn: 'WARN',
+    Fail: 'FAIL'
 } as const;
 export type ScanStatus = typeof ScanStatus[keyof typeof ScanStatus];
 

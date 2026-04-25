@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.promptly.infrastructure.in.web.dto.ContentFormat;
+import com.promptly.infrastructure.in.web.dto.PromptStatus;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ import jakarta.annotation.Generated;
  * PromptResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class PromptResponse {
 
   private @Nullable String id;
@@ -36,7 +37,7 @@ public class PromptResponse {
 
   private @Nullable String projectId;
 
-  private @Nullable String status;
+  private @Nullable PromptStatus status;
 
   private @Nullable ContentFormat contentFormat;
 
@@ -137,24 +138,24 @@ public class PromptResponse {
     this.projectId = projectId;
   }
 
-  public PromptResponse status(@Nullable String status) {
+  public PromptResponse status(@Nullable PromptStatus status) {
     this.status = status;
     return this;
   }
 
   /**
-   * Lifecycle status of the prompt
+   * Get status
    * @return status
    */
-  
-  @Schema(name = "status", description = "Lifecycle status of the prompt", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Valid 
+  @Schema(name = "status", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("status")
-  public @Nullable String getStatus() {
+  public @Nullable PromptStatus getStatus() {
     return status;
   }
 
   @JsonProperty("status")
-  public void setStatus(@Nullable String status) {
+  public void setStatus(@Nullable PromptStatus status) {
     this.status = status;
   }
 
@@ -305,6 +306,7 @@ public class PromptResponse {
         Objects.equals(this.name, promptResponse.name) &&
         Objects.equals(this.description, promptResponse.description) &&
         Objects.equals(this.projectId, promptResponse.projectId) &&
+        Objects.equals(this.status, promptResponse.status) &&
         Objects.equals(this.contentFormat, promptResponse.contentFormat) &&
         Objects.equals(this.currentVersion, promptResponse.currentVersion) &&
         Objects.equals(this.latestContent, promptResponse.latestContent) &&
@@ -315,7 +317,7 @@ public class PromptResponse {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, projectId, contentFormat, currentVersion, latestContent, tags, createdAt, updatedAt);
+    return Objects.hash(id, name, description, projectId, status, contentFormat, currentVersion, latestContent, tags, createdAt, updatedAt);
   }
 
   @Override
@@ -326,6 +328,7 @@ public class PromptResponse {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    projectId: ").append(toIndentedString(projectId)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    contentFormat: ").append(toIndentedString(contentFormat)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
     sb.append("    latestContent: ").append(toIndentedString(latestContent)).append("\n");

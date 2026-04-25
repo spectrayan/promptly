@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * SubmitReviewRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class SubmitReviewRequest {
 
   private String promptId;
@@ -68,7 +68,12 @@ public class SubmitReviewRequest {
     return this;
   }
 
-  @Schema(name = "projectId", description = "Project the prompt belongs to", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  /**
+   * Project the prompt belongs to (for filtering)
+   * @return projectId
+   */
+  
+  @Schema(name = "projectId", description = "Project the prompt belongs to (for filtering)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("projectId")
   public @Nullable String getProjectId() {
     return projectId;
@@ -131,13 +136,14 @@ public class SubmitReviewRequest {
     }
     SubmitReviewRequest submitReviewRequest = (SubmitReviewRequest) o;
     return Objects.equals(this.promptId, submitReviewRequest.promptId) &&
+        Objects.equals(this.projectId, submitReviewRequest.projectId) &&
         Objects.equals(this.promptVersion, submitReviewRequest.promptVersion) &&
         Objects.equals(this.requestedBy, submitReviewRequest.requestedBy);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(promptId, promptVersion, requestedBy);
+    return Objects.hash(promptId, projectId, promptVersion, requestedBy);
   }
 
   @Override
@@ -145,6 +151,7 @@ public class SubmitReviewRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class SubmitReviewRequest {\n");
     sb.append("    promptId: ").append(toIndentedString(promptId)).append("\n");
+    sb.append("    projectId: ").append(toIndentedString(projectId)).append("\n");
     sb.append("    promptVersion: ").append(toIndentedString(promptVersion)).append("\n");
     sb.append("    requestedBy: ").append(toIndentedString(requestedBy)).append("\n");
     sb.append("}");

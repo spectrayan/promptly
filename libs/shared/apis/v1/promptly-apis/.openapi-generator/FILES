@@ -31,6 +31,7 @@ src/main/java/com/promptly/infrastructure/in/web/dto/ProjectMemberResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ProjectResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ProjectRole.java
 src/main/java/com/promptly/infrastructure/in/web/dto/PromptResponse.java
+src/main/java/com/promptly/infrastructure/in/web/dto/PromptStatus.java
 src/main/java/com/promptly/infrastructure/in/web/dto/PromptSummaryResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/RefreshTokenRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/RegisterRequest.java

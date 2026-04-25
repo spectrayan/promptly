@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.promptly.infrastructure.in.web.dto.PromptStatus;
 import java.time.OffsetDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
@@ -20,7 +22,7 @@ import jakarta.annotation.Generated;
  * PromptSummaryResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T03:57:14.880945462-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class PromptSummaryResponse {
 
   private @Nullable String id;
@@ -31,7 +33,7 @@ public class PromptSummaryResponse {
 
   private @Nullable String projectId;
 
-  private @Nullable String status;
+  private @Nullable PromptStatus status;
 
   private @Nullable Integer currentVersion;
 
@@ -122,24 +124,24 @@ public class PromptSummaryResponse {
     this.projectId = projectId;
   }
 
-  public PromptSummaryResponse status(@Nullable String status) {
+  public PromptSummaryResponse status(@Nullable PromptStatus status) {
     this.status = status;
     return this;
   }
 
   /**
-   * Lifecycle status of the prompt
+   * Get status
    * @return status
    */
-  
-  @Schema(name = "status", description = "Lifecycle status of the prompt", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @Valid 
+  @Schema(name = "status", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("status")
-  public @Nullable String getStatus() {
+  public @Nullable PromptStatus getStatus() {
     return status;
   }
 
   @JsonProperty("status")
-  public void setStatus(@Nullable String status) {
+  public void setStatus(@Nullable PromptStatus status) {
     this.status = status;
   }
 
@@ -198,13 +200,14 @@ public class PromptSummaryResponse {
         Objects.equals(this.name, promptSummaryResponse.name) &&
         Objects.equals(this.description, promptSummaryResponse.description) &&
         Objects.equals(this.projectId, promptSummaryResponse.projectId) &&
+        Objects.equals(this.status, promptSummaryResponse.status) &&
         Objects.equals(this.currentVersion, promptSummaryResponse.currentVersion) &&
         Objects.equals(this.updatedAt, promptSummaryResponse.updatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, projectId, currentVersion, updatedAt);
+    return Objects.hash(id, name, description, projectId, status, currentVersion, updatedAt);
   }
 
   @Override
@@ -215,6 +218,7 @@ public class PromptSummaryResponse {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    projectId: ").append(toIndentedString(projectId)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("}");

@@ -10,12 +10,14 @@
 
 
 /**
- * Action taken on a workflow approval step
+ * Lifecycle status of a prompt
  */
-export const StepAction = {
-    Pending: 'PENDING',
+export const PromptStatus = {
+    Draft: 'DRAFT',
+    InReview: 'IN_REVIEW',
     Approved: 'APPROVED',
-    Rejected: 'REJECTED'
+    Rejected: 'REJECTED',
+    Deprecated: 'DEPRECATED'
 } as const;
-export type StepAction = typeof StepAction[keyof typeof StepAction];
+export type PromptStatus = typeof PromptStatus[keyof typeof PromptStatus];
 

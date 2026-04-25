@@ -1,3 +1,4 @@
+import { ProblemDetails } from '@promptly/client';
 import { ErrorCode, ErrorCodeType } from './error-codes';
 
 /**
@@ -58,16 +59,18 @@ const codeMessages: Record<string, string> = {
 };
 
 /**
- * Resolves a user-friendly error message from a backend ProblemDetail response.
+ * Resolves a user-friendly error message from a backend ProblemDetails response.
  *
  * Priority:
  *  1. Look up `code` in the code → message map
  *  2. Fall back to the backend's `detail` field
  *  3. Fall back to the provided default message
  *
- * @param error  The HTTP error response body (ProblemDetail)
+ * @param error  The HTTP error response body (ProblemDetails from SDK, or any)
  * @param fallback  A default fallback message if nothing matches
  */
+export function resolveErrorMessage(error: ProblemDetails | null | undefined, fallback: string): string;
+export function resolveErrorMessage(error: any, fallback: string): string;
 export function resolveErrorMessage(error: any, fallback: string): string {
   const code = error?.code as string | undefined;
   if (code && codeMessages[code]) {

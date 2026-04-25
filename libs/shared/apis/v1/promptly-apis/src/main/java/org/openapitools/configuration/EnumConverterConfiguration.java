@@ -4,6 +4,7 @@ import com.promptly.infrastructure.in.web.dto.ContentFormat;
 import com.promptly.infrastructure.in.web.dto.FindingType;
 import com.promptly.infrastructure.in.web.dto.OrgRole;
 import com.promptly.infrastructure.in.web.dto.ProjectRole;
+import com.promptly.infrastructure.in.web.dto.PromptStatus;
 import com.promptly.infrastructure.in.web.dto.ScanStatus;
 import com.promptly.infrastructure.in.web.dto.Severity;
 import com.promptly.infrastructure.in.web.dto.StepAction;
@@ -57,6 +58,15 @@ public class EnumConverterConfiguration {
             @Override
             public ProjectRole convert(String source) {
                 return ProjectRole.fromValue(source);
+            }
+        };
+    }
+    @Bean(name = "org.openapitools.configuration.EnumConverterConfiguration.promptStatusConverter")
+    Converter<String, PromptStatus> promptStatusConverter() {
+        return new Converter<String, PromptStatus>() {
+            @Override
+            public PromptStatus convert(String source) {
+                return PromptStatus.fromValue(source);
             }
         };
     }

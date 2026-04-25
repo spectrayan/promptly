@@ -37,7 +37,7 @@ public class PromptWebMapper {
         response.setTags(prompt.getTags() != null ? new java.util.ArrayList<>(prompt.getTags()) : null);
         response.setCreatedAt(toOffsetDateTime(prompt.getCreatedAt()));
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
-        response.setStatus(prompt.getStatus() != null ? prompt.getStatus().name() : "DRAFT");
+        response.setStatus(toDtoStatus(prompt.getStatus()));
         return response;
     }
 
@@ -49,7 +49,7 @@ public class PromptWebMapper {
         response.setProjectId(prompt.getProjectId());
         response.setCurrentVersion(prompt.getCurrentVersion());
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
-        response.setStatus(prompt.getStatus() != null ? prompt.getStatus().name() : "DRAFT");
+        response.setStatus(toDtoStatus(prompt.getStatus()));
         return response;
     }
 
@@ -65,6 +65,14 @@ public class PromptWebMapper {
 
     private OffsetDateTime toOffsetDateTime(Instant instant) {
         return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
+    }
+
+    private com.promptly.infrastructure.in.web.dto.PromptStatus toDtoStatus(
+            com.promptly.prompt.domain.model.PromptStatus domainStatus) {
+        if (domainStatus == null) {
+            return com.promptly.infrastructure.in.web.dto.PromptStatus.DRAFT;
+        }
+        return com.promptly.infrastructure.in.web.dto.PromptStatus.fromValue(domainStatus.name());
     }
 
 }

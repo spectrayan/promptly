@@ -8,6 +8,7 @@
  * Do not edit the class manually.
  */
 import { ContentFormat } from './content-format.model';
+import { PromptStatus } from './prompt-status.model';
 
 
 export interface PromptResponse { 
@@ -18,7 +19,7 @@ export interface PromptResponse {
     name?: string;
     description?: string;
     projectId?: string;
-    status?: PromptResponse.StatusEnum;
+    status?: PromptStatus;
     contentFormat?: ContentFormat;
     /**
      * Latest version number
@@ -33,14 +34,6 @@ export interface PromptResponse {
     updatedAt?: string;
 }
 export namespace PromptResponse {
-    export type StatusEnum = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'DEPRECATED';
-    export const StatusEnum = {
-        Draft: 'DRAFT' as StatusEnum,
-        InReview: 'IN_REVIEW' as StatusEnum,
-        Approved: 'APPROVED' as StatusEnum,
-        Rejected: 'REJECTED' as StatusEnum,
-        Deprecated: 'DEPRECATED' as StatusEnum,
-    };
 }
 
 

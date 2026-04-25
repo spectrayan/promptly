@@ -20,6 +20,7 @@ export * from './project-member-response.model';
 export * from './project-response.model';
 export * from './project-role.model';
 export * from './prompt-response.model';
+export * from './prompt-status.model';
 export * from './prompt-summary-response.model';
 export * from './refresh-token-request.model';
 export * from './register-request.model';

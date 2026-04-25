@@ -11,6 +11,9 @@
 
 export interface SubmitReviewRequest { 
     promptId: string;
+    /**
+     * Project the prompt belongs to (for filtering)
+     */
     projectId?: string;
     promptVersion: number;
     requestedBy: string;

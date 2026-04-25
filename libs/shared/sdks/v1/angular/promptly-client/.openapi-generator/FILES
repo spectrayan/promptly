@@ -48,6 +48,7 @@ model/project-member-response.model.ts
 model/project-response.model.ts
 model/project-role.model.ts
 model/prompt-response.model.ts
+model/prompt-status.model.ts
 model/prompt-summary-response.model.ts
 model/refresh-token-request.model.ts
 model/register-request.model.ts

@@ -16,19 +16,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Organization-level role
+ * Lifecycle status of a prompt
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
-public enum OrgRole {
+public enum PromptStatus {
   
-  ORG_ADMIN("ORG_ADMIN"),
+  DRAFT("DRAFT"),
   
-  ORG_USER("ORG_USER");
+  IN_REVIEW("IN_REVIEW"),
+  
+  APPROVED("APPROVED"),
+  
+  REJECTED("REJECTED"),
+  
+  DEPRECATED("DEPRECATED");
 
   private final String value;
 
-  OrgRole(String value) {
+  PromptStatus(String value) {
     this.value = value;
   }
 
@@ -43,8 +49,8 @@ public enum OrgRole {
   }
 
   @JsonCreator
-  public static OrgRole fromValue(String value) {
-    for (OrgRole b : OrgRole.values()) {
+  public static PromptStatus fromValue(String value) {
+    for (PromptStatus b : PromptStatus.values()) {
       if (b.value.equals(value)) {
         return b;
       }

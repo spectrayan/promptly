@@ -13,11 +13,11 @@
  * Category of vulnerability finding
  */
 export const FindingType = {
-    PhiExposure: 'phi_exposure',
-    InjectionRisk: 'injection_risk',
-    MissingGuardrail: 'missing_guardrail',
-    HallucinationProne: 'hallucination_prone',
-    WeakToolCalling: 'weak_tool_calling'
+    PhiExposure: 'PHI_EXPOSURE',
+    InjectionRisk: 'INJECTION_RISK',
+    MissingGuardrail: 'MISSING_GUARDRAIL',
+    HallucinationProne: 'HALLUCINATION_PRONE',
+    WeakToolCalling: 'WEAK_TOOL_CALLING'
 } as const;
 export type FindingType = typeof FindingType[keyof typeof FindingType];
 
