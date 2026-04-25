@@ -3,6 +3,9 @@ required: [promptId, promptVersion, requestedBy]
 properties:
   promptId:
     type: string
+  projectId:
+    type: string
+    description: Project the prompt belongs to (for filtering)
   promptVersion:
     type: integer
   requestedBy:

@@ -31,7 +31,7 @@ class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldSubmitForReview() {
         var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
-                "dummy-prompt-id", 1, "test-user"
+                "dummy-prompt-id", "test-project", 1, "test-user"
         );
 
         StepVerifier.create(submitReviewUseCase.submitForReview(cmd))
@@ -45,7 +45,7 @@ class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldApproveAllStepsAndCompleteWorkflow() {
         var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
-                "dummy-prompt-id", 1, "test-user"
+                "dummy-prompt-id", "test-project", 1, "test-user"
         );
 
         StepVerifier.create(
@@ -62,7 +62,7 @@ class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
     @Test
     void shouldRejectWorkflow() {
         var cmd = new SubmitReviewUseCase.SubmitReviewCommand(
-                "dummy-prompt-id", 1, "test-user"
+                "dummy-prompt-id", "test-project", 1, "test-user"
         );
 
         StepVerifier.create(

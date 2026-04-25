@@ -23,6 +23,8 @@ public class SubmitReviewRequest {
 
   private String promptId;
 
+  private @Nullable String projectId;
+
   private Integer promptVersion;
 
   private String requestedBy;
@@ -59,6 +61,22 @@ public class SubmitReviewRequest {
   @JsonProperty("promptId")
   public void setPromptId(String promptId) {
     this.promptId = promptId;
+  }
+
+  public SubmitReviewRequest projectId(@Nullable String projectId) {
+    this.projectId = projectId;
+    return this;
+  }
+
+  @Schema(name = "projectId", description = "Project the prompt belongs to", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("projectId")
+  public @Nullable String getProjectId() {
+    return projectId;
+  }
+
+  @JsonProperty("projectId")
+  public void setProjectId(@Nullable String projectId) {
+    this.projectId = projectId;
   }
 
   public SubmitReviewRequest promptVersion(Integer promptVersion) {

@@ -43,6 +43,7 @@ public class WorkflowController implements WorkflowsApi {
         return submitReviewRequest
                 .map(req -> new SubmitReviewUseCase.SubmitReviewCommand(
                         req.getPromptId(),
+                        req.getProjectId(),
                         req.getPromptVersion(),
                         req.getRequestedBy()
                 ))
@@ -63,7 +64,7 @@ public class WorkflowController implements WorkflowsApi {
         } else if (Boolean.TRUE.equals(pendingOnly)) {
             workflows = getWorkflowUseCase.getPendingWorkflows();
         } else {
-            workflows = getWorkflowUseCase.getPendingWorkflows();
+            workflows = workflowRepository.findAll();
         }
         return Mono.just(ResponseEntity.ok(workflows.map(this::toResponse)));
     }

@@ -37,6 +37,7 @@ public class WorkflowApplicationService implements
 
         Workflow workflow = Workflow.builder()
                 .promptId(command.promptId())
+                .projectId(command.projectId())
                 .promptVersion(command.promptVersion())
                 .type("approval")
                 .status(WorkflowStatus.PENDING)

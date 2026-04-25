@@ -218,6 +218,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
     const userId = this.auth.user()?.id ?? 'current-user';
     this.workflowsFacade.submitForReview({
       promptId: p.id,
+      projectId: p.projectId,
       promptVersion: p.currentVersion ?? 1,
       requestedBy: userId,
     });
