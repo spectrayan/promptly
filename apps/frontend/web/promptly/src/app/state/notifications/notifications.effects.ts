@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SseService } from '../../shared/services/sse.service';
+import { environment } from '../../../environments/environment';
 import {
   connectSse,
   disconnectSse,
@@ -68,6 +69,7 @@ export class NotificationsEffects {
   private readonly sse = inject(SseService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly disconnect$ = new Subject<void>();
+  private readonly apiBase = environment.apiBasePath;
 
   /**
    * Connect to SSE — when an event arrives, refresh from the API.
@@ -136,7 +138,7 @@ export class NotificationsEffects {
       ofType(loadNotifications),
       switchMap(({ projectId }) =>
         this.http.get<NotificationListResponse>(
-          `/api/v1/notifications?projectId=${projectId}&limit=20`
+          `${this.apiBase}/api/v1/notifications?projectId=${projectId}&limit=20`
         ).pipe(
           map(res => loadNotificationsSuccess({
             notifications: res.items.map(item => this.mapApiNotification(item)),
@@ -154,7 +156,7 @@ export class NotificationsEffects {
       ofType(loadMore),
       switchMap(({ projectId, before }) =>
         this.http.get<NotificationListResponse>(
-          `/api/v1/notifications?projectId=${projectId}&before=${before}&limit=20`
+          `${this.apiBase}/api/v1/notifications?projectId=${projectId}&before=${before}&limit=20`
         ).pipe(
           map(res => loadMoreSuccess({
             notifications: res.items.map(item => this.mapApiNotification(item)),
@@ -172,7 +174,7 @@ export class NotificationsEffects {
       ofType(loadUnreadCount),
       switchMap(({ projectId }) =>
         this.http.get<{ unread: number }>(
-          `/api/v1/notifications/count?projectId=${projectId}`
+          `${this.apiBase}/api/v1/notifications/count?projectId=${projectId}`
         ).pipe(
           map(res => loadUnreadCountSuccess({ count: res.unread })),
           catchError(() => EMPTY),
@@ -186,7 +188,7 @@ export class NotificationsEffects {
     this.actions$.pipe(
       ofType(markAsReadApi),
       mergeMap(({ id }) => {
-        this.http.patch(`/api/v1/notifications/${id}/read`, {}).subscribe();
+        this.http.patch(`${this.apiBase}/api/v1/notifications/${id}/read`, {}).subscribe();
         return [markAsRead({ id })];
       }),
     ),
@@ -197,7 +199,7 @@ export class NotificationsEffects {
     this.actions$.pipe(
       ofType(markAllAsReadApi),
       mergeMap(({ projectId }) => {
-        this.http.post(`/api/v1/notifications/mark-all-read?projectId=${projectId}`, {}).subscribe();
+        this.http.post(`${this.apiBase}/api/v1/notifications/mark-all-read?projectId=${projectId}`, {}).subscribe();
         return [markAllAsRead()];
       }),
     ),
@@ -208,7 +210,7 @@ export class NotificationsEffects {
     this.actions$.pipe(
       ofType(dismissApi),
       mergeMap(({ id }) => {
-        this.http.delete(`/api/v1/notifications/${id}`).subscribe();
+        this.http.delete(`${this.apiBase}/api/v1/notifications/${id}`).subscribe();
         return [dismissNotification({ id })];
       }),
     ),
