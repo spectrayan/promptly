@@ -6,6 +6,8 @@ import com.promptly.project.application.port.out.ProjectRepository;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.domain.model.ProjectMember;
 import com.promptly.project.domain.model.ProjectRole;
+import com.promptly.shared.exception.DuplicateResourceException;
+import com.promptly.shared.exception.ErrorMessages;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,8 @@ public class ProjectApplicationService implements ProjectUseCase {
                 .doOnError(e -> log.error("existsByName error for '{}': {}", command.name(), e.getMessage()))
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new IllegalArgumentException("Project name already exists: " + command.name()));
+                        return Mono.error(new DuplicateResourceException(
+                                String.format(ErrorMessages.DUPLICATE_PROJECT_NAME, command.name())));
                     }
 
                     Project project = Project.builder()
@@ -83,7 +86,7 @@ public class ProjectApplicationService implements ProjectUseCase {
         return memberRepository.existsByProjectIdAndUserId(projectId, userId)
                 .flatMap(exists -> {
                     if (exists) {
-                        return Mono.error(new IllegalArgumentException("User is already a member of this project"));
+                        return Mono.error(new DuplicateResourceException(ErrorMessages.DUPLICATE_PROJECT_MEMBER));
                     }
 
                     ProjectMember member = ProjectMember.builder()

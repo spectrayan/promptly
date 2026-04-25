@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
         if (ex.getError().getCode() == 11000) {
             log.warn("MongoDB duplicate key on {}: {}", exchange.getRequest().getPath(), ex.getError().getMessage());
             ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                    HttpStatus.CONFLICT, "A resource with the same unique key already exists");
+                    HttpStatus.CONFLICT, ErrorMessages.DUPLICATE_RESOURCE_GENERIC);
             problem.setTitle("Duplicate Resource");
             problem.setType(URI.create("https://promptly.dev/errors/conflict"));
             problem.setProperty("timestamp", Instant.now());
@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
         String rootTrace = ExceptionUtils.getRootCauseMessage(ex);
         log.error("Unexpected error on {}: {} | Root cause: {}", exchange.getRequest().getPath(), ex.getMessage(), rootTrace);
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+                HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessages.UNEXPECTED_ERROR);
         problem.setTitle("Internal Server Error");
         problem.setType(URI.create("https://promptly.dev/errors/internal"));
         problem.setProperty("timestamp", Instant.now());

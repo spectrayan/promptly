@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { AuditService, AuditResponse } from '@promptly/client';
+import { ErrorMessages } from '../../shared/constants/error-messages';
 
 /**
  * Audit facade — signal-based (no NgRx).
@@ -23,7 +24,7 @@ export class AuditFacade {
         this.loading.set(false);
       },
       error: err => {
-        this.error.set(err?.error?.detail ?? 'Failed to load audit logs');
+        this.error.set(err?.error?.detail ?? ErrorMessages.LOAD_AUDIT);
         this.loading.set(false);
       },
     });

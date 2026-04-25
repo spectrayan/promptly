@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { PromptsService, WorkflowsService, ScannerService, AuditService } from '@promptly/client';
+import { ErrorMessages } from '../../shared/constants/error-messages';
 import * as DashboardActions from './dashboard.actions';
 
 /**
@@ -38,7 +39,7 @@ export class DashboardEffects {
             })
           ),
           catchError(err =>
-            of(DashboardActions.loadDashboardFailure({ error: err?.message ?? 'Failed to load dashboard' }))
+            of(DashboardActions.loadDashboardFailure({ error: err?.message ?? ErrorMessages.LOAD_DASHBOARD }))
           )
         )
       )

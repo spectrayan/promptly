@@ -12,6 +12,7 @@ import com.promptly.prompt.domain.model.PromptSpecifications;
 import com.promptly.prompt.domain.model.PromptStatus;
 import com.promptly.prompt.domain.model.PromptVersion;
 import com.promptly.shared.exception.DuplicateResourceException;
+import com.promptly.shared.exception.ErrorMessages;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,7 @@ public class PromptApplicationService implements
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.<Prompt>error(new DuplicateResourceException(
-                                "A prompt named '" + command.name() + "' already exists in this project"));
+                                String.format(ErrorMessages.DUPLICATE_PROMPT_NAME, command.name())));
                     }
 
                     Prompt prompt = Prompt.builder()

@@ -3,7 +3,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProjectsService } from '@promptly/client';
+import { ErrorMessages } from '../../shared/constants/error-messages';
 import * as ProjectsActions from './projects.actions';
 import * as AuthActions from '../auth/auth.actions';
 
@@ -12,6 +14,7 @@ export class ProjectsEffects {
   private readonly actions$ = inject(Actions);
   private readonly api = inject(ProjectsService);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   // Load projects on login success or session restore
   loadOnAuth$ = createEffect(() =>
@@ -28,7 +31,7 @@ export class ProjectsEffects {
         this.api.listProjects().pipe(
           map(projects => ProjectsActions.loadProjectsSuccess({ projects })),
           catchError(err => of(ProjectsActions.loadProjectsFailure({
-            error: err?.error?.detail ?? 'Failed to load projects'
+            error: err?.error?.detail ?? ErrorMessages.LOAD_PROJECTS
           })))
         )
       )
@@ -42,7 +45,7 @@ export class ProjectsEffects {
         this.api.createProject({ createProjectRequest: request }).pipe(
           map(project => ProjectsActions.createProjectSuccess({ project })),
           catchError(err => of(ProjectsActions.createProjectFailure({
-            error: err?.error?.detail ?? 'Failed to create project'
+            error: err?.error?.detail ?? ErrorMessages.CREATE_PROJECT
           })))
         )
       )
@@ -67,7 +70,7 @@ export class ProjectsEffects {
         this.api.listProjectMembers({ projectId }).pipe(
           map(members => ProjectsActions.loadProjectMembersSuccess({ members })),
           catchError(err => of(ProjectsActions.loadProjectMembersFailure({
-            error: err?.error?.detail ?? 'Failed to load project members'
+            error: err?.error?.detail ?? ErrorMessages.LOAD_MEMBERS
           })))
         )
       )
@@ -81,7 +84,7 @@ export class ProjectsEffects {
         this.api.addProjectMember({ projectId, addMemberRequest: request }).pipe(
           map(member => ProjectsActions.addProjectMemberSuccess({ member })),
           catchError(err => of(ProjectsActions.addProjectMemberFailure({
-            error: err?.error?.detail ?? 'Failed to add project member'
+            error: err?.error?.detail ?? ErrorMessages.ADD_MEMBER
           })))
         )
       )
@@ -95,7 +98,7 @@ export class ProjectsEffects {
         this.api.updateProjectMember({ projectId, userId, updateMemberRequest: request }).pipe(
           map(member => ProjectsActions.updateProjectMemberSuccess({ member })),
           catchError(err => of(ProjectsActions.updateProjectMemberFailure({
-            error: err?.error?.detail ?? 'Failed to update project member'
+            error: err?.error?.detail ?? ErrorMessages.UPDATE_MEMBER
           })))
         )
       )
@@ -109,10 +112,25 @@ export class ProjectsEffects {
         this.api.removeProjectMember({ projectId, userId }).pipe(
           map(() => ProjectsActions.removeProjectMemberSuccess({ userId })),
           catchError(err => of(ProjectsActions.removeProjectMemberFailure({
-            error: err?.error?.detail ?? 'Failed to remove project member'
+            error: err?.error?.detail ?? ErrorMessages.REMOVE_MEMBER
           })))
         )
       )
     )
+  );
+
+  showErrorSnackbar$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(
+        ProjectsActions.createProjectFailure,
+        ProjectsActions.addProjectMemberFailure,
+        ProjectsActions.updateProjectMemberFailure,
+        ProjectsActions.removeProjectMemberFailure,
+      ),
+      tap(({ error }) => {
+        this.snackBar.open(error, 'Dismiss', { duration: 5000, panelClass: 'snackbar-error' });
+      })
+    ),
+    { dispatch: false }
   );
 }

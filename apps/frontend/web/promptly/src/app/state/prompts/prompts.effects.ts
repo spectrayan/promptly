@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PromptsService } from '@promptly/client';
+import { ErrorMessages } from '../../shared/constants/error-messages';
 import * as PromptsActions from './prompts.actions';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class PromptsEffects {
       switchMap(({ projectId }) =>
         this.api.listPrompts({ projectId }).pipe(
           map(prompts => PromptsActions.loadPromptsSuccess({ prompts })),
-          catchError(err => of(PromptsActions.loadPromptsFailure({ error: err?.error?.detail ?? 'Failed to load prompts' })))
+          catchError(err => of(PromptsActions.loadPromptsFailure({ error: err?.error?.detail ?? ErrorMessages.LOAD_PROMPTS })))
         )
       )
     )
@@ -30,7 +31,7 @@ export class PromptsEffects {
       switchMap(({ id }) =>
         this.api.getPrompt({ id }).pipe(
           map(prompt => PromptsActions.loadPromptSuccess({ prompt })),
-          catchError(err => of(PromptsActions.loadPromptFailure({ error: err?.error?.detail ?? 'Prompt not found' })))
+          catchError(err => of(PromptsActions.loadPromptFailure({ error: err?.error?.detail ?? ErrorMessages.LOAD_PROMPT })))
         )
       )
     )
@@ -42,7 +43,7 @@ export class PromptsEffects {
       switchMap(({ request }) =>
         this.api.createPrompt({ createPromptRequest: request }).pipe(
           map(prompt => PromptsActions.createPromptSuccess({ prompt })),
-          catchError(err => of(PromptsActions.createPromptFailure({ error: err?.error?.detail ?? 'Failed to create prompt' })))
+          catchError(err => of(PromptsActions.createPromptFailure({ error: err?.error?.detail ?? ErrorMessages.CREATE_PROMPT })))
         )
       )
     )
@@ -54,7 +55,7 @@ export class PromptsEffects {
       switchMap(({ id, request }) =>
         this.api.updatePrompt({ id, updatePromptRequest: request }).pipe(
           map(prompt => PromptsActions.updatePromptSuccess({ prompt })),
-          catchError(err => of(PromptsActions.updatePromptFailure({ error: err?.error?.detail ?? 'Failed to update prompt' })))
+          catchError(err => of(PromptsActions.updatePromptFailure({ error: err?.error?.detail ?? ErrorMessages.UPDATE_PROMPT })))
         )
       )
     )
@@ -66,7 +67,7 @@ export class PromptsEffects {
       switchMap(({ id }) =>
         this.api.deletePrompt({ id }).pipe(
           map(() => PromptsActions.deletePromptSuccess({ id })),
-          catchError(err => of(PromptsActions.deletePromptFailure({ error: err?.error?.detail ?? 'Failed to delete prompt' })))
+          catchError(err => of(PromptsActions.deletePromptFailure({ error: err?.error?.detail ?? ErrorMessages.DELETE_PROMPT })))
         )
       )
     )
@@ -78,7 +79,7 @@ export class PromptsEffects {
       switchMap(({ id, targetVersion }) =>
         this.api.rollbackPrompt({ id, targetVersion }).pipe(
           map(prompt => PromptsActions.rollbackPromptSuccess({ prompt })),
-          catchError(err => of(PromptsActions.rollbackPromptFailure({ error: err?.error?.detail ?? 'Failed to rollback' })))
+          catchError(err => of(PromptsActions.rollbackPromptFailure({ error: err?.error?.detail ?? ErrorMessages.ROLLBACK_PROMPT })))
         )
       )
     )
@@ -90,7 +91,7 @@ export class PromptsEffects {
       switchMap(({ prompt }) =>
         this.api.getVersionHistory({ id: prompt.id! }).pipe(
           map(versions => PromptsActions.loadVersionsSuccess({ versions })),
-          catchError(() => of(PromptsActions.loadVersionsFailure({ error: 'Failed to load versions' })))
+          catchError(() => of(PromptsActions.loadVersionsFailure({ error: ErrorMessages.LOAD_VERSIONS })))
         )
       )
     )
