@@ -17,6 +17,7 @@ import java.util.List;
 @SuperBuilder
 public class ScanResult extends AggregateRoot {
 
+    private String projectId;
     private String promptId;
     private int promptVersion;
     private double overallScore;

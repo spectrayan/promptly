@@ -35,16 +35,12 @@ public class WorkflowApplicationService implements
     public Mono<Workflow> submitForReview(SubmitReviewCommand command) {
         log.info("Submitting prompt {} v{} for review", command.promptId(), command.promptVersion());
 
-        Environment target = Environment.valueOf(command.targetEnvironment().toUpperCase());
-
         Workflow workflow = Workflow.builder()
                 .promptId(command.promptId())
                 .promptVersion(command.promptVersion())
                 .type("approval")
                 .status(WorkflowStatus.PENDING)
                 .currentStep(1)
-                .sourceEnvironment(Environment.DEV)
-                .targetEnvironment(target)
                 .requestedBy(command.requestedBy())
                 .steps(List.of(
                         WorkflowStep.builder()
@@ -87,7 +83,7 @@ public class WorkflowApplicationService implements
                                             saved.getId(), saved.getPromptId(),
                                             saved.getPromptId(), // TODO: enrich with prompt name via lookup
                                             null, // TODO: enrich with projectId via prompt lookup
-                                            saved.getTargetEnvironment().name(), approvedBy,
+                                            approvedBy,
                                             null  // TODO: enrich with requester email via user lookup
                                     ));
                                 }

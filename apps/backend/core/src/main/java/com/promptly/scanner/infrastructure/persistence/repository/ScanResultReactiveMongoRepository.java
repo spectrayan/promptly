@@ -11,4 +11,6 @@ public interface ScanResultReactiveMongoRepository extends ReactiveMongoReposito
 
     Flux<ScanResultDocument> findByPromptIdOrderByPromptVersionDesc(String promptId);
 
+    Flux<ScanResultDocument> findByProjectIdOrderByScannedAtDesc(String projectId);
+
 }

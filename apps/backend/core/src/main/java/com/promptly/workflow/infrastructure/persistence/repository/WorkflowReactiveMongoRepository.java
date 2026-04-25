@@ -13,4 +13,6 @@ public interface WorkflowReactiveMongoRepository extends ReactiveMongoRepository
 
     Flux<WorkflowDocument> findByPromptId(String promptId);
 
+    Flux<WorkflowDocument> findByProjectIdOrderByCreatedAtDesc(String projectId);
+
 }

@@ -12,15 +12,14 @@ public record WorkflowApproved(
         String promptId,
         String promptName,
         String projectId,
-        String environment,
         String approvedBy,
         String requesterEmail,
         Instant occurredAt
 ) implements DomainEvent {
     public WorkflowApproved(String workflowId, String promptId, String promptName,
-                             String projectId, String environment, String approvedBy,
+                             String projectId, String approvedBy,
                              String requesterEmail) {
-        this(workflowId, promptId, promptName, projectId, environment, approvedBy,
+        this(workflowId, promptId, promptName, projectId, approvedBy,
              requesterEmail, Instant.now());
     }
 }

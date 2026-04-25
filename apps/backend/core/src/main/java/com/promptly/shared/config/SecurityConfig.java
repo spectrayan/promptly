@@ -1,5 +1,6 @@
 package com.promptly.shared.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -21,6 +22,7 @@ public class SecurityConfig {
 
     @Bean
     @Profile("dev")
+    @ConditionalOnProperty(name = "promptly.auth.provider", havingValue = "oidc", matchIfMissing = false)
     public SecurityWebFilterChain devSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -37,6 +39,7 @@ public class SecurityConfig {
 
     @Bean
     @Profile("prod")
+    @ConditionalOnProperty(name = "promptly.auth.provider", havingValue = "oidc", matchIfMissing = false)
     public SecurityWebFilterChain prodSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)

@@ -15,4 +15,6 @@ public interface AuditReactiveMongoRepository extends ReactiveMongoRepository<Au
 
     Flux<AuditDocument> findByActionOrderByTimestampDesc(String action);
 
+    Flux<AuditDocument> findByProjectIdOrderByTimestampDesc(String projectId);
+
 }

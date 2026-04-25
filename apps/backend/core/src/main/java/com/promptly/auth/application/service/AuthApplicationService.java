@@ -63,9 +63,16 @@ public class AuthApplicationService implements AuthenticationUseCase, UserQueryU
         log.info("Login attempt for: {}", email);
 
         return userRepository.findByEmail(email)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid email or password")))
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.warn("User not found for email: {}", email);
+                    return Mono.error(new IllegalArgumentException("Invalid email or password"));
+                }))
                 .flatMap(user -> {
+                    log.debug("Found user: id={}, email={}, status={}, hashPrefix={}",
+                            user.getId(), user.getEmail(), user.getStatus(),
+                            user.getPasswordHash() != null ? user.getPasswordHash().substring(0, 7) : "NULL");
                     if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+                        log.warn("Password mismatch for user: {}", email);
                         return Mono.error(new IllegalArgumentException("Invalid email or password"));
                     }
                     if (user.getStatus() != UserStatus.ACTIVE) {
@@ -100,6 +107,12 @@ public class AuthApplicationService implements AuthenticationUseCase, UserQueryU
     @Override
     public Flux<User> searchUsers(String query, int limit) {
         return userRepository.searchByEmailOrName(query, limit);
+    }
+
+    @Override
+    public Mono<User> getUserById(String id) {
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("User", id)));
     }
 
     private Mono<AuthResult> generateAuthResult(User user) {

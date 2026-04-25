@@ -28,6 +28,7 @@ public class AuditDocument {
     @Id
     private String id;
 
+    private String projectId;
     private String action;
     private String resourceType;
     private String resourceId;

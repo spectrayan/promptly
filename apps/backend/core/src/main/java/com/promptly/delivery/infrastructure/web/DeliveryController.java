@@ -30,7 +30,6 @@ public class DeliveryController implements DeliveryApi {
                     response.setName(r.name());
                     response.setContent(r.content());
                     response.setVersion(r.version());
-                    response.setEnvironment(r.environment());
                     response.setContentFormat(r.contentFormat());
                     return response;
                 })

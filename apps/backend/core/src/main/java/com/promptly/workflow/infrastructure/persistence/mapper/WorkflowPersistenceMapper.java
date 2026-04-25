@@ -13,13 +13,9 @@ import org.mapstruct.Named;
 public interface WorkflowPersistenceMapper {
 
     @Mapping(target = "status", source = "status", qualifiedByName = "statusToString")
-    @Mapping(target = "sourceEnvironment", source = "sourceEnvironment", qualifiedByName = "envToString")
-    @Mapping(target = "targetEnvironment", source = "targetEnvironment", qualifiedByName = "envToString")
     WorkflowDocument toDocument(Workflow workflow);
 
     @Mapping(target = "status", source = "status", qualifiedByName = "stringToStatus")
-    @Mapping(target = "sourceEnvironment", source = "sourceEnvironment", qualifiedByName = "stringToEnv")
-    @Mapping(target = "targetEnvironment", source = "targetEnvironment", qualifiedByName = "stringToEnv")
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
@@ -36,16 +32,6 @@ public interface WorkflowPersistenceMapper {
     @Named("stringToStatus")
     default WorkflowStatus stringToStatus(String status) {
         return status != null ? WorkflowStatus.valueOf(status) : null;
-    }
-
-    @Named("envToString")
-    default String envToString(Environment env) {
-        return env != null ? env.name() : null;
-    }
-
-    @Named("stringToEnv")
-    default Environment stringToEnv(String env) {
-        return env != null ? Environment.valueOf(env) : null;
     }
 
 }

@@ -43,7 +43,6 @@ public class DeliveryApplicationService implements DeliverPromptUseCase {
                             prompt.getName(),
                             content,
                             prompt.getCurrentVersion(),
-                            prompt.getActiveEnvironment(),
                             prompt.getContentFormat() != null ? prompt.getContentFormat().name() : "TEXT"
                     );
                 });

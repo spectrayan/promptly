@@ -44,6 +44,12 @@ public class WorkflowMongoAdapter implements WorkflowRepository {
     }
 
     @Override
+    public Flux<Workflow> findByProjectId(String projectId) {
+        return mongoRepository.findByProjectIdOrderByCreatedAtDesc(projectId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Flux<Workflow> findAll() {
         return mongoRepository.findAll()
                 .map(mapper::toDomain);

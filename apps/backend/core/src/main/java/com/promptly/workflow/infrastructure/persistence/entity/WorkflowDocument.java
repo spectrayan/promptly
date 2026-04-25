@@ -22,6 +22,8 @@ public class WorkflowDocument {
     @Id
     private String id;
 
+    private String projectId;
+
     @Indexed
     private String promptId;
 
@@ -29,8 +31,6 @@ public class WorkflowDocument {
     private String type;
     private String status;
     private int currentStep;
-    private String sourceEnvironment;
-    private String targetEnvironment;
     private String requestedBy;
     private List<WorkflowStepSubdocument> steps;
 

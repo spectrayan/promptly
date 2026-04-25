@@ -15,7 +15,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  */
 @Configuration
 @ConditionalOnProperty(name = "promptly.auth.provider", havingValue = "local", matchIfMissing = true)
-@Profile("prod")
 public class LocalAuthSecurityConfig {
 
     @Bean
@@ -29,8 +28,8 @@ public class LocalAuthSecurityConfig {
                         // Public endpoints
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // Actuator
-                        .pathMatchers("/actuator/**").permitAll()
+                        // Actuator and Swagger
+                        .pathMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         // Everything else requires authentication
                         .anyExchange().authenticated()
                 )

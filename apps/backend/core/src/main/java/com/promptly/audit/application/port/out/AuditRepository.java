@@ -18,6 +18,8 @@ public interface AuditRepository {
 
     Flux<AuditEntry> findAll();
 
+    Flux<AuditEntry> findByProjectId(String projectId);
+
     Flux<AuditEntry> findByAction(String action);
 
 }

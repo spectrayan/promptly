@@ -22,6 +22,7 @@ public class ScanResultDocument {
     @Id
     private String id;
 
+    private String projectId;
     private String promptId;
     private int promptVersion;
     private double overallScore;

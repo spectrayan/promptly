@@ -17,6 +17,7 @@ import java.util.Map;
 @SuperBuilder
 public class AuditEntry extends AggregateRoot {
 
+    private String projectId;
     private String action; // prompt.created, prompt.updated, workflow.approved, scan.completed, etc.
     private String resourceType; // prompt, workflow, scan
     private String resourceId;

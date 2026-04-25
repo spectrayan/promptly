@@ -44,6 +44,12 @@ public class AuditMongoAdapter implements AuditRepository {
     }
 
     @Override
+    public Flux<AuditEntry> findByProjectId(String projectId) {
+        return mongoRepository.findByProjectIdOrderByTimestampDesc(projectId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Flux<AuditEntry> findByAction(String action) {
         return mongoRepository.findByActionOrderByTimestampDesc(action)
                 .map(mapper::toDomain);

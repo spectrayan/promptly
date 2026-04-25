@@ -15,7 +15,6 @@ public interface DeliverPromptUseCase {
             String name,
             String content,
             int version,
-            String environment,
             String contentFormat
     ) {}
 

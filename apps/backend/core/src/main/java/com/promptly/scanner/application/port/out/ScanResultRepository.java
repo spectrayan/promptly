@@ -15,6 +15,8 @@ public interface ScanResultRepository {
 
     Flux<ScanResult> findAll();
 
+    Flux<ScanResult> findByProjectId(String projectId);
+
     Flux<ScanResult> findByPromptId(String promptId);
 
 }

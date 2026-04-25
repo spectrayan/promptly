@@ -35,7 +35,7 @@ public interface ScanResultPersistenceMapper {
 
     @Named("stringToSeverity")
     default Severity stringToSeverity(String severity) {
-        return severity != null ? Severity.valueOf(severity) : null;
+        return severity != null ? Severity.valueOf(severity.toUpperCase()) : null;
     }
 
 }

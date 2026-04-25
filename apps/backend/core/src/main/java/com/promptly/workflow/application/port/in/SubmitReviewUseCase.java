@@ -13,8 +13,7 @@ public interface SubmitReviewUseCase {
     record SubmitReviewCommand(
             String promptId,
             int promptVersion,
-            String requestedBy,
-            String targetEnvironment
+            String requestedBy
     ) {}
 
 }

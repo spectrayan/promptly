@@ -18,6 +18,8 @@ public interface WorkflowRepository {
 
     Flux<Workflow> findByPromptId(String promptId);
 
+    Flux<Workflow> findByProjectId(String projectId);
+
     Flux<Workflow> findAll();
 
 }

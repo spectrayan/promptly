@@ -1,4 +1,4 @@
 @org.springframework.modulith.ApplicationModule(
-        allowedDependencies = {"shared", "shared::config", "prompt", "workflow", "scanner"}
+        allowedDependencies = {"shared", "infrastructure", "shared::config", "prompt", "prompt :: domain-model", "workflow", "scanner"}
 )
 package com.promptly.export;

@@ -71,7 +71,7 @@ public class AuditEventListener {
     void on(WorkflowApproved event) {
         log.debug("Audit: WorkflowApproved {}", event.aggregateId());
         save("workflow.approved", "workflow", event.aggregateId(), null,
-                Map.of("promptId", event.promptId(), "environment", event.environment(),
+                Map.of("promptId", event.promptId(),
                         "approvedBy", event.approvedBy()));
     }
 

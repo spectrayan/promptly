@@ -86,8 +86,8 @@ public class AuthController implements AuthApi {
         response.setEmail(user.getEmail());
         response.setDisplayName(user.getDisplayName());
         response.setAvatarUrl(user.getAvatarUrl());
-        response.setOrgRole(com.promptly.infrastructure.in.web.dto.OrgRole.valueOf(user.getOrgRole().name()));
-        response.setStatus(com.promptly.infrastructure.in.web.dto.UserStatus.valueOf(user.getStatus().name()));
+        response.setOrgRole(OrgRole.fromValue(user.getOrgRole().name()));
+        response.setStatus(UserStatus.fromValue(user.getStatus().name()));
         if (user.getCreatedAt() != null) {
             response.setCreatedAt(java.time.OffsetDateTime.ofInstant(user.getCreatedAt(), java.time.ZoneOffset.UTC));
         }

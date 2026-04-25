@@ -6,6 +6,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ServerWebExchange;
+import com.promptly.shared.util.ExceptionUtils;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -43,7 +44,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Mono<ProblemDetail> handleGenericException(Exception ex, ServerWebExchange exchange) {
-        log.error("Unexpected error on {}: {}", exchange.getRequest().getPath(), ex.getMessage(), ex);
+        String rootTrace = ExceptionUtils.getRootCauseMessage(ex);
+        log.error("Unexpected error on {}: {} | Root cause: {}", exchange.getRequest().getPath(), ex.getMessage(), rootTrace);
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
         problem.setTitle("Internal Server Error");

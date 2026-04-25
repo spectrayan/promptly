@@ -17,13 +17,12 @@ import java.util.List;
 @SuperBuilder
 public class Workflow extends AggregateRoot {
 
+    private String projectId;
     private String promptId;
     private int promptVersion;
-    private String type; // "approval" | "promotion"
+    private String type; // "approval"
     private WorkflowStatus status;
     private int currentStep;
-    private Environment sourceEnvironment;
-    private Environment targetEnvironment;
     private String requestedBy;
 
     @lombok.Builder.Default

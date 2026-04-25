@@ -38,6 +38,12 @@ public class ScanResultMongoAdapter implements ScanResultRepository {
     }
 
     @Override
+    public Flux<ScanResult> findByProjectId(String projectId) {
+        return mongoRepository.findByProjectIdOrderByScannedAtDesc(projectId)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Flux<ScanResult> findByPromptId(String promptId) {
         return mongoRepository.findByPromptIdOrderByPromptVersionDesc(promptId)
                 .map(mapper::toDomain);

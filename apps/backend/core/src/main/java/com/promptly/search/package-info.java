@@ -1,4 +1,4 @@
 @org.springframework.modulith.ApplicationModule(
-        allowedDependencies = {"shared", "prompt :: domain-model", "prompt"}
+        allowedDependencies = {"shared", "infrastructure", "prompt :: domain-model", "prompt"}
 )
 package com.promptly.search;
