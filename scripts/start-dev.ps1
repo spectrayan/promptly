@@ -2,9 +2,9 @@
 # Promptly — Dev Startup Script (PowerShell)
 # Starts MongoDB (Docker), Spring Boot backend, and Angular frontend.
 # Press Ctrl+C to gracefully stop all services.
+# Usage: .\scripts\start-dev.ps1
 # ═══════════════════════════════════════════════════════════════════════
 
-$ErrorActionPreference = "Stop"
 $RootDir = Split-Path -Parent $PSScriptRoot
 
 # ── Helpers ──
@@ -17,32 +17,28 @@ function Err($msg)  { Write-Host "[promptly] $msg" -ForegroundColor Red }
 $script:BackendJob  = $null
 $script:FrontendJob = $null
 
-function Cleanup {
+function Stop-DevServices {
     Write-Host ""
     Log "Shutting down..."
 
     # Kill frontend (node/ng) on port 4200
     $feProcs = Get-NetTCPConnection -LocalPort 4200 -State Listen -ErrorAction SilentlyContinue |
                Select-Object -ExpandProperty OwningProcess -Unique
-    foreach ($pid in $feProcs) {
-        try {
-            Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
-            Log "Stopped frontend process (PID $pid)"
-        } catch {}
+    foreach ($p in $feProcs) {
+        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
+        Log "Stopped frontend process (PID $p)"
     }
 
     # Kill backend (java) on port 8080
     $beProcs = Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue |
                Select-Object -ExpandProperty OwningProcess -Unique
-    foreach ($pid in $beProcs) {
-        try {
-            Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
-            Log "Stopped backend process (PID $pid)"
-        } catch {}
+    foreach ($p in $beProcs) {
+        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
+        Log "Stopped backend process (PID $p)"
     }
 
     # Stop PowerShell background jobs
-    if ($script:BackendJob)  {
+    if ($script:BackendJob) {
         Stop-Job -Job $script:BackendJob -ErrorAction SilentlyContinue
         Remove-Job -Job $script:BackendJob -Force -ErrorAction SilentlyContinue
     }
@@ -54,12 +50,6 @@ function Cleanup {
     Ok "All services stopped."
 }
 
-# Register Ctrl+C handler
-$null = Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action { Cleanup } -ErrorAction SilentlyContinue
-try {
-    [Console]::TreatControlCAsInput = $false
-} catch {}
-
 Push-Location $RootDir
 
 try {
@@ -70,19 +60,21 @@ try {
     $mongoRunning = Get-NetTCPConnection -LocalPort $MongoPort -State Listen -ErrorAction SilentlyContinue
 
     if ($mongoRunning) {
-        Ok "MongoDB already running on port $MongoPort — skipping Docker."
-    } else {
+        Ok "MongoDB already running on port $MongoPort - skipping Docker."
+    }
+    else {
         Log "MongoDB not detected on port $MongoPort. Starting via Docker..."
-        $dockerExists = Get-Command docker -ErrorAction SilentlyContinue
-        if ($dockerExists) {
+        $dockerCmd = Get-Command docker -ErrorAction SilentlyContinue
+        if ($dockerCmd) {
             docker compose up -d 2>$null
             if ($LASTEXITCODE -ne 0) {
                 docker-compose up -d 2>$null
             }
             Ok "Infrastructure ready."
-        } else {
+        }
+        else {
             Err "Docker not found and MongoDB is not running. Please start MongoDB on port $MongoPort."
-            exit 1
+            return
         }
     }
 
@@ -94,12 +86,10 @@ try {
     $script:BackendJob = Start-Job -ScriptBlock {
         param($root)
         Set-Location $root
-        & mvn spring-boot:run `
-            -f apps/backend/core/pom.xml `
-            -D"spring-boot.run.profiles=dev" 2>&1
+        & mvn spring-boot:run -f apps/backend/core/pom.xml "-Dspring-boot.run.profiles=dev" 2>&1
     } -ArgumentList $RootDir
 
-    Ok "Backend starting (Job $($script:BackendJob.Id)) — http://localhost:8080"
+    Ok "Backend starting (Job $($script:BackendJob.Id)) - http://localhost:8080"
 
     # ═══════════════════════════════════════════════════════════════════
     # 3. Frontend — Angular dev server
@@ -112,18 +102,18 @@ try {
         & npx nx serve promptly 2>&1
     } -ArgumentList $RootDir
 
-    Ok "Frontend starting (Job $($script:FrontendJob.Id)) — http://localhost:4200"
+    Ok "Frontend starting (Job $($script:FrontendJob.Id)) - http://localhost:4200"
 
     # ═══════════════════════════════════════════════════════════════════
     # Status Banner
     # ═══════════════════════════════════════════════════════════════════
     Write-Host ""
-    Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor White
+    Write-Host "===========================================================" -ForegroundColor White
     Write-Host "  Promptly Dev Environment" -ForegroundColor White
     Write-Host "  Frontend  -> http://localhost:4200" -ForegroundColor Cyan
     Write-Host "  Backend   -> http://localhost:8080" -ForegroundColor Cyan
     Write-Host "  MongoDB   -> localhost:27017" -ForegroundColor Cyan
-    Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor White
+    Write-Host "===========================================================" -ForegroundColor White
     Write-Host "  Press Ctrl+C to stop all services" -ForegroundColor Yellow
     Write-Host ""
 
@@ -157,8 +147,11 @@ try {
 
         Start-Sleep -Milliseconds 500
     }
-
-} finally {
-    Cleanup
+}
+catch {
+    Warn "Interrupted: $_"
+}
+finally {
+    Stop-DevServices
     Pop-Location
 }
