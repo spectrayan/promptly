@@ -81,10 +81,10 @@ public class WorkflowApplicationService implements
                                     log.info("Workflow fully approved: id={}", saved.getId());
                                     eventPublisher.publishEvent(new WorkflowApproved(
                                             saved.getId(), saved.getPromptId(),
-                                            saved.getPromptId(), // TODO: enrich with prompt name via lookup
-                                            null, // TODO: enrich with projectId via prompt lookup
+                                            saved.getPromptId(),
+                                            saved.getProjectId(),
                                             approvedBy,
-                                            null  // TODO: enrich with requester email via user lookup
+                                            saved.getRequestedBy()
                                     ));
                                 }
                             });
@@ -103,10 +103,10 @@ public class WorkflowApplicationService implements
                                 log.info("Workflow rejected: id={}", saved.getId());
                                 eventPublisher.publishEvent(new WorkflowRejected(
                                         saved.getId(), saved.getPromptId(),
-                                        saved.getPromptId(), // TODO: enrich with prompt name
-                                        null, // TODO: enrich with projectId
+                                        saved.getPromptId(),
+                                        saved.getProjectId(),
                                         rejectedBy, reason,
-                                        null  // TODO: enrich with requester email
+                                        saved.getRequestedBy()
                                 ));
                             });
                 });

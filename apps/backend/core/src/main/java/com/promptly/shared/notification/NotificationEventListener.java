@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,20 +31,38 @@ public class NotificationEventListener {
 
     @EventListener
     void on(PromptCreated event) {
+        if (event.projectId() == null) {
+            log.warn("PromptCreated event missing projectId, skipping SSE");
+            return;
+        }
         sse.emit("project-" + event.projectId(), "prompt.created",
-                Map.of("promptId", event.promptId(), "name", event.name()));
+                payload("prompt.created",
+                        "promptId", event.promptId(),
+                        "name", event.name()));
     }
 
     @EventListener
     void on(PromptUpdated event) {
+        if (event.projectId() == null) {
+            log.warn("PromptUpdated event missing projectId, skipping SSE");
+            return;
+        }
         sse.emit("project-" + event.projectId(), "prompt.updated",
-                Map.of("promptId", event.promptId(), "version", event.version()));
+                payload("prompt.updated",
+                        "promptId", event.promptId(),
+                        "version", event.version()));
     }
 
     @EventListener
     void on(WorkflowApproved event) {
+        if (event.projectId() == null) {
+            log.warn("WorkflowApproved event missing projectId, skipping SSE");
+            return;
+        }
         sse.emit("project-" + event.projectId(), "workflow.approved",
-                Map.of("promptId", event.promptId(), "approvedBy", event.approvedBy()));
+                payload("workflow.approved",
+                        "promptId", event.promptId(),
+                        "approvedBy", event.approvedBy()));
 
         // Email the requester
         if (event.requesterEmail() != null) {
@@ -56,9 +75,15 @@ public class NotificationEventListener {
 
     @EventListener
     void on(WorkflowRejected event) {
+        if (event.projectId() == null) {
+            log.warn("WorkflowRejected event missing projectId, skipping SSE");
+            return;
+        }
         sse.emit("project-" + event.projectId(), "workflow.rejected",
-                Map.of("promptId", event.promptId(), "rejectedBy", event.rejectedBy(),
-                       "reason", event.reason() != null ? event.reason() : ""));
+                payload("workflow.rejected",
+                        "promptId", event.promptId(),
+                        "rejectedBy", event.rejectedBy(),
+                        "reason", event.reason() != null ? event.reason() : ""));
 
         // Email the requester
         if (event.requesterEmail() != null) {
@@ -72,9 +97,30 @@ public class NotificationEventListener {
 
     @EventListener
     void on(ScanCompleted event) {
+        if (event.projectId() == null) {
+            log.warn("ScanCompleted event missing projectId, skipping SSE");
+            return;
+        }
         String eventName = event.hasCriticalFindings() ? "scan.critical" : "scan.completed";
         sse.emit("project-" + event.projectId(), eventName,
-                Map.of("promptId", event.promptId(), "status", event.status(),
-                       "score", event.overallScore()));
+                payload(eventName,
+                        "promptId", event.promptId(),
+                        "status", event.status(),
+                        "score", event.overallScore()));
+    }
+
+    /**
+     * Build a null-safe payload map with eventType included.
+     * Map.of() throws on null values, so we use HashMap.
+     */
+    private Map<String, Object> payload(String eventType, Object... kvPairs) {
+        var map = new HashMap<String, Object>();
+        map.put("eventType", eventType);
+        for (int i = 0; i < kvPairs.length - 1; i += 2) {
+            String key = String.valueOf(kvPairs[i]);
+            Object val = kvPairs[i + 1];
+            map.put(key, val != null ? val : "");
+        }
+        return map;
     }
 }
