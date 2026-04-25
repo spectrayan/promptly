@@ -27,10 +27,13 @@ public class AuditController implements AuditApi {
 
     @Override
     public Mono<ResponseEntity<Flux<AuditResponse>>> getAuditLogs(
-            String resourceId, String userId, String action, ServerWebExchange exchange) {
+            String projectId, String resourceId, String userId, String action, ServerWebExchange exchange) {
+
         Flux<AuditEntry> entries;
 
-        if (resourceId != null) {
+        if (projectId != null && !projectId.isBlank()) {
+            entries = auditRepository.findByProjectId(projectId);
+        } else if (resourceId != null) {
             entries = auditRepository.findByResourceId(resourceId);
         } else if (userId != null) {
             entries = auditRepository.findByActorUserId(userId);

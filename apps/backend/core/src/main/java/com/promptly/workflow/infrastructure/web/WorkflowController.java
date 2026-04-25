@@ -2,13 +2,13 @@ package com.promptly.workflow.infrastructure.web;
 
 import com.promptly.infrastructure.in.web.api.WorkflowsApi;
 import com.promptly.infrastructure.in.web.dto.ApproveRejectRequest;
-import com.promptly.infrastructure.in.web.dto.Environment;
 import com.promptly.infrastructure.in.web.dto.SubmitReviewRequest;
-import com.promptly.infrastructure.in.web.dto.WorkflowResponse;
-import com.promptly.infrastructure.in.web.dto.WorkflowStepResponse;
-import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
 import com.promptly.infrastructure.in.web.dto.StepAction;
+import com.promptly.infrastructure.in.web.dto.WorkflowResponse;
+import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
+import com.promptly.infrastructure.in.web.dto.WorkflowStepResponse;
 import com.promptly.workflow.application.port.in.*;
+import com.promptly.workflow.application.port.out.WorkflowRepository;
 import com.promptly.workflow.domain.model.Workflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,6 +35,7 @@ public class WorkflowController implements WorkflowsApi {
     private final ApproveWorkflowUseCase approveWorkflowUseCase;
     private final RejectWorkflowUseCase rejectWorkflowUseCase;
     private final GetWorkflowUseCase getWorkflowUseCase;
+    private final WorkflowRepository workflowRepository;
 
     @Override
     public Mono<ResponseEntity<WorkflowResponse>> submitForReview(
@@ -43,8 +44,7 @@ public class WorkflowController implements WorkflowsApi {
                 .map(req -> new SubmitReviewUseCase.SubmitReviewCommand(
                         req.getPromptId(),
                         req.getPromptVersion(),
-                        req.getRequestedBy(),
-                        req.getTargetEnvironment() != null ? req.getTargetEnvironment().getValue() : null
+                        req.getRequestedBy()
                 ))
                 .flatMap(submitReviewUseCase::submitForReview)
                 .map(this::toResponse)
@@ -53,9 +53,12 @@ public class WorkflowController implements WorkflowsApi {
 
     @Override
     public Mono<ResponseEntity<Flux<WorkflowResponse>>> listWorkflows(
-            String promptId, Boolean pendingOnly, ServerWebExchange exchange) {
+            String projectId, String promptId, Boolean pendingOnly, ServerWebExchange exchange) {
+
         Flux<Workflow> workflows;
-        if (promptId != null) {
+        if (projectId != null && !projectId.isBlank()) {
+            workflows = workflowRepository.findByProjectId(projectId);
+        } else if (promptId != null) {
             workflows = getWorkflowUseCase.getWorkflowsByPromptId(promptId);
         } else if (Boolean.TRUE.equals(pendingOnly)) {
             workflows = getWorkflowUseCase.getPendingWorkflows();
@@ -100,7 +103,9 @@ public class WorkflowController implements WorkflowsApi {
                     step.setStep(s.getStep());
                     step.setRole(s.getRole());
                     step.setAssignedTo(s.getAssignedTo());
-                    step.setAction(s.getAction() != null ? StepAction.fromValue(s.getAction()) : null);
+                    step.setAction(s.getAction() != null
+                            ? StepAction.fromValue(s.getAction())
+                            : null);
                     step.setComment(s.getComment());
                     step.setActedAt(toOffsetDateTime(s.getActedAt()));
                     return step;
@@ -112,12 +117,10 @@ public class WorkflowController implements WorkflowsApi {
         response.setPromptId(workflow.getPromptId());
         response.setPromptVersion(workflow.getPromptVersion());
         response.setType(workflow.getType());
-        response.setStatus(workflow.getStatus() != null ? WorkflowStatus.fromValue(workflow.getStatus().name()) : null);
+        response.setStatus(workflow.getStatus() != null
+                ? WorkflowStatus.fromValue(workflow.getStatus().name())
+                : null);
         response.setCurrentStep(workflow.getCurrentStep());
-        response.setSourceEnvironment(workflow.getSourceEnvironment() != null
-                ? Environment.fromValue(workflow.getSourceEnvironment().name()) : null);
-        response.setTargetEnvironment(workflow.getTargetEnvironment() != null
-                ? Environment.fromValue(workflow.getTargetEnvironment().name()) : null);
         response.setRequestedBy(workflow.getRequestedBy());
         response.setSteps(steps);
         response.setCreatedAt(toOffsetDateTime(workflow.getCreatedAt()));
