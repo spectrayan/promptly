@@ -240,6 +240,30 @@ import { AuthFacade } from '../../state/auth/auth.facade';
       text-decoration: underline;
       text-underline-offset: 3px;
     }
+
+    @media (max-width: 480px) {
+      .register-card {
+        padding: var(--space-8) var(--space-5);
+        border-radius: var(--radius-lg);
+      }
+
+      .logo-icon {
+        font-size: 40px;
+      }
+
+      .logo-title {
+        font-size: var(--text-3xl);
+      }
+
+      .logo-section {
+        margin-bottom: var(--space-6);
+      }
+
+      .register-btn {
+        height: 44px;
+        font-size: var(--text-base) !important;
+      }
+    }
   `],
 })
 export class RegisterPage {

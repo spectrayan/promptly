@@ -257,6 +257,30 @@ import { AuthFacade } from '../../state/auth/auth.facade';
       font-size: var(--text-base);
       font-family: var(--font-mono);
     }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: var(--space-8) var(--space-5);
+        border-radius: var(--radius-lg);
+      }
+
+      .logo-icon {
+        font-size: 40px;
+      }
+
+      .logo-title {
+        font-size: var(--text-3xl);
+      }
+
+      .logo-section {
+        margin-bottom: var(--space-6);
+      }
+
+      .login-btn {
+        height: 44px;
+        font-size: var(--text-base) !important;
+      }
+    }
   `],
 })
 export class LoginPage {

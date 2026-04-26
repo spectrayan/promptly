@@ -134,3 +134,43 @@ h3 {
     height: 22px;
   }
 }
+
+// ── Mobile Responsive ────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .welcome-section h1 {
+    font-size: var(--text-2xl);
+  }
+
+  .stat-value {
+    font-size: var(--text-3xl);
+  }
+
+  .stat-icon-wrap {
+    width: 40px;
+    height: 40px;
+    margin-bottom: var(--space-2);
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+
+  .action-card {
+    padding: var(--space-3);
+    font-size: var(--text-sm);
+    gap: var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+}

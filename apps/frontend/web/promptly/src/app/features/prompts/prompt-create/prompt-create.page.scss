@@ -238,3 +238,25 @@
   flex-direction: column;
   gap: var(--space-3);
 }
+
+// ── Mobile Responsive ────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .create-layout {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .form-third {
+    width: 100%;
+  }
+
+  .action-card {
+    position: static;
+  }
+
+  .ai-suggestion-content {
+    max-height: 180px;
+    font-size: var(--text-xs);
+  }
+}

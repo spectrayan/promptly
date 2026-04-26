@@ -236,3 +236,73 @@ mat-card-header {
     gap: var(--space-2);
   }
 }
+
+// ── Mobile Responsive ────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .page-title-row {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+
+    h1 {
+      font-size: var(--text-2xl);
+    }
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  // Card header: wrap so version badge doesn't clip
+  mat-card-header {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  // Monaco editor: shorter on mobile
+  .monaco-editor-wrapper {
+    max-height: 250px;
+    overflow: hidden;
+  }
+
+  .lock-banner {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+
+    .clone-banner-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .prop-list {
+    grid-template-columns: 100px 1fr;
+    gap: var(--space-1) var(--space-2);
+
+    dt {
+      font-weight: var(--weight-semibold);
+    }
+  }
+
+  .content-block {
+    font-size: var(--text-sm);
+    padding: var(--space-3);
+  }
+
+  // Action buttons: horizontal on mobile
+  .action-buttons {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: var(--space-2) !important;
+
+    button {
+      width: auto !important;
+      flex: 1;
+      min-width: 0;
+      font-size: var(--text-xs) !important;
+    }
+  }
+}
