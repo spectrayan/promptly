@@ -21,7 +21,7 @@ public class ScanResult extends AggregateRoot {
     private String promptId;
     private int promptVersion;
     private double overallScore;
-    private String status; // pass | warn | fail
+    private String status; // PASS | WARN | FAIL
     private String llmProvider;
     private String llmModel;
     private String scannedBy;
@@ -35,11 +35,11 @@ public class ScanResult extends AggregateRoot {
      */
     public void computeStatus() {
         if (overallScore <= 2.0) {
-            status = "pass";
+            status = "PASS";
         } else if (overallScore <= 5.0) {
-            status = "warn";
+            status = "WARN";
         } else {
-            status = "fail";
+            status = "FAIL";
         }
     }
 

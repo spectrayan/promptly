@@ -11,8 +11,8 @@
     "targetEnvironment": "PRODUCTION",
     "requestedBy": "bob@promptly.ai",
     "steps": [
-      { "step": 1, "role": "reviewer", "assignedTo": "alice@promptly.ai", "action": "pending", "comment": null, "actedAt": null },
-      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "pending", "comment": null, "actedAt": null }
+      { "step": 1, "role": "reviewer", "assignedTo": "alice@promptly.ai", "action": "PENDING", "comment": null, "actedAt": null },
+      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "PENDING", "comment": null, "actedAt": null }
     ],
     "createdAt": { "$date": "2026-04-20T10:00:00Z" },
     "updatedAt": { "$date": "2026-04-20T10:00:00Z" }
@@ -29,8 +29,8 @@
     "targetEnvironment": "PRODUCTION",
     "requestedBy": "dave@promptly.ai",
     "steps": [
-      { "step": 1, "role": "reviewer", "assignedTo": "alice@promptly.ai", "action": "approved", "comment": "Looks good, all tests pass", "actedAt": { "$date": "2026-04-19T14:00:00Z" } },
-      { "step": 2, "role": "approver", "assignedTo": "carol@promptly.ai", "action": "approved", "comment": "Approved for production release", "actedAt": { "$date": "2026-04-19T16:30:00Z" } }
+      { "step": 1, "role": "reviewer", "assignedTo": "alice@promptly.ai", "action": "APPROVED", "comment": "Looks good, all tests pass", "actedAt": { "$date": "2026-04-19T14:00:00Z" } },
+      { "step": 2, "role": "approver", "assignedTo": "carol@promptly.ai", "action": "APPROVED", "comment": "Approved for production release", "actedAt": { "$date": "2026-04-19T16:30:00Z" } }
     ],
     "createdAt": { "$date": "2026-04-18T14:00:00Z" },
     "updatedAt": { "$date": "2026-04-19T16:30:00Z" }
@@ -47,8 +47,8 @@
     "targetEnvironment": "STAGING",
     "requestedBy": "alice@promptly.ai",
     "steps": [
-      { "step": 1, "role": "reviewer", "assignedTo": "bob@promptly.ai", "action": "pending", "comment": null, "actedAt": null },
-      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "pending", "comment": null, "actedAt": null }
+      { "step": 1, "role": "reviewer", "assignedTo": "bob@promptly.ai", "action": "PENDING", "comment": null, "actedAt": null },
+      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "PENDING", "comment": null, "actedAt": null }
     ],
     "createdAt": { "$date": "2026-04-22T09:00:00Z" },
     "updatedAt": { "$date": "2026-04-22T11:30:00Z" }
@@ -65,8 +65,8 @@
     "targetEnvironment": "STAGING",
     "requestedBy": "carol@promptly.ai",
     "steps": [
-      { "step": 1, "role": "reviewer", "assignedTo": "bob@promptly.ai", "action": "rejected", "comment": "Missing test coverage for edge cases", "actedAt": { "$date": "2026-04-16T10:00:00Z" } },
-      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "pending", "comment": null, "actedAt": null }
+      { "step": 1, "role": "reviewer", "assignedTo": "bob@promptly.ai", "action": "REJECTED", "comment": "Missing test coverage for edge cases", "actedAt": { "$date": "2026-04-16T10:00:00Z" } },
+      { "step": 2, "role": "approver", "assignedTo": "auto", "action": "PENDING", "comment": null, "actedAt": null }
     ],
     "createdAt": { "$date": "2026-04-15T08:00:00Z" },
     "updatedAt": { "$date": "2026-04-16T10:00:00Z" }

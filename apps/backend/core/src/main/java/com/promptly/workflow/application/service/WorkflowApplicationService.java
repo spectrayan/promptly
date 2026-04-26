@@ -48,13 +48,13 @@ public class WorkflowApplicationService implements
                                 .step(1)
                                 .role("reviewer")
                                 .assignedTo("auto")
-                                .action("pending")
+                                .action("PENDING")
                                 .build(),
                         WorkflowStep.builder()
                                 .step(2)
                                 .role("approver")
                                 .assignedTo("auto")
-                                .action("pending")
+                                .action("PENDING")
                                 .build()
                 ))
                 .build();

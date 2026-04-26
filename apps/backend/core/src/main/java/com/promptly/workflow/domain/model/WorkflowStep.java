@@ -17,22 +17,22 @@ public class WorkflowStep {
     private int step;
     private String role;
     private String assignedTo;
-    private String action; // pending | approved | rejected
+    private String action; // PENDING | APPROVED | REJECTED
     private String comment;
     private Instant actedAt;
 
     public boolean isPending() {
-        return "pending".equalsIgnoreCase(action);
+        return "PENDING".equalsIgnoreCase(action);
     }
 
     public void approve(String comment) {
-        this.action = "approved";
+        this.action = "APPROVED";
         this.comment = comment;
         this.actedAt = Instant.now();
     }
 
     public void reject(String comment) {
-        this.action = "rejected";
+        this.action = "REJECTED";
         this.comment = comment;
         this.actedAt = Instant.now();
     }

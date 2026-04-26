@@ -29,28 +29,18 @@ public class Workflow extends AggregateRoot {
     private List<WorkflowStep> steps = new ArrayList<>();
 
     /**
-     * Approves the current step and advances the workflow.
-     * If all steps are approved, the workflow moves to APPROVED.
+     * Approves all remaining pending steps and marks the workflow as APPROVED.
+     * <p>
+     * In the current MVP flow a single "Approve" action from the UI
+     * is intended to complete the entire workflow.
      */
     public void approveCurrentStep(String comment) {
-        WorkflowStep step = getCurrentStepObj();
-        step.approve(comment);
+        steps.stream()
+                .filter(WorkflowStep::isPending)
+                .forEach(step -> step.approve(comment));
 
-        if (currentStep < steps.size()) {
-            currentStep++;
-            // Check if this was the last step
-            if (currentStep > steps.size()) {
-                currentStep = steps.size();
-            }
-        }
-
-        // If all steps are approved, mark workflow as approved
-        boolean allApproved = steps.stream().noneMatch(WorkflowStep::isPending);
-        if (allApproved) {
-            status = WorkflowStatus.APPROVED;
-        } else {
-            status = WorkflowStatus.IN_REVIEW;
-        }
+        currentStep = steps.size();
+        status = WorkflowStatus.APPROVED;
     }
 
     /**
