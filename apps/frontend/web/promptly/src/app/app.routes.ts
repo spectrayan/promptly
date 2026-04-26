@@ -92,6 +92,12 @@ export const routes: Routes = [
     title: 'Settings — Promptly',
     canActivate: [authGuard],
   },
+  {
+    path: 'profile',
+    loadComponent: () => import('./features/user-profile/user-profile.page').then(m => m.UserProfilePage),
+    title: 'User Profile — Promptly',
+    canActivate: [authGuard],
+  },
 
   // ── Legacy redirects (backward compat) ──
   { path: 'prompts', redirectTo: 'dashboard', pathMatch: 'full' },

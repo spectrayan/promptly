@@ -7,7 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthFacade } from '../../state/auth/auth.facade';
+import { HelpDocsService } from '../../core/services/help-docs.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,13 +17,16 @@ import { AuthFacade } from '../../state/auth/auth.facade';
   imports: [
     FormsModule, RouterLink,
     MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule,
+    MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule
   ],
   template: `
     <div class="login-container">
+      <button mat-icon-button class="floating-help-btn" (click)="helpDocs.toggle()" matTooltip="Help Docs">
+        <mat-icon>help_outline</mat-icon>
+      </button>
       <div class="login-card">
         <div class="logo-section">
-          <span class="logo-icon">⚡</span>
+          <img src="logo.png" alt="Promptly Logo" class="logo-image" />
           <h1 class="logo-title">Promptly</h1>
           <p class="logo-subtitle">Enterprise AI Prompt Governance</p>
         </div>
@@ -85,6 +90,21 @@ import { AuthFacade } from '../../state/auth/auth.facade';
       overflow: hidden;
     }
 
+    .floating-help-btn {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      transition: all var(--duration-fast);
+    }
+    .floating-help-btn:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
     /* Subtle ambient glow */
     .login-container::before {
       content: '';
@@ -124,11 +144,14 @@ import { AuthFacade } from '../../state/auth/auth.facade';
       margin-bottom: var(--space-10);
     }
 
-    .logo-icon {
-      font-size: 52px;
+    .logo-image {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto var(--space-4) auto;
       display: block;
-      margin-bottom: var(--space-3);
-      filter: drop-shadow(0 0 12px rgba(124, 77, 255, 0.3));
+      border-radius: var(--radius-lg);
+      box-shadow: 0 0 24px rgba(124, 77, 255, 0.4);
+      object-fit: cover;
     }
 
     .logo-title {
@@ -265,8 +288,9 @@ import { AuthFacade } from '../../state/auth/auth.facade';
         border-radius: var(--radius-lg);
       }
 
-      .logo-icon {
-        font-size: 40px;
+      .logo-image {
+        width: 56px;
+        height: 56px;
       }
 
       .logo-title {
@@ -286,6 +310,7 @@ import { AuthFacade } from '../../state/auth/auth.facade';
 })
 export class LoginPage {
   readonly auth = inject(AuthFacade);
+  readonly helpDocs = inject(HelpDocsService);
 
   email = '';
   password = '';

@@ -1,0 +1,119 @@
+<div class="page-header">
+  <h1>User Settings</h1>
+  <p>Manage your profile, avatar, and notification preferences</p>
+</div>
+
+<div class="settings-layout">
+  <!-- Profile Section -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>person</mat-icon>
+        Public Profile
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="form-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Display Name</mat-label>
+          <input matInput [(ngModel)]="displayName" placeholder="e.g. Alice Johnson" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Avatar URL</mat-label>
+          <input matInput [(ngModel)]="avatarUrl" placeholder="https://example.com/avatar.png" />
+          <mat-icon matSuffix>image</mat-icon>
+        </mat-form-field>
+
+        <div class="profile-info">
+          <mat-icon>info</mat-icon>
+          <span>Email address and Role are managed by your Organization Administrator.</span>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" (click)="saveProfile()" [disabled]="savingProfile() || !displayName">
+        @if (savingProfile()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        Save Profile
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Notification Preferences Section -->
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>notifications</mat-icon>
+        Notifications
+      </mat-card-title>
+      <mat-card-subtitle>
+        Project-specific settings for: <strong>{{ projectsFacade.selectedProject()?.name ?? 'No project' }}</strong>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (loading()) {
+        <div class="loading-center"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else {
+        <!-- Master Switches -->
+        <div class="section-label">Delivery Channels</div>
+        <div class="preferences-list">
+          <div class="preference-item">
+            <div class="preference-info">
+              <span class="preference-title">In-App Notifications</span>
+              <span class="preference-desc">Receive notifications in the top-right bell menu.</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="inAppEnabled"></mat-slide-toggle>
+          </div>
+
+          <div class="preference-item">
+            <div class="preference-info">
+              <span class="preference-title">Email Notifications</span>
+              <span class="preference-desc">Receive important alerts directly to your email inbox.</span>
+            </div>
+            <mat-slide-toggle [(ngModel)]="emailEnabled"></mat-slide-toggle>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <!-- Granular Event Type Toggles -->
+        <div class="section-label">Event Types</div>
+        <p class="section-hint">Mute specific event types you don't want to be notified about.</p>
+
+        @for (group of eventCategories; track group.category) {
+          <div class="event-category">
+            <div class="category-header">{{ group.category }}</div>
+            <div class="event-list">
+              @for (evt of group.events; track evt.key) {
+                <div class="event-item" [class.muted]="isEventMuted(evt.key)">
+                  <mat-icon class="event-icon">{{ evt.icon }}</mat-icon>
+                  <span class="event-title">{{ evt.title }}</span>
+                  <span class="event-key">{{ evt.key }}</span>
+                  <mat-slide-toggle
+                    [checked]="!isEventMuted(evt.key)"
+                    (change)="toggleEvent(evt.key)"
+                    class="event-toggle"
+                  ></mat-slide-toggle>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" (click)="savePreferences()" [disabled]="savingPrefs() || loading()">
+        @if (savingPrefs()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        Save Preferences
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
