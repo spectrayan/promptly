@@ -73,7 +73,7 @@
       "defaultConfiguration": "development"
     },
     "test": {
-      "executor": "@angular-devkit/build-angular:unit-test"
+      "executor": "@angular/build:unit-test"
     },
     "lint": {
       "executor": "@nx/eslint:lint"
