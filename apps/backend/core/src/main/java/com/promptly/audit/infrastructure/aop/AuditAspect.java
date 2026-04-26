@@ -1,7 +1,7 @@
 package com.promptly.audit.infrastructure.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.promptly.audit.application.port.out.AuditRepository;
+import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import com.promptly.shared.domain.DomainEvent;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuditAspect {
 
-    private final AuditRepository auditRepository;
+    private final AuditPersistencePort auditRepository;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .findAndRegisterModules();
 

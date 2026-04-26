@@ -1,6 +1,6 @@
 package com.promptly.project.infrastructure.persistence.repository;
 
-import com.promptly.project.application.port.out.ProjectRepository;
+import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.infrastructure.persistence.entity.ProjectDocument;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ProjectMongoAdapter implements ProjectRepository {
+public class ProjectMongoAdapter implements ProjectPersistencePort {
 
     private final ProjectReactiveMongoRepository mongoRepo;
     private final ProjectMemberReactiveMongoRepository memberRepo;

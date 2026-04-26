@@ -1,6 +1,6 @@
 package com.promptly.project.infrastructure.persistence.repository;
 
-import com.promptly.project.application.port.out.ProjectMemberRepository;
+import com.promptly.project.application.port.out.ProjectMemberPersistencePort;
 import com.promptly.project.domain.model.ProjectMember;
 import com.promptly.project.domain.model.ProjectRole;
 import com.promptly.project.infrastructure.persistence.entity.ProjectMemberDocument;
@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-public class ProjectMemberMongoAdapter implements ProjectMemberRepository {
+public class ProjectMemberMongoAdapter implements ProjectMemberPersistencePort {
 
     private final ProjectMemberReactiveMongoRepository mongoRepo;
 

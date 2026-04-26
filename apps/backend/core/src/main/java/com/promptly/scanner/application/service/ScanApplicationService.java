@@ -4,7 +4,7 @@ import com.promptly.prompt.PromptModuleApi;
 import com.promptly.scanner.ScanCompleted;
 import com.promptly.scanner.application.port.in.ScanPromptUseCase;
 import com.promptly.scanner.application.port.out.LlmScannerPort;
-import com.promptly.scanner.application.port.out.ScanResultRepository;
+import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
 import com.promptly.scanner.domain.model.ScanResult;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class ScanApplicationService implements ScanPromptUseCase {
 
-    private final ScanResultRepository scanResultRepository;
+    private final ScanResultPersistencePort scanResultRepository;
     private final LlmScannerPort llmScannerPort;
     private final PromptModuleApi promptModuleApi;
     private final ApplicationEventPublisher eventPublisher;
@@ -36,12 +36,12 @@ public class ScanApplicationService implements ScanPromptUseCase {
         return promptModuleApi.findById(promptId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Prompt", promptId)))
                 .flatMap(prompt -> {
-                    String latestContent = prompt.getVersions().isEmpty()
-                            ? ""
-                            : prompt.getVersions().get(prompt.getVersions().size() - 1).getContent();
+                    String latestContent = (prompt.latestContent() != null)
+                            ? prompt.latestContent()
+                            : "";
 
                     return Mono.fromCallable(() ->
-                                    llmScannerPort.analyzePrompt(promptId, prompt.getCurrentVersion(), latestContent)
+                                    llmScannerPort.analyzePrompt(promptId, prompt.currentVersion(), latestContent)
                             )
                             .subscribeOn(Schedulers.boundedElastic())
                             .flatMap(scanResultRepository::save)
@@ -50,7 +50,7 @@ public class ScanApplicationService implements ScanPromptUseCase {
                                         promptId, saved.getOverallScore(), saved.getStatus());
                                 eventPublisher.publishEvent(new ScanCompleted(
                                         saved.getId(), saved.getPromptId(),
-                                        prompt.getProjectId(),
+                                        prompt.projectId(),
                                         saved.getPromptVersion(), saved.getStatus(),
                                         saved.getOverallScore(), saved.getFindings().size()
                                 ));

@@ -1,6 +1,6 @@
 package com.promptly.notification.infrastructure.persistence.repository;
 
-import com.promptly.notification.application.port.out.NotificationRepository;
+import com.promptly.notification.application.port.out.NotificationPersistencePort;
 import com.promptly.notification.domain.model.Notification;
 import com.promptly.notification.infrastructure.persistence.entity.NotificationDocument;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 @Component
 @RequiredArgsConstructor
-public class NotificationMongoAdapter implements NotificationRepository {
+public class NotificationMongoAdapter implements NotificationPersistencePort {
 
     private final NotificationReactiveMongoRepository mongoRepo;
     private final ReactiveMongoTemplate mongoTemplate;

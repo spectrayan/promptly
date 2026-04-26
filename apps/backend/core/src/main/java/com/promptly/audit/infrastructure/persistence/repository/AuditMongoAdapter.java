@@ -1,6 +1,6 @@
 package com.promptly.audit.infrastructure.persistence.repository;
 
-import com.promptly.audit.application.port.out.AuditRepository;
+import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import com.promptly.audit.infrastructure.persistence.mapper.AuditPersistenceMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Adapter implementing the domain's AuditRepository port.
+ * Adapter implementing the domain's AuditPersistencePort port.
  * Write-only — no update or delete operations.
  */
 @Component
 @RequiredArgsConstructor
-public class AuditMongoAdapter implements AuditRepository {
+public class AuditMongoAdapter implements AuditPersistencePort {
 
     private final AuditReactiveMongoRepository mongoRepository;
     private final AuditPersistenceMapper mapper;

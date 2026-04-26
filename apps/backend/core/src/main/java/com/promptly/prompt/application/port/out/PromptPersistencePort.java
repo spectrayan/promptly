@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
  * <p>
  * Returns domain models — never MongoDB documents.
  */
-public interface PromptRepository {
+public interface PromptPersistencePort {
 
     Mono<Prompt> save(Prompt prompt);
 

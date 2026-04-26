@@ -1,6 +1,6 @@
 package com.promptly.audit.application.listener;
 
-import com.promptly.audit.application.port.out.AuditRepository;
+import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import com.promptly.prompt.PromptCreated;
 import com.promptly.prompt.PromptRolledBack;
@@ -33,7 +33,7 @@ import java.util.Map;
 @Deprecated(since = "0.0.2", forRemoval = true)
 public class AuditEventListener {
 
-    private final AuditRepository auditRepository;
+    private final AuditPersistencePort auditRepository;
 
     @Async
     @EventListener

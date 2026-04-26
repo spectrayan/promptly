@@ -1,6 +1,7 @@
 package com.promptly.llmconfig.infrastructure.web;
 
-import com.promptly.llmconfig.application.service.LlmConfigApplicationService;
+import com.promptly.llmconfig.application.port.in.ManageLlmConfigUseCase;
+import com.promptly.llmconfig.application.port.in.ResolveLlmConfigUseCase;
 import com.promptly.llmconfig.domain.model.ResolvedLlmConfig;
 import com.promptly.shared.config.CredentialEncryptionService;
 import com.promptly.shared.config.DeploymentProperties;
@@ -22,7 +23,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LlmConfigController {
 
-    private final LlmConfigApplicationService configService;
+    private final ResolveLlmConfigUseCase resolveConfigUseCase;
+    private final ManageLlmConfigUseCase manageConfigUseCase;
     private final CredentialEncryptionService encryptionService;
     private final DeploymentProperties deploymentProps;
 
@@ -35,7 +37,7 @@ public class LlmConfigController {
             @RequestParam String projectId,
             @RequestParam(defaultValue = "global") String feature) {
 
-        return configService.resolve(projectId, feature)
+        return resolveConfigUseCase.resolve(projectId, feature)
                 .map(resolved -> {
                     Map<String, Object> response = new HashMap<>();
                     response.put("config", buildConfigResponse(resolved));
@@ -54,7 +56,7 @@ public class LlmConfigController {
     public Mono<ResponseEntity<List<Map<String, Object>>>> getProjectConfigs(
             @RequestParam String projectId) {
 
-        return configService.getConfigsByProject(projectId)
+        return manageConfigUseCase.getConfigsByProject(projectId)
                 .map(config -> {
                     Map<String, Object> entry = new HashMap<>();
                     entry.put("feature", config.getFeature());
@@ -77,17 +79,18 @@ public class LlmConfigController {
      */
     @PutMapping
     public Mono<ResponseEntity<Map<String, Object>>> saveConfig(@RequestBody SaveLlmConfigRequest request) {
-        return configService.saveConfig(
-                        request.projectId(),
-                        request.feature(),
-                        request.provider(),
-                        request.model(),
-                        request.temperature(),
-                        request.maxTokens(),
-                        request.baseUrl(),
-                        request.apiKey(),
-                        "admin" // TODO: extract from auth context
-                )
+        var command = new ManageLlmConfigUseCase.SaveConfigCommand(
+                request.projectId(),
+                request.feature(),
+                request.provider(),
+                request.model(),
+                request.temperature(),
+                request.maxTokens(),
+                request.baseUrl(),
+                request.apiKey(),
+                "admin" // TODO: extract from auth context
+        );
+        return manageConfigUseCase.saveConfig(command)
                 .map(saved -> {
                     Map<String, Object> response = new HashMap<>();
                     response.put("status", "saved");
@@ -109,7 +112,7 @@ public class LlmConfigController {
             @RequestParam String projectId,
             @RequestParam(defaultValue = "global") String feature) {
 
-        return configService.resetConfig(projectId, feature)
+        return manageConfigUseCase.resetConfig(projectId, feature)
                 .then(Mono.just(ResponseEntity.ok(
                         Map.of("status", "reset", "message",
                                "Config for " + feature + " reset to platform defaults"))));

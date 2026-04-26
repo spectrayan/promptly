@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
  */
 public interface ApproveWorkflowUseCase {
 
-    Mono<Workflow> approveWorkflow(String workflowId, String approvedBy, String comment);
+    record ApproveWorkflowCommand(String workflowId, String approvedBy, String comment) {}
+
+    Mono<Workflow> approveWorkflow(ApproveWorkflowCommand command);
 
 }

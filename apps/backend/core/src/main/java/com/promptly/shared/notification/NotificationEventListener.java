@@ -1,6 +1,6 @@
 package com.promptly.shared.notification;
 
-import com.promptly.notification.application.port.in.NotificationUseCase;
+import com.promptly.notification.application.port.in.CreateNotificationUseCase;
 import com.promptly.notification.domain.model.NotificationEventType;
 import com.promptly.prompt.PromptCreated;
 import com.promptly.prompt.PromptUpdated;
@@ -19,13 +19,16 @@ import java.util.Map;
  * Central notification event listener.
  * <p>
  * Subscribes to domain events from all modules and delegates to
- * {@link NotificationUseCase} which handles:
+ * {@link CreateNotificationUseCase} which handles:
  * - Project settings check (is this event type enabled?)
  * - Member lookup (who should receive this notification?)
  * - User preference check (has this user muted this event type?)
  * - Persist to MongoDB
  * - SSE real-time push
  * - Email (when SMTP is configured)
+ * <p>
+ * Message content is derived from {@link NotificationEventType#resolveMessage(Map)}
+ * templates — no hardcoded strings in this listener.
  * <p>
  * All operations are fire-and-forget — failures never impact the originating business logic.
  */
@@ -34,8 +37,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class NotificationEventListener {
 
-    private final NotificationUseCase notificationUseCase;
+    private final CreateNotificationUseCase createNotificationUseCase;
     private final EmailNotificationPort email;
+    private final NotificationEmailTemplates emailTemplates;
 
     @EventListener
     void on(PromptCreated event) {
@@ -43,12 +47,8 @@ public class NotificationEventListener {
             log.warn("PromptCreated event missing projectId, skipping notification");
             return;
         }
-        notificationUseCase.createForProject(
-                event.projectId(),
-                NotificationEventType.PROMPT_CREATED,
-                "Prompt \"" + event.name() + "\" was created",
-                payload("promptId", event.promptId(), "name", event.name())
-        ).subscribe();
+        var payload = payload("promptId", event.promptId(), "name", event.name());
+        fireNotification(event.projectId(), NotificationEventType.PROMPT_CREATED, payload);
     }
 
     @EventListener
@@ -57,12 +57,8 @@ public class NotificationEventListener {
             log.warn("PromptUpdated event missing projectId, skipping notification");
             return;
         }
-        notificationUseCase.createForProject(
-                event.projectId(),
-                NotificationEventType.PROMPT_UPDATED,
-                "Prompt updated to version " + event.version(),
-                payload("promptId", event.promptId(), "version", event.version())
-        ).subscribe();
+        var payload = payload("promptId", event.promptId(), "version", event.version());
+        fireNotification(event.projectId(), NotificationEventType.PROMPT_UPDATED, payload);
     }
 
     @EventListener
@@ -71,19 +67,14 @@ public class NotificationEventListener {
             log.warn("WorkflowApproved event missing projectId, skipping notification");
             return;
         }
-        notificationUseCase.createForProject(
-                event.projectId(),
-                NotificationEventType.WORKFLOW_APPROVED,
-                "Approved by " + (event.approvedBy() != null ? event.approvedBy() : "unknown"),
-                payload("promptId", event.promptId(), "approvedBy", event.approvedBy())
-        ).subscribe();
+        var payload = payload("promptId", event.promptId(), "approvedBy", event.approvedBy());
+        fireNotification(event.projectId(), NotificationEventType.WORKFLOW_APPROVED, payload);
 
         // Email the requester directly (outside the fan-out)
         if (event.requesterEmail() != null) {
             email.send(event.requesterEmail(),
                     "Prompt Approved: " + event.promptName(),
-                    "<h3>Your prompt has been approved</h3>" +
-                    "<p><b>" + event.promptName() + "</b> was approved by " + event.approvedBy() + ".</p>");
+                    emailTemplates.approved(event.promptName(), event.approvedBy()));
         }
     }
 
@@ -93,22 +84,16 @@ public class NotificationEventListener {
             log.warn("WorkflowRejected event missing projectId, skipping notification");
             return;
         }
-        notificationUseCase.createForProject(
-                event.projectId(),
-                NotificationEventType.WORKFLOW_REJECTED,
-                "Rejected by " + (event.rejectedBy() != null ? event.rejectedBy() : "unknown") +
-                        (event.reason() != null ? ": " + event.reason() : ""),
-                payload("promptId", event.promptId(), "rejectedBy", event.rejectedBy(),
-                        "reason", event.reason() != null ? event.reason() : "")
-        ).subscribe();
+        var payload = payload("promptId", event.promptId(),
+                "rejectedBy", event.rejectedBy(),
+                "reason", event.reason() != null ? event.reason() : "");
+        fireNotification(event.projectId(), NotificationEventType.WORKFLOW_REJECTED, payload);
 
         // Email the requester directly
         if (event.requesterEmail() != null) {
             email.send(event.requesterEmail(),
                     "Prompt Rejected: " + event.promptName(),
-                    "<h3>Your prompt was rejected</h3>" +
-                    "<p><b>" + event.promptName() + "</b> was rejected by " + event.rejectedBy() + ".</p>" +
-                    "<p>Reason: " + (event.reason() != null ? event.reason() : "No reason provided") + "</p>");
+                    emailTemplates.rejected(event.promptName(), event.rejectedBy(), event.reason()));
         }
     }
 
@@ -122,17 +107,24 @@ public class NotificationEventListener {
                 ? NotificationEventType.SCAN_CRITICAL
                 : NotificationEventType.SCAN_COMPLETED;
 
-        String message = event.hasCriticalFindings()
-                ? "Critical findings detected! Score: " + event.overallScore()
-                : "Scan finished with score " + event.overallScore();
+        var payload = payload("promptId", event.promptId(),
+                "status", event.status(), "score", event.overallScore());
+        fireNotification(event.projectId(), type, payload);
+    }
 
-        notificationUseCase.createForProject(
-                event.projectId(),
-                type,
-                message,
-                payload("promptId", event.promptId(), "status", event.status(),
-                        "score", event.overallScore())
-        ).subscribe();
+    // ── Internal ─────────────────────────────────────────────────────
+
+    /**
+     * Fire-and-forget notification creation.
+     * Message is resolved from the event type's template.
+     */
+    private void fireNotification(String projectId, NotificationEventType type,
+                                   Map<String, Object> payload) {
+        String message = type.resolveMessage(payload);
+        createNotificationUseCase.createForProject(projectId, type, message, payload)
+                .doOnError(e -> log.warn("Notification fan-out failed: {}", e.getMessage()))
+                .onErrorComplete()
+                .subscribe();
     }
 
     /**

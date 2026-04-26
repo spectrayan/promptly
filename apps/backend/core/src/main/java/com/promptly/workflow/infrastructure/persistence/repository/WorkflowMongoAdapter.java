@@ -1,6 +1,6 @@
 package com.promptly.workflow.infrastructure.persistence.repository;
 
-import com.promptly.workflow.application.port.out.WorkflowRepository;
+import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
 import com.promptly.workflow.domain.model.WorkflowStatus;
 import com.promptly.workflow.infrastructure.persistence.mapper.WorkflowPersistenceMapper;
@@ -10,11 +10,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Adapter implementing the domain's WorkflowRepository port.
+ * Adapter implementing the domain's WorkflowPersistencePort port.
  */
 @Component
 @RequiredArgsConstructor
-public class WorkflowMongoAdapter implements WorkflowRepository {
+public class WorkflowMongoAdapter implements WorkflowPersistencePort {
 
     private final WorkflowReactiveMongoRepository mongoRepository;
     private final WorkflowPersistenceMapper mapper;

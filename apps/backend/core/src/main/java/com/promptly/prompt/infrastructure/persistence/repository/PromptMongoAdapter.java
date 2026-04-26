@@ -1,6 +1,6 @@
 package com.promptly.prompt.infrastructure.persistence.repository;
 
-import com.promptly.prompt.application.port.out.PromptRepository;
+import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.prompt.infrastructure.persistence.mapper.PromptPersistenceMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Adapter implementing the domain's PromptRepository port.
+ * Adapter implementing the domain's PromptPersistencePort port.
  * Converts between domain models and MongoDB documents using MapStruct.
  */
 @Component
 @RequiredArgsConstructor
-public class PromptMongoAdapter implements PromptRepository {
+public class PromptMongoAdapter implements PromptPersistencePort {
 
     private final PromptReactiveMongoRepository mongoRepository;
     private final PromptPersistenceMapper mapper;

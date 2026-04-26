@@ -1,6 +1,8 @@
 package com.promptly.llmconfig.application.service;
 
-import com.promptly.llmconfig.application.port.out.LlmConfigRepository;
+import com.promptly.llmconfig.application.port.in.ManageLlmConfigUseCase;
+import com.promptly.llmconfig.application.port.in.ResolveLlmConfigUseCase;
+import com.promptly.llmconfig.application.port.out.LlmConfigPersistencePort;
 import com.promptly.llmconfig.domain.model.LlmConfig;
 import com.promptly.llmconfig.domain.model.ResolvedLlmConfig;
 import com.promptly.llmconfig.domain.model.ResolvedLlmConfig.ConfigSource;
@@ -30,11 +32,11 @@ import java.util.Set;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LlmConfigApplicationService {
+public class LlmConfigApplicationService implements ResolveLlmConfigUseCase, ManageLlmConfigUseCase {
 
     private final LlmProperties yamlProps;
     private final DeploymentProperties deploymentProps;
-    private final LlmConfigRepository configRepo;
+    private final LlmConfigPersistencePort configRepo;
     private final CredentialEncryptionService encryptionService;
     private final Environment springEnv;
 
@@ -43,6 +45,7 @@ public class LlmConfigApplicationService {
     /**
      * Resolves the effective LLM configuration for a given project and feature.
      */
+    @Override
     public Mono<ResolvedLlmConfig> resolve(String projectId, String feature) {
         return configRepo.findByProjectIdAndFeature(projectId, feature)
                 .switchIfEmpty(configRepo.findByProjectIdAndFeature(projectId, "global"))
@@ -199,6 +202,7 @@ public class LlmConfigApplicationService {
     /**
      * Returns all LLM configs for a project (all features).
      */
+    @Override
     public Flux<LlmConfig> getConfigsByProject(String projectId) {
         return configRepo.findByProjectId(projectId);
     }
@@ -207,11 +211,17 @@ public class LlmConfigApplicationService {
      * Saves or updates an LLM config. If an API key is provided in plaintext,
      * it will be encrypted before storage (SaaS mode only).
      */
-    public Mono<LlmConfig> saveConfig(String projectId, String feature,
-                                       String provider, String model,
-                                       Double temperature, Integer maxTokens,
-                                       String baseUrl, String plaintextApiKey,
-                                       String updatedBy) {
+    @Override
+    public Mono<LlmConfig> saveConfig(SaveConfigCommand command) {
+        String projectId = command.projectId();
+        String feature = command.feature();
+        String provider = command.provider();
+        String model = command.model();
+        Double temperature = command.temperature();
+        Integer maxTokens = command.maxTokens();
+        String baseUrl = command.baseUrl();
+        String plaintextApiKey = command.plaintextApiKey();
+        String updatedBy = command.updatedBy();
 
         // In self-hosted mode, reject API key storage attempts
         if (plaintextApiKey != null && deploymentProps.isSelfHosted()) {
@@ -244,6 +254,7 @@ public class LlmConfigApplicationService {
     /**
      * Resets a project's feature config back to platform defaults.
      */
+    @Override
     public Mono<Void> resetConfig(String projectId, String feature) {
         return configRepo.deleteByProjectIdAndFeature(projectId, feature);
     }
@@ -253,6 +264,7 @@ public class LlmConfigApplicationService {
     /**
      * Returns which fields are locked by environment variables for a given feature.
      */
+    @Override
     public Set<String> getLockedFields(String feature) {
         if (deploymentProps.isSaas()) {
             return Set.of(); // SaaS: nothing locked, tenant controls all

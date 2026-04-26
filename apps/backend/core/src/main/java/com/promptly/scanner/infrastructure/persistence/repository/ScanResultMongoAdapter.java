@@ -1,6 +1,6 @@
 package com.promptly.scanner.infrastructure.persistence.repository;
 
-import com.promptly.scanner.application.port.out.ScanResultRepository;
+import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
 import com.promptly.scanner.domain.model.ScanResult;
 import com.promptly.scanner.infrastructure.persistence.mapper.ScanResultPersistenceMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Adapter implementing the domain's ScanResultRepository port.
+ * Adapter implementing the domain's ScanResultPersistencePort port.
  */
 @Component
 @RequiredArgsConstructor
-public class ScanResultMongoAdapter implements ScanResultRepository {
+public class ScanResultMongoAdapter implements ScanResultPersistencePort {
 
     private final ScanResultReactiveMongoRepository mongoRepository;
     private final ScanResultPersistenceMapper mapper;

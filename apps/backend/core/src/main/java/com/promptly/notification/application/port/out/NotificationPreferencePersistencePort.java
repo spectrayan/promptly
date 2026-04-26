@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 /**
  * Outbound port for notification preference persistence.
  */
-public interface NotificationPreferenceRepository {
+public interface NotificationPreferencePersistencePort {
 
     Mono<NotificationPreference> findByUserIdAndProjectId(String userId, String projectId);
 

@@ -2,7 +2,7 @@ package com.promptly.auth.application.service;
 
 import com.promptly.auth.application.port.in.AuthenticationUseCase;
 import com.promptly.auth.application.port.in.UserQueryUseCase;
-import com.promptly.auth.application.port.out.UserRepository;
+import com.promptly.auth.application.port.out.UserPersistencePort;
 import com.promptly.auth.domain.model.OrgRole;
 import com.promptly.auth.domain.model.User;
 import com.promptly.auth.domain.model.UserStatus;
@@ -25,7 +25,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class AuthApplicationService implements AuthenticationUseCase, UserQueryUseCase {
 
-    private final UserRepository userRepository;
+    private final UserPersistencePort userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 

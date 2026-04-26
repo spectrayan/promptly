@@ -1,8 +1,10 @@
 package com.promptly.project.application.service;
 
-import com.promptly.project.application.port.in.ProjectUseCase;
-import com.promptly.project.application.port.out.ProjectMemberRepository;
-import com.promptly.project.application.port.out.ProjectRepository;
+import com.promptly.project.application.port.in.CreateProjectUseCase;
+import com.promptly.project.application.port.in.GetProjectUseCase;
+import com.promptly.project.application.port.in.ManageProjectMembersUseCase;
+import com.promptly.project.application.port.out.ProjectMemberPersistencePort;
+import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.domain.model.ProjectMember;
 import com.promptly.project.domain.model.ProjectRole;
@@ -21,10 +23,10 @@ import java.time.Instant;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ProjectApplicationService implements ProjectUseCase {
+public class ProjectApplicationService implements CreateProjectUseCase, GetProjectUseCase, ManageProjectMembersUseCase {
 
-    private final ProjectRepository projectRepository;
-    private final ProjectMemberRepository memberRepository;
+    private final ProjectPersistencePort projectRepository;
+    private final ProjectMemberPersistencePort memberRepository;
 
     @Override
     public Mono<Project> createProject(CreateProjectCommand command) {
@@ -56,7 +58,7 @@ public class ProjectApplicationService implements ProjectUseCase {
                 })
                 .flatMap(project -> {
                     log.info("Creating OWNER membership for project: {}", project.getId());
-                    // Creator auto-becomes ADMIN
+                    // Creator auto-becomes OWNER
                     ProjectMember admin = ProjectMember.builder()
                             .projectId(project.getId())
                             .userId(command.createdBy())
@@ -84,8 +86,8 @@ public class ProjectApplicationService implements ProjectUseCase {
     }
 
     @Override
-    public Mono<ProjectMember> addMember(String projectId, String userId, ProjectRole role, String addedBy) {
-        return memberRepository.existsByProjectIdAndUserId(projectId, userId)
+    public Mono<ProjectMember> addMember(AddMemberCommand command) {
+        return memberRepository.existsByProjectIdAndUserId(command.projectId(), command.userId())
                 .flatMap(exists -> {
                     if (exists) {
                         return Mono.error(new DuplicateResourceException(
@@ -93,10 +95,10 @@ public class ProjectApplicationService implements ProjectUseCase {
                     }
 
                     ProjectMember member = ProjectMember.builder()
-                            .projectId(projectId)
-                            .userId(userId)
-                            .role(role)
-                            .addedBy(addedBy)
+                            .projectId(command.projectId())
+                            .userId(command.userId())
+                            .role(command.role())
+                            .addedBy(command.addedBy())
                             .addedAt(Instant.now())
                             .build();
 
@@ -116,11 +118,11 @@ public class ProjectApplicationService implements ProjectUseCase {
     }
 
     @Override
-    public Mono<ProjectMember> updateMember(String projectId, String userId, ProjectRole role) {
-        return memberRepository.findByProjectIdAndUserId(projectId, userId)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("ProjectMember", userId)))
+    public Mono<ProjectMember> updateMember(UpdateMemberCommand command) {
+        return memberRepository.findByProjectIdAndUserId(command.projectId(), command.userId())
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("ProjectMember", command.userId())))
                 .flatMap(member -> {
-                    member.setRole(role);
+                    member.setRole(command.role());
                     return memberRepository.save(member);
                 });
     }

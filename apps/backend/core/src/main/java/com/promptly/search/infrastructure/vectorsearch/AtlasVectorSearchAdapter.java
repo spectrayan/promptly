@@ -107,17 +107,17 @@ public class AtlasVectorSearchAdapter implements VectorSearchPort {
         return promptModuleApi.findAll()
                 .take(limit)
                 .map(prompt -> new SemanticSearchUseCase.SearchResult(
-                        prompt.getId(), prompt.getName(), prompt.getDescription(), 0.5
+                        prompt.id(), prompt.name(), prompt.description(), 0.5
                 ));
     }
 
     private Flux<SemanticSearchUseCase.SearchResult> fallbackSimilar(String promptId, int limit) {
         return promptModuleApi.findById(promptId)
-                .flatMapMany(prompt -> promptModuleApi.findByProjectId(prompt.getProjectId()))
-                .filter(p -> !p.getId().equals(promptId))
+                .flatMapMany(prompt -> promptModuleApi.findByProjectId(prompt.projectId()))
+                .filter(p -> !p.id().equals(promptId))
                 .take(limit)
                 .map(prompt -> new SemanticSearchUseCase.SearchResult(
-                        prompt.getId(), prompt.getName(), prompt.getDescription(), 0.7
+                        prompt.id(), prompt.name(), prompt.description(), 0.7
                 ));
     }
 

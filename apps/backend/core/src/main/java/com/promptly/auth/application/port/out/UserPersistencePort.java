@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 /**
  * Outbound port for user persistence.
  */
-public interface UserRepository {
+public interface UserPersistencePort {
 
     Mono<User> save(User user);
 

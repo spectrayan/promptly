@@ -3,7 +3,7 @@ package com.promptly.export.application.service;
 import com.promptly.export.domain.model.ExportManifest;
 import com.promptly.export.domain.model.PromptBundle;
 import com.promptly.prompt.PromptModuleApi;
-import com.promptly.prompt.domain.model.Prompt;
+import com.promptly.prompt.PromptProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -97,36 +97,25 @@ public class ExportApplicationService {
 
     // ─── Helpers ──────────────────────────────────────────────────
 
-    private PromptBundle toBundle(Prompt prompt) {
-        // Get latest version content
-        String content = "";
-        if (prompt.getVersions() != null && !prompt.getVersions().isEmpty()) {
-            content = prompt.getVersions().stream()
-                    .max(Comparator.comparingInt(v -> v.getVersionNumber()))
-                    .map(v -> v.getContent())
-                    .orElse("");
-        }
-
+    private PromptBundle toBundle(PromptProjection prompt) {
         return PromptBundle.builder()
-                .promptId(prompt.getId())
-                .name(prompt.getName())
-                .version(prompt.getCurrentVersion())
-                .content(content)
-                .contentFormat(prompt.getContentFormat() != null
-                        ? prompt.getContentFormat().name() : "TEXT")
-                .projectId(prompt.getProjectId())
+                .promptId(prompt.id())
+                .name(prompt.name())
+                .version(prompt.currentVersion())
+                .content(prompt.latestContent() != null ? prompt.latestContent() : "")
+                .contentFormat(prompt.contentFormat() != null ? prompt.contentFormat() : "TEXT")
+                .projectId(prompt.projectId())
                 .metadata(Map.of(
-                        "description", prompt.getDescription() != null ? prompt.getDescription() : "",
-                        "tags", prompt.getTags() != null ? prompt.getTags() : Set.of()
+                        "description", prompt.description() != null ? prompt.description() : ""
                 ))
                 .build();
     }
 
-    private boolean matchesDateRange(Prompt prompt, Instant after, Instant before) {
-        if (after != null && prompt.getUpdatedAt() != null && prompt.getUpdatedAt().isBefore(after)) {
+    private boolean matchesDateRange(PromptProjection prompt, Instant after, Instant before) {
+        if (after != null && prompt.updatedAt() != null && prompt.updatedAt().isBefore(after)) {
             return false;
         }
-        if (before != null && prompt.getUpdatedAt() != null && prompt.getUpdatedAt().isAfter(before)) {
+        if (before != null && prompt.updatedAt() != null && prompt.updatedAt().isAfter(before)) {
             return false;
         }
         return true;

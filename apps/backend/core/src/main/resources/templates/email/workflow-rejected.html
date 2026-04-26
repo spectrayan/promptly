@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1a1a1a; line-height: 1.6; }
+        .container { max-width: 560px; margin: 0 auto; padding: 24px; }
+        h3 { color: #dc2626; margin-bottom: 8px; }
+        .prompt-name { font-weight: 600; }
+        .reason { background: #fef2f2; border-left: 3px solid #dc2626; padding: 8px 12px; margin-top: 12px; }
+        .footer { margin-top: 24px; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3>Your prompt was rejected</h3>
+    <p><span class="prompt-name">{{promptName}}</span> was rejected by {{rejectedBy}}.</p>
+    <div class="reason">
+        <p><strong>Reason:</strong> {{reason}}</p>
+    </div>
+    <div class="footer">
+        <p>This is an automated notification from Promptly.</p>
+    </div>
+</div>
+</body>
+</html>

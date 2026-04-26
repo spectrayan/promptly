@@ -7,7 +7,7 @@ import com.promptly.infrastructure.in.web.dto.ScanResponse;
 import com.promptly.infrastructure.in.web.dto.ScanStatus;
 import com.promptly.infrastructure.in.web.dto.Severity;
 import com.promptly.scanner.application.port.in.ScanPromptUseCase;
-import com.promptly.scanner.application.port.out.ScanResultRepository;
+import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
 import com.promptly.scanner.domain.model.ScanResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +30,7 @@ import java.util.List;
 public class ScanController implements ScannerApi {
 
     private final ScanPromptUseCase scanPromptUseCase;
-    private final ScanResultRepository scanResultRepository;
+    private final ScanResultPersistencePort scanResultRepository;
 
     @Override
     public Mono<ResponseEntity<ScanResponse>> triggerScan(

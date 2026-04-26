@@ -9,7 +9,7 @@ import java.time.Instant;
 /**
  * Outbound port for notification persistence.
  */
-public interface NotificationRepository {
+public interface NotificationPersistencePort {
 
     Mono<Notification> save(Notification notification);
 

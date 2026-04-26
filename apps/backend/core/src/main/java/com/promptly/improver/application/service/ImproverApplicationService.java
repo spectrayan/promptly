@@ -28,9 +28,9 @@ public class ImproverApplicationService implements ImprovePromptUseCase {
         return promptModuleApi.findById(promptId)
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Prompt", promptId)))
                 .flatMap(prompt -> {
-                    String currentContent = prompt.getVersions().isEmpty()
-                            ? ""
-                            : prompt.getVersions().get(prompt.getVersions().size() - 1).getContent();
+                    String currentContent = (prompt.latestContent() != null)
+                            ? prompt.latestContent()
+                            : "";
 
                     return Mono.fromCallable(() -> llmImproverPort.improveContent(currentContent))
                             .subscribeOn(Schedulers.boundedElastic())

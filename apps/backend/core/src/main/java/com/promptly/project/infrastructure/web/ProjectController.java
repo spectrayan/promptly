@@ -2,7 +2,9 @@ package com.promptly.project.infrastructure.web;
 
 import com.promptly.infrastructure.in.web.api.ProjectsApi;
 import com.promptly.infrastructure.in.web.dto.*;
-import com.promptly.project.application.port.in.ProjectUseCase;
+import com.promptly.project.application.port.in.CreateProjectUseCase;
+import com.promptly.project.application.port.in.GetProjectUseCase;
+import com.promptly.project.application.port.in.ManageProjectMembersUseCase;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.domain.model.ProjectMember;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +24,15 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class ProjectController implements ProjectsApi {
 
-    private final ProjectUseCase projectUseCase;
+    private final CreateProjectUseCase createProjectUseCase;
+    private final GetProjectUseCase getProjectUseCase;
+    private final ManageProjectMembersUseCase manageMembersUseCase;
     private final com.promptly.auth.application.port.in.UserQueryUseCase userQueryUseCase;
 
     @Override
     public Mono<ResponseEntity<Flux<ProjectResponse>>> listProjects(ServerWebExchange exchange) {
         return getCurrentUserId()
-                .flatMap(userId -> projectUseCase.listProjects(userId)
+                .flatMap(userId -> getProjectUseCase.listProjects(userId)
                         .map(this::toResponse)
                         .collectList()
                         .map(list -> ResponseEntity.ok(Flux.fromIterable(list)))
@@ -40,7 +44,7 @@ public class ProjectController implements ProjectsApi {
             Mono<CreateProjectRequest> request, ServerWebExchange exchange) {
         return getCurrentUserId()
                 .flatMap(userId -> request.flatMap(req ->
-                        projectUseCase.createProject(new ProjectUseCase.CreateProjectCommand(
+                        createProjectUseCase.createProject(new CreateProjectUseCase.CreateProjectCommand(
                                 req.getName(), req.getDescription(),
                                 req.getTags() != null ? req.getTags() : new ArrayList<>(),
                                 userId
@@ -51,14 +55,14 @@ public class ProjectController implements ProjectsApi {
 
     @Override
     public Mono<ResponseEntity<ProjectResponse>> getProject(String id, ServerWebExchange exchange) {
-        return projectUseCase.getProject(id)
+        return getProjectUseCase.getProject(id)
                 .map(project -> ResponseEntity.ok(toResponse(project)));
     }
 
     @Override
     public Mono<ResponseEntity<Flux<ProjectMemberResponse>>> listProjectMembers(
             String projectId, ServerWebExchange exchange) {
-        return projectUseCase.listMembers(projectId)
+        return manageMembersUseCase.listMembers(projectId)
                 .flatMap(this::toMemberResponseAsync)
                 .collectList()
                 .map(list -> ResponseEntity.ok(Flux.fromIterable(list)));
@@ -69,8 +73,9 @@ public class ProjectController implements ProjectsApi {
             String projectId, Mono<AddMemberRequest> request, ServerWebExchange exchange) {
         return getCurrentUserId().flatMap(userId ->
                 request.flatMap(req ->
-                        projectUseCase.addMember(projectId, req.getUserId(),
-                                com.promptly.project.domain.model.ProjectRole.valueOf(req.getRole().name()), userId)
+                        manageMembersUseCase.addMember(new ManageProjectMembersUseCase.AddMemberCommand(
+                                projectId, req.getUserId(),
+                                com.promptly.project.domain.model.ProjectRole.valueOf(req.getRole().name()), userId))
                 )
         ).flatMap(this::toMemberResponseAsync)
          .map(member -> ResponseEntity.status(HttpStatus.CREATED).body(member));
@@ -80,8 +85,9 @@ public class ProjectController implements ProjectsApi {
     public Mono<ResponseEntity<ProjectMemberResponse>> updateProjectMember(
             String projectId, String userId, Mono<UpdateMemberRequest> request, ServerWebExchange exchange) {
         return request.flatMap(req ->
-                projectUseCase.updateMember(projectId, userId,
-                        com.promptly.project.domain.model.ProjectRole.valueOf(req.getRole().name()))
+                manageMembersUseCase.updateMember(new ManageProjectMembersUseCase.UpdateMemberCommand(
+                        projectId, userId,
+                        com.promptly.project.domain.model.ProjectRole.valueOf(req.getRole().name())))
         ).flatMap(this::toMemberResponseAsync)
          .map(ResponseEntity::ok);
     }
@@ -89,7 +95,7 @@ public class ProjectController implements ProjectsApi {
     @Override
     public Mono<ResponseEntity<Void>> removeProjectMember(
             String projectId, String userId, ServerWebExchange exchange) {
-        return projectUseCase.removeMember(projectId, userId)
+        return manageMembersUseCase.removeMember(projectId, userId)
                 .thenReturn(ResponseEntity.noContent().build());
     }
 

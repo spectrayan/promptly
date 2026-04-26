@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 /**
  * Outbound port for workflow persistence.
  */
-public interface WorkflowRepository {
+public interface WorkflowPersistencePort {
 
     Mono<Workflow> save(Workflow workflow);
 

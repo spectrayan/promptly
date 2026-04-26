@@ -2,7 +2,7 @@ package com.promptly.audit.infrastructure.web;
 
 import com.promptly.infrastructure.in.web.api.AuditApi;
 import com.promptly.infrastructure.in.web.dto.AuditResponse;
-import com.promptly.audit.application.port.out.AuditRepository;
+import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.time.ZoneOffset;
 @RequiredArgsConstructor
 public class AuditController implements AuditApi {
 
-    private final AuditRepository auditRepository;
+    private final AuditPersistencePort auditRepository;
 
     @Override
     public Mono<ResponseEntity<Flux<AuditResponse>>> getAuditLogs(

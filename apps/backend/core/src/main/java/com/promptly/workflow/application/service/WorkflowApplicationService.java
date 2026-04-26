@@ -5,7 +5,7 @@ import com.promptly.workflow.ReviewSubmitted;
 import com.promptly.workflow.WorkflowApproved;
 import com.promptly.workflow.WorkflowRejected;
 import com.promptly.workflow.application.port.in.*;
-import com.promptly.workflow.application.port.out.WorkflowRepository;
+import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
 import com.promptly.workflow.domain.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class WorkflowApplicationService implements
         RejectWorkflowUseCase,
         GetWorkflowUseCase {
 
-    private final WorkflowRepository workflowRepository;
+    private final WorkflowPersistencePort workflowRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -70,12 +70,12 @@ public class WorkflowApplicationService implements
     }
 
     @Override
-    public Mono<Workflow> approveWorkflow(String workflowId, String approvedBy, String comment) {
-        log.info("Approving workflow: id={}", workflowId);
-        return workflowRepository.findById(workflowId)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", workflowId)))
+    public Mono<Workflow> approveWorkflow(ApproveWorkflowCommand command) {
+        log.info("Approving workflow: id={}", command.workflowId());
+        return workflowRepository.findById(command.workflowId())
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", command.workflowId())))
                 .flatMap(workflow -> {
-                    workflow.approveCurrentStep(comment);
+                    workflow.approveCurrentStep(command.comment());
                     return workflowRepository.save(workflow)
                             .doOnSuccess(saved -> {
                                 if (saved.getStatus() == WorkflowStatus.APPROVED) {
@@ -84,7 +84,7 @@ public class WorkflowApplicationService implements
                                             saved.getId(), saved.getPromptId(),
                                             saved.getPromptId(),
                                             saved.getProjectId(),
-                                            approvedBy,
+                                            command.approvedBy(),
                                             saved.getRequestedBy()
                                     ));
                                 }
@@ -93,12 +93,12 @@ public class WorkflowApplicationService implements
     }
 
     @Override
-    public Mono<Workflow> rejectWorkflow(String workflowId, String rejectedBy, String reason) {
-        log.info("Rejecting workflow: id={}", workflowId);
-        return workflowRepository.findById(workflowId)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", workflowId)))
+    public Mono<Workflow> rejectWorkflow(RejectWorkflowCommand command) {
+        log.info("Rejecting workflow: id={}", command.workflowId());
+        return workflowRepository.findById(command.workflowId())
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", command.workflowId())))
                 .flatMap(workflow -> {
-                    workflow.rejectCurrentStep(reason);
+                    workflow.rejectCurrentStep(command.reason());
                     return workflowRepository.save(workflow)
                             .doOnSuccess(saved -> {
                                 log.info("Workflow rejected: id={}", saved.getId());
@@ -106,7 +106,7 @@ public class WorkflowApplicationService implements
                                         saved.getId(), saved.getPromptId(),
                                         saved.getPromptId(),
                                         saved.getProjectId(),
-                                        rejectedBy, reason,
+                                        command.rejectedBy(), command.reason(),
                                         saved.getRequestedBy()
                                 ));
                             });

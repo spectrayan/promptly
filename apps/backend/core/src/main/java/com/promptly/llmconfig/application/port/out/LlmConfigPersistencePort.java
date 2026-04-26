@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 /**
  * Outbound port for LLM config persistence.
  */
-public interface LlmConfigRepository {
+public interface LlmConfigPersistencePort {
 
     Mono<LlmConfig> findByProjectIdAndFeature(String projectId, String feature);
 

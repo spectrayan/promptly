@@ -1,6 +1,6 @@
 package com.promptly.llmconfig.infrastructure.persistence.repository;
 
-import com.promptly.llmconfig.application.port.out.LlmConfigRepository;
+import com.promptly.llmconfig.application.port.out.LlmConfigPersistencePort;
 import com.promptly.llmconfig.domain.model.LlmConfig;
 import com.promptly.llmconfig.infrastructure.persistence.entity.LlmConfigDocument;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * MongoDB adapter implementing the LlmConfigRepository outbound port.
+ * MongoDB adapter implementing the LlmConfigPersistencePort outbound port.
  */
 @Repository
 @RequiredArgsConstructor
-public class LlmConfigMongoAdapter implements LlmConfigRepository {
+public class LlmConfigMongoAdapter implements LlmConfigPersistencePort {
 
     private final LlmConfigReactiveMongoRepository mongoRepo;
 

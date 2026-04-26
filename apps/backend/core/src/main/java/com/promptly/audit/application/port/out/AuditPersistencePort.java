@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
  * Outbound port for audit log persistence.
  * Write-only in application code — no update/delete operations.
  */
-public interface AuditRepository {
+public interface AuditPersistencePort {
 
     Mono<AuditEntry> save(AuditEntry entry);
 

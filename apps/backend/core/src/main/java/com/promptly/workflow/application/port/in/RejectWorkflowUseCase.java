@@ -8,6 +8,8 @@ import reactor.core.publisher.Mono;
  */
 public interface RejectWorkflowUseCase {
 
-    Mono<Workflow> rejectWorkflow(String workflowId, String rejectedBy, String reason);
+    record RejectWorkflowCommand(String workflowId, String rejectedBy, String reason) {}
+
+    Mono<Workflow> rejectWorkflow(RejectWorkflowCommand command);
 
 }

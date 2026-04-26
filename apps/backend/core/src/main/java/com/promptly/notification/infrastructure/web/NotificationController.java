@@ -1,6 +1,8 @@
 package com.promptly.notification.infrastructure.web;
 
-import com.promptly.notification.application.port.in.NotificationUseCase;
+import com.promptly.notification.application.port.in.CreateNotificationUseCase;
+import com.promptly.notification.application.port.in.ManageNotificationPreferencesUseCase;
+import com.promptly.notification.application.port.in.QueryNotificationUseCase;
 import com.promptly.notification.domain.model.Notification;
 import com.promptly.notification.domain.model.NotificationEventType;
 import com.promptly.notification.domain.model.NotificationPreference;
@@ -25,7 +27,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationUseCase notificationUseCase;
+    private final QueryNotificationUseCase queryNotificationUseCase;
+    private final ManageNotificationPreferencesUseCase managePreferencesUseCase;
 
     /**
      * Cursor-based notification list.
@@ -43,7 +46,7 @@ public class NotificationController {
         Instant cursor = before != null ? Instant.parse(before) : null;
         int fetchLimit = Math.min(limit, 50); // Cap at 50
 
-        return notificationUseCase.getByUserAndProject(userId, projectId, unreadOnly, cursor, fetchLimit + 1)
+        return queryNotificationUseCase.getByUserAndProject(userId, projectId, unreadOnly, cursor, fetchLimit + 1)
                 .collectList()
                 .map(items -> {
                     boolean hasMore = items.size() > fetchLimit;
@@ -69,7 +72,7 @@ public class NotificationController {
             @RequestParam String projectId) {
 
         String userId = principal.getName();
-        return notificationUseCase.countUnread(userId, projectId)
+        return queryNotificationUseCase.countUnread(userId, projectId)
                 .map(count -> ResponseEntity.ok(Map.of("unread", count)));
     }
 
@@ -82,7 +85,7 @@ public class NotificationController {
             Principal principal,
             @PathVariable String id) {
 
-        return notificationUseCase.markAsRead(id, principal.getName())
+        return queryNotificationUseCase.markAsRead(id, principal.getName())
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()));
     }
 
@@ -95,7 +98,7 @@ public class NotificationController {
             Principal principal,
             @RequestParam String projectId) {
 
-        return notificationUseCase.markAllRead(principal.getName(), projectId)
+        return queryNotificationUseCase.markAllRead(principal.getName(), projectId)
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()));
     }
 
@@ -108,7 +111,7 @@ public class NotificationController {
             Principal principal,
             @PathVariable String id) {
 
-        return notificationUseCase.dismiss(id, principal.getName())
+        return queryNotificationUseCase.dismiss(id, principal.getName())
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()));
     }
 
@@ -123,7 +126,7 @@ public class NotificationController {
             Principal principal,
             @RequestParam String projectId) {
 
-        return notificationUseCase.getPreferences(principal.getName(), projectId)
+        return managePreferencesUseCase.getPreferences(principal.getName(), projectId)
                 .map(pref -> ResponseEntity.ok(prefToResponse(pref)));
     }
 
@@ -148,7 +151,7 @@ public class NotificationController {
                 .emailEnabled(emailEnabled)
                 .build();
 
-        return notificationUseCase.updatePreferences(principal.getName(), projectId, pref)
+        return managePreferencesUseCase.updatePreferences(principal.getName(), projectId, pref)
                 .map(saved -> ResponseEntity.ok(prefToResponse(saved)));
     }
 
@@ -161,7 +164,7 @@ public class NotificationController {
     public Mono<ResponseEntity<Map<String, Object>>> getProjectSettings(
             @RequestParam String projectId) {
 
-        return notificationUseCase.getProjectSettings(projectId)
+        return managePreferencesUseCase.getProjectSettings(projectId)
                 .map(s -> ResponseEntity.ok(settingsToResponse(s)));
     }
 
@@ -181,7 +184,7 @@ public class NotificationController {
                 .enabledEvents(new HashSet<>(enabledList))
                 .build();
 
-        return notificationUseCase.updateProjectSettings(projectId, settings)
+        return managePreferencesUseCase.updateProjectSettings(projectId, settings)
                 .map(saved -> ResponseEntity.ok(settingsToResponse(saved)));
     }
 

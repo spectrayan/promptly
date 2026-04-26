@@ -1,6 +1,6 @@
 package com.promptly.project.infrastructure.security;
 
-import com.promptly.project.application.port.out.ProjectMemberRepository;
+import com.promptly.project.application.port.out.ProjectMemberPersistencePort;
 import com.promptly.project.domain.model.ProjectRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProjectAuthorizationService {
 
-    private final ProjectMemberRepository memberRepository;
+    private final ProjectMemberPersistencePort memberRepository;
 
     /** Minimum roles needed per action */
     private static final Set<ProjectRole> WRITE_ROLES = Set.of(

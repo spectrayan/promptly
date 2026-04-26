@@ -103,7 +103,8 @@ public class PromptController implements PromptsApi {
     @Override
     public Mono<ResponseEntity<PromptResponse>> rollbackPrompt(
             String id, Integer targetVersion, String author, ServerWebExchange exchange) {
-        return rollbackPromptUseCase.rollbackToVersion(id, targetVersion, author)
+        var command = new RollbackPromptUseCase.RollbackPromptCommand(id, targetVersion, author);
+        return rollbackPromptUseCase.rollbackToVersion(command)
                 .map(mapper::toPromptResponse)
                 .map(ResponseEntity::ok);
     }

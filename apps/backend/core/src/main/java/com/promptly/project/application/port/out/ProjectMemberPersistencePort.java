@@ -5,7 +5,7 @@ import com.promptly.project.domain.model.ProjectRole;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ProjectMemberRepository {
+public interface ProjectMemberPersistencePort {
     Mono<ProjectMember> save(ProjectMember member);
     Flux<ProjectMember> findByProjectId(String projectId);
     Flux<ProjectMember> findByUserId(String userId);

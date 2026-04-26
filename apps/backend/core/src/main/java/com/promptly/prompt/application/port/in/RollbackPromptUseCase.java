@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono;
  */
 public interface RollbackPromptUseCase {
 
-    Mono<Prompt> rollbackToVersion(String id, int targetVersion, String author);
+    record RollbackPromptCommand(String promptId, int targetVersion, String author) {}
+
+    Mono<Prompt> rollbackToVersion(RollbackPromptCommand command);
 
 }

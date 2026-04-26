@@ -1,6 +1,6 @@
 package com.promptly.auth.infrastructure.persistence.repository;
 
-import com.promptly.auth.application.port.out.UserRepository;
+import com.promptly.auth.application.port.out.UserPersistencePort;
 import com.promptly.auth.domain.model.OrgRole;
 import com.promptly.auth.domain.model.User;
 import com.promptly.auth.domain.model.UserStatus;
@@ -11,11 +11,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Adapter implementing the UserRepository port using reactive MongoDB.
+ * Adapter implementing the UserPersistencePort port using reactive MongoDB.
  */
 @Component
 @RequiredArgsConstructor
-public class UserMongoAdapter implements UserRepository {
+public class UserMongoAdapter implements UserPersistencePort {
 
     private final UserReactiveMongoRepository mongoRepository;
 

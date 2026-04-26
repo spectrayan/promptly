@@ -25,7 +25,7 @@ public class SearchApplicationService implements SemanticSearchUseCase {
 
     @Override
     public Flux<SearchResult> search(String query) {
-        log.info("Semantic search: query='{}'", query);
+        log.debug("Semantic search: query='{}'", query);
 
         return Mono.fromCallable(() -> embeddingPort.generateEmbedding(query))
                 .subscribeOn(Schedulers.boundedElastic())
@@ -34,13 +34,13 @@ public class SearchApplicationService implements SemanticSearchUseCase {
 
     @Override
     public Flux<SearchResult> findSimilar(String promptId) {
-        log.info("Finding similar prompts: promptId={}", promptId);
+        log.debug("Finding similar prompts: promptId={}", promptId);
         return vectorSearchPort.findSimilarByPromptId(promptId, 5);
     }
 
     @Override
     public Mono<DuplicateCheckResult> checkDuplicates(String promptId) {
-        log.info("Checking duplicates for prompt: {}", promptId);
+        log.debug("Checking duplicates for prompt: {}", promptId);
         return findSimilar(promptId)
                 .filter(r -> r.score() > 0.95)
                 .collectList()
@@ -58,9 +58,9 @@ public class SearchApplicationService implements SemanticSearchUseCase {
     public Mono<Void> generateAndStoreEmbedding(String promptId) {
         return promptModuleApi.findById(promptId)
                 .flatMap(prompt -> {
-                    String content = prompt.getVersions().isEmpty()
-                            ? prompt.getName() + " " + prompt.getDescription()
-                            : prompt.getVersions().get(prompt.getVersions().size() - 1).getContent();
+                    String content = (prompt.latestContent() != null && !prompt.latestContent().isBlank())
+                            ? prompt.latestContent()
+                            : prompt.name() + " " + (prompt.description() != null ? prompt.description() : "");
 
                     return Mono.fromCallable(() -> embeddingPort.generateEmbedding(content))
                             .subscribeOn(Schedulers.boundedElastic())

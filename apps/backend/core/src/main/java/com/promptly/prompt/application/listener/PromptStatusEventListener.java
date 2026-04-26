@@ -1,6 +1,6 @@
 package com.promptly.prompt.application.listener;
 
-import com.promptly.prompt.application.port.out.PromptRepository;
+import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.workflow.ReviewSubmitted;
 import com.promptly.workflow.WorkflowApproved;
 import com.promptly.workflow.WorkflowRejected;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PromptStatusEventListener {
 
-    private final PromptRepository promptRepository;
+    private final PromptPersistencePort promptRepository;
 
     @EventListener
     void on(ReviewSubmitted event) {
@@ -40,6 +40,7 @@ public class PromptStatusEventListener {
                 .flatMap(promptRepository::save)
                 .doOnError(err -> log.warn("Failed to update prompt status on ReviewSubmitted: {}",
                         err.getMessage()))
+                .onErrorComplete()
                 .subscribe();
     }
 
@@ -54,6 +55,7 @@ public class PromptStatusEventListener {
                 .flatMap(promptRepository::save)
                 .doOnError(err -> log.warn("Failed to update prompt status on WorkflowApproved: {}",
                         err.getMessage()))
+                .onErrorComplete()
                 .subscribe();
     }
 
@@ -68,6 +70,7 @@ public class PromptStatusEventListener {
                 .flatMap(promptRepository::save)
                 .doOnError(err -> log.warn("Failed to update prompt status on WorkflowRejected: {}",
                         err.getMessage()))
+                .onErrorComplete()
                 .subscribe();
     }
 }

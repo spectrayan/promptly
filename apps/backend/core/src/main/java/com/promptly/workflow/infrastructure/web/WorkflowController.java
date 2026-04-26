@@ -7,9 +7,9 @@ import com.promptly.infrastructure.in.web.dto.StepAction;
 import com.promptly.infrastructure.in.web.dto.WorkflowResponse;
 import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
 import com.promptly.infrastructure.in.web.dto.WorkflowStepResponse;
-import com.promptly.prompt.application.port.out.PromptRepository;
+import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.workflow.application.port.in.*;
-import com.promptly.workflow.application.port.out.WorkflowRepository;
+import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,8 +38,8 @@ public class WorkflowController implements WorkflowsApi {
     private final ApproveWorkflowUseCase approveWorkflowUseCase;
     private final RejectWorkflowUseCase rejectWorkflowUseCase;
     private final GetWorkflowUseCase getWorkflowUseCase;
-    private final WorkflowRepository workflowRepository;
-    private final PromptRepository promptRepository;
+    private final WorkflowPersistencePort workflowRepository;
+    private final PromptPersistencePort promptRepository;
 
     @Override
     public Mono<ResponseEntity<WorkflowResponse>> submitForReview(
@@ -97,7 +97,8 @@ public class WorkflowController implements WorkflowsApi {
     public Mono<ResponseEntity<WorkflowResponse>> approveWorkflow(
             String id, Mono<ApproveRejectRequest> approveRejectRequest, ServerWebExchange exchange) {
         return approveRejectRequest
-                .flatMap(req -> approveWorkflowUseCase.approveWorkflow(id, req.getActor(), req.getComment()))
+                .map(req -> new ApproveWorkflowUseCase.ApproveWorkflowCommand(id, req.getActor(), req.getComment()))
+                .flatMap(approveWorkflowUseCase::approveWorkflow)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok);
     }
@@ -106,7 +107,8 @@ public class WorkflowController implements WorkflowsApi {
     public Mono<ResponseEntity<WorkflowResponse>> rejectWorkflow(
             String id, Mono<ApproveRejectRequest> approveRejectRequest, ServerWebExchange exchange) {
         return approveRejectRequest
-                .flatMap(req -> rejectWorkflowUseCase.rejectWorkflow(id, req.getActor(), req.getComment()))
+                .map(req -> new RejectWorkflowUseCase.RejectWorkflowCommand(id, req.getActor(), req.getComment()))
+                .flatMap(rejectWorkflowUseCase::rejectWorkflow)
                 .map(this::toResponse)
                 .map(ResponseEntity::ok);
     }

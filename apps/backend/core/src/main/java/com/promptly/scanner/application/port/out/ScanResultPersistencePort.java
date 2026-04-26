@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 /**
  * Outbound port for scan result persistence.
  */
-public interface ScanResultRepository {
+public interface ScanResultPersistencePort {
 
     Mono<ScanResult> save(ScanResult scanResult);
 
