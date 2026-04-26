@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,7 @@ import { ProjectsFacade } from '../../../state/projects/projects.facade';
 import { CreateProjectRequest } from '@promptly/client';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-project-creation-modal',
   standalone: true,
   imports: [

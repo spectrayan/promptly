@@ -99,5 +99,12 @@ export const routes: Routes = [
   { path: 'scanner', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'audit', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'projects/settings', redirectTo: 'dashboard', pathMatch: 'full' },
+
+  // ── Catch-all 404 ──
+  {
+    path: '**',
+    loadComponent: () => import('./features/not-found/not-found.page').then(m => m.NotFoundPage),
+    title: 'Not Found — Promptly',
+  },
 ];
 

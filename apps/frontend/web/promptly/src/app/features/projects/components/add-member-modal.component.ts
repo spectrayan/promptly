@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AsyncPipe } from '@angular/common';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -12,6 +12,7 @@ import { debounceTime, switchMap, map, startWith } from 'rxjs/operators';
 import { AuthService, UserResponse, ProjectRole } from '@promptly/client';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-add-member-modal',
   standalone: true,
   imports: [

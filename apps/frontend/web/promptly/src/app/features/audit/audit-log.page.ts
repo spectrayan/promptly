@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { DatePipe, SlicePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -31,10 +31,9 @@ import { AuditFacade } from '../../state/audit/audit.facade';
   templateUrl: './audit-log.page.html',
   styleUrl: './audit-log.page.scss',
 })
-export class AuditLogPage implements OnInit, OnDestroy {
+export class AuditLogPage {
   readonly facade = inject(AuditFacade);
   private readonly route = inject(ActivatedRoute);
-  private paramSub?: Subscription;
   displayedColumns = ['action', 'resourceType', 'resourceId', 'actorUserId', 'timestamp'];
 
   // ── Filter signals ────────────────────────────────────────────
@@ -118,15 +117,11 @@ export class AuditLogPage implements OnInit, OnDestroy {
     !!this.dateToValue()
   );
 
-  ngOnInit(): void {
-    this.paramSub = this.route.paramMap.subscribe(params => {
+  constructor() {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
       const projectId = params.get('projectId') ?? undefined;
       this.facade.loadLogs(projectId);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.paramSub?.unsubscribe();
   }
 
   actionClass(action: string | undefined): string {

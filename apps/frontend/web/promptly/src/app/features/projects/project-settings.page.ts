@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, effect } from '@angular/core';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,10 +12,11 @@ import { ProjectRole } from '@promptly/client';
 import { AddMemberModalComponent } from './components/add-member-modal.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-project-settings',
   standalone: true,
   imports: [
-    CommonModule,
+
     MatCardModule,
     MatButtonModule,
     MatIconModule,

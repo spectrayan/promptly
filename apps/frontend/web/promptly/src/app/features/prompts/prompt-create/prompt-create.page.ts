@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -18,6 +18,7 @@ import { ProjectsFacade } from '../../../state/projects/projects.facade';
 import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-prompt-create',
   imports: [
     FormsModule, RouterLink,

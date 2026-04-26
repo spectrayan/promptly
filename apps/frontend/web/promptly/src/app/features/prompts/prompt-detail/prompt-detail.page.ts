@@ -130,7 +130,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
     this.facade.updatePrompt(id, {
       content: this.editContent,
       changeMessage: this.editChangeMessage || 'Updated via UI',
-      author: 'current-user',
+      author: this.auth.user()?.id ?? 'unknown',
     });
 
     this.editing.set(false);
@@ -162,7 +162,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
         projectId: result.projectId ?? p.projectId!,
         contentFormat: (p.contentFormat as any) ?? 'TEXT',
         content: p.latestContent ?? '',
-        author: 'current-user',
+        author: this.auth.user()?.id ?? 'unknown',
       });
       this.snackBar.open(`Cloned as "${result.name}" — redirecting...`, 'OK', { duration: 3000 });
       setTimeout(() => {
@@ -193,7 +193,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
     const suggestion = this.improverFacade.suggestion();
     if (!id || !suggestion?.improvedContent) return;
 
-    this.improverFacade.applyImprovement(id, suggestion.improvedContent, 'current-user');
+    this.improverFacade.applyImprovement(id, suggestion.improvedContent, this.auth.user()?.id ?? 'unknown');
     this.snackBar.open('Improvement applied as new version!', 'OK', { duration: 3000 });
 
     // Reload prompt to reflect the new version
@@ -215,7 +215,7 @@ export class PromptDetailPage implements OnInit, OnDestroy {
     const p = this.facade.selected();
     if (!p?.id) return;
 
-    const userId = this.auth.user()?.id ?? 'current-user';
+    const userId = this.auth.user()?.id ?? 'unknown';
     this.workflowsFacade.submitForReview({
       promptId: p.id,
       projectId: p.projectId,

@@ -1,5 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -7,16 +6,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DatePipe } from '@angular/common';
-import {
-  Notification,
-  markAsReadApi,
-  markAllAsReadApi,
-  dismissApi,
-  clearAll,
-} from '../../../state/notifications/notifications.actions';
-import { NotificationsState } from '../../../state/notifications/notifications.reducer';
+import { Notification } from '../../../state/notifications/notifications.actions';
+import { NotificationsFacade } from '../../../state/notifications/notifications.facade';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-notification-bell',
   standalone: true,
   imports: [
@@ -254,35 +248,30 @@ import { NotificationsState } from '../../../state/notifications/notifications.r
   `],
 })
 export class NotificationBellComponent {
-  private readonly store = inject(Store<{ notifications: NotificationsState }>);
+  private readonly notifications = inject(NotificationsFacade);
 
-  readonly items = computed(() =>
-    (this.store.selectSignal((s: any) => s.notifications?.items ?? []))()
-  );
-
-  readonly unreadCount = computed(() =>
-    (this.store.selectSignal((s: any) => s.notifications?.unreadCount ?? 0))()
-  );
+  readonly items = this.notifications.items;
+  readonly unreadCount = this.notifications.unreadCount;
 
   onRead(n: Notification): void {
     if (!n.read) {
-      this.store.dispatch(markAsReadApi({ id: n.id }));
+      this.notifications.markAsRead(n.id);
     }
   }
 
   onDismiss(event: Event, id: string): void {
     event.stopPropagation();
-    this.store.dispatch(dismissApi({ id }));
+    this.notifications.dismiss(id);
   }
 
   onMarkAllRead(): void {
     const firstItem = this.items()[0];
     if (firstItem?.projectId) {
-      this.store.dispatch(markAllAsReadApi({ projectId: firstItem.projectId }));
+      this.notifications.markAllAsRead(firstItem.projectId);
     }
   }
 
   onClearAll(): void {
-    this.store.dispatch(clearAll());
+    this.notifications.clearAll();
   }
 }

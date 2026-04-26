@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, Sort } from '@angular/material/sort';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PromptsFacade } from '../../../state/prompts/prompts.facade';
 import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
 
@@ -27,13 +27,12 @@ import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
   templateUrl: './prompt-list.page.html',
   styleUrl: './prompt-list.page.scss',
 })
-export class PromptListPage implements OnInit, OnDestroy {
+export class PromptListPage {
   readonly facade = inject(PromptsFacade);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
 
-  private paramSub?: Subscription;
   private projectId: string | null = null;
 
   displayedColumns = ['name', 'status', 'currentVersion', 'updatedAt'];
@@ -64,16 +63,11 @@ export class PromptListPage implements OnInit, OnDestroy {
     return all.slice(start, start + this.pageSize());
   });
 
-  ngOnInit(): void {
-    // React to route param changes (project switching)
-    this.paramSub = this.route.paramMap.subscribe(params => {
+  constructor() {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
       this.projectId = params.get('projectId');
       this.facade.loadPrompts(this.projectId ?? undefined);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.paramSub?.unsubscribe();
   }
 
   goToPrompt(id: string): void {

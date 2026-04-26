@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, Renderer2, computed, signal, effect, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, Renderer2, computed, signal, effect, HostListener, DestroyRef } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,15 +7,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Store } from '@ngrx/store';
-import { Subscription, filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import { AuthFacade } from './state/auth/auth.facade';
 import { ProjectsFacade } from './state/projects/projects.facade';
-import { connectSse, disconnectSse } from './state/notifications/notifications.actions';
+import { NotificationsFacade } from './state/notifications/notifications.facade';
 import { ProjectCreationModalComponent } from './features/projects/components/project-creation-modal.component';
 import { NotificationBellComponent } from './shared/components/notification-bell/notification-bell.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-root',
   imports: [
     RouterOutlet, RouterLink, RouterLinkActive,
@@ -26,15 +27,15 @@ import { NotificationBellComponent } from './shared/components/notification-bell
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App implements OnInit, OnDestroy {
+export class App implements OnInit {
   readonly auth = inject(AuthFacade);
   readonly projectsFacade = inject(ProjectsFacade);
   private readonly renderer = inject(Renderer2);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
-  private readonly store = inject(Store);
+  private readonly notificationsFacade = inject(NotificationsFacade);
+  private readonly destroyRef = inject(DestroyRef);
 
-  private routerSub?: Subscription;
   private projectAutoSelected = false; // Guard to prevent repeated auto-selection
 
   sidebarCollapsed = window.innerWidth <= 768;
@@ -115,8 +116,9 @@ export class App implements OnInit, OnDestroy {
     // Track active projectId from URL
     this.syncProjectIdFromUrl(this.router.url);
     this.restoreProjectIfNeeded();
-    this.routerSub = this.router.events.pipe(
-      filter((e): e is NavigationEnd => e instanceof NavigationEnd)
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(e => {
       this.syncProjectIdFromUrl(e.urlAfterRedirects);
       // Re-check after every navigation (e.g. post-login redirect to /dashboard)
@@ -126,10 +128,6 @@ export class App implements OnInit, OnDestroy {
         this.sidebarCollapsed = true;
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.routerSub?.unsubscribe();
   }
 
   /** Parse /projects/:projectId/... from the URL */
@@ -142,9 +140,9 @@ export class App implements OnInit, OnDestroy {
         this.projectsFacade.selectProject(pid);
         localStorage.setItem('promptly-last-project', pid);
         // Connect SSE for this project
-        this.store.dispatch(connectSse({ projectId: pid }));
+        this.notificationsFacade.connectSse(pid);
       } else {
-        this.store.dispatch(disconnectSse());
+        this.notificationsFacade.disconnectSse();
       }
     }
   }

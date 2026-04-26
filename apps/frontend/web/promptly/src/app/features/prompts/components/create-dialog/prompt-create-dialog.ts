@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,6 +15,7 @@ import { ProjectsFacade } from '../../../../state/projects/projects.facade';
 import { PromptsFacade } from '../../../../state/prompts/prompts.facade';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-prompt-create-dialog',
   imports: [
     FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule,
