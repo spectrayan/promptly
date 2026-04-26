@@ -6,18 +6,62 @@
 // No mat-sidenav-container — no margin/gap issues.
 // ═══════════════════════════════════════════════════════════════════════
 
+// ── App Root ────────────────────────────────────────────────────────
+.app-root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+// ── Help Drawer ─────────────────────────────────────────────────────
+.help-drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-modal);
+  backdrop-filter: blur(2px);
+}
+
+.help-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  max-width: 90vw;
+  height: 100vh;
+  background: var(--mat-sys-surface);
+  box-shadow: var(--shadow-2xl);
+  z-index: calc(var(--z-modal) + 1);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight var(--duration-base) var(--ease-out);
+
+  promptly-help-docs-panel {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
 // ── Shell Root ──────────────────────────────────────────────────────
 .shell {
   display: grid;
   grid-template-rows: var(--topbar-height) 1fr;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: var(--sidebar-width) 1fr auto;
   height: 100vh;
   overflow: hidden;
   transition: grid-template-columns var(--duration-slow) var(--ease-default);
 
   // When sidebar is collapsed, shrink column 1
   &.sidebar-collapsed {
-    grid-template-columns: var(--sidebar-collapsed) 1fr;
+    grid-template-columns: var(--sidebar-collapsed) 1fr auto;
 
     .nav-item {
       justify-content: center;
@@ -75,10 +119,12 @@
   }
 }
 
-.topbar-logo-icon {
-  font-size: 24px;
-  line-height: 1;
-  filter: drop-shadow(0 0 6px rgba(124, 77, 255, 0.3));
+.topbar-logo-image {
+  height: 32px;
+  width: 32px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  box-shadow: 0 0 8px rgba(124, 77, 255, 0.4);
 }
 
 .topbar-logo-text {
@@ -206,6 +252,7 @@
   display: grid;
   grid-template-columns: subgrid;    // Inherit column sizing from parent
   overflow: hidden;
+  min-height: 0;
 }
 
 // ── Sidebar ─────────────────────────────────────────────────────────
@@ -275,6 +322,44 @@
   padding: var(--space-8);
   background: var(--mat-sys-surface);
   animation: fadeIn var(--duration-slow) var(--ease-out);
+}
+
+.inline-docs-panel {
+  grid-column: 3;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: var(--mat-sys-surface);
+  border-left: 1px solid var(--mat-sys-outline-variant);
+  z-index: var(--z-sticky);
+  animation: slideInRight var(--duration-base) var(--ease-out);
+
+  promptly-help-docs-panel {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  left: -2px; /* Slight overlap for easier grabbing */
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  z-index: calc(var(--z-sticky) + 1);
+  transition: background 0.2s;
+
+  &:hover, &:active {
+    background: var(--mat-sys-primary);
+  }
+}
+
+body.is-resizing {
+  user-select: none;
 }
 
 // ── Project Dropdown Menu ───────────────────────────────────────────

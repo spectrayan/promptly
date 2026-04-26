@@ -1,3 +1,13 @@
+<div class="app-root">
+  <!-- Global Help Drawer for unauthenticated users -->
+  @if (!auth.isAuthenticated() && helpDocs.isOpen()) {
+    <div class="help-drawer-backdrop" (click)="helpDocs.close()"></div>
+    <div class="help-drawer" [style.width.px]="helpDocsWidth()">
+      <div class="resize-handle" (mousedown)="onResizeStart($event)"></div>
+      <promptly-help-docs-panel (closePanel)="helpDocs.close()"></promptly-help-docs-panel>
+    </div>
+  }
+
 @if (auth.isAuthenticated()) {
   <div class="shell" [class.sidebar-collapsed]="sidebarCollapsed">
     <!-- ── Top Navbar (spans full width, above everything) ── -->
@@ -11,7 +21,7 @@
 
       <!-- Brand / Logo -->
       <a [routerLink]="dashboardNavItem().path" class="topbar-brand">
-        <span class="topbar-logo-icon">⚡</span>
+        <img src="logo.png" alt="Promptly Logo" class="topbar-logo-image" />
         <span class="topbar-logo-text">Promptly</span>
       </a>
 
@@ -81,6 +91,13 @@
         <mat-icon>{{ isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
 
+      <!-- Help Docs -->
+      <button mat-icon-button class="topbar-icon-btn"
+              matTooltip="Help & Documentation" id="help-docs-btn"
+              (click)="openHelpDocs()">
+        <mat-icon>help_outline</mat-icon>
+      </button>
+
       <!-- Notifications Bell -->
       <promptly-notification-bell />
 
@@ -99,10 +116,15 @@
           </div>
         </div>
         <mat-divider></mat-divider>
-        <button mat-menu-item disabled>
-          <mat-icon>settings</mat-icon>
-          <span>Settings</span>
+        <button mat-menu-item routerLink="/profile" id="profile-settings-btn">
+          <mat-icon>manage_accounts</mat-icon>
+          <span>Profile & Settings</span>
         </button>
+        <button mat-menu-item routerLink="/settings" id="platform-settings-btn">
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Platform Settings</span>
+        </button>
+        <mat-divider></mat-divider>
         <button mat-menu-item (click)="auth.logout()" id="logout-btn">
           <mat-icon>logout</mat-icon>
           <span>Sign Out</span>
@@ -174,9 +196,18 @@
       <main class="main-content">
         <router-outlet />
       </main>
+
+      <!-- Inline Docs Panel for Authenticated Shell -->
+      @if (helpDocs.isOpen()) {
+        <aside class="inline-docs-panel" [style.width.px]="helpDocsWidth()">
+          <div class="resize-handle" (mousedown)="onResizeStart($event)"></div>
+          <promptly-help-docs-panel (closePanel)="helpDocs.close()"></promptly-help-docs-panel>
+        </aside>
+      }
     </div>
   </div>
 } @else {
   <!-- Login/Register pages render without shell -->
   <router-outlet />
 }
+</div>

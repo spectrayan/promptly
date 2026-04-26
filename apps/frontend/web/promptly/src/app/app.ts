@@ -14,6 +14,8 @@ import { ProjectsFacade } from './state/projects/projects.facade';
 import { NotificationsFacade } from './state/notifications/notifications.facade';
 import { ProjectCreationModalComponent } from './features/projects/components/project-creation-modal.component';
 import { NotificationBellComponent } from './shared/components/notification-bell/notification-bell.component';
+import { HelpDocsService } from './core/services/help-docs.service';
+import { HelpDocsPanelComponent } from './shared/components/help-docs-panel/help-docs-panel.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,7 +24,7 @@ import { NotificationBellComponent } from './shared/components/notification-bell
     RouterOutlet, RouterLink, RouterLinkActive,
     MatListModule, MatIconModule, MatButtonModule,
     MatTooltipModule, MatMenuModule, MatDividerModule, MatDialogModule,
-    NotificationBellComponent,
+    NotificationBellComponent, HelpDocsPanelComponent
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -35,12 +37,15 @@ export class App implements OnInit {
   private readonly router = inject(Router);
   private readonly notificationsFacade = inject(NotificationsFacade);
   private readonly destroyRef = inject(DestroyRef);
+  readonly helpDocs = inject(HelpDocsService);
 
   private projectAutoSelected = false; // Guard to prevent repeated auto-selection
 
   sidebarCollapsed = window.innerWidth <= 768;
   isDark = true;
   projectSearch = signal('');
+  helpDocsWidth = signal<number>(480);
+  private isResizing = false;
 
   /** Extract projectId from current URL (e.g. /projects/proj-001/prompts → proj-001) */
   activeProjectId = signal<string | null>(null);
@@ -81,14 +86,15 @@ export class App implements OnInit {
     { segment: 'workflows', icon: 'approval',  label: 'Workflows' },
     { segment: 'scanner',   icon: 'security',  label: 'Scanner' },
     { segment: 'audit',     icon: 'history',    label: 'Audit' },
+    { segment: 'settings',  icon: 'tune',      label: 'Project Settings' },
   ];
 
-  /** Bottom nav — project-scoped when a project is active */
+  /** Bottom nav — always-visible global items */
   readonly bottomNavItems = computed(() => {
     const pid = this.activeProjectId();
     return [
       { path: pid ? `/projects/${pid}/search` : '/search', icon: 'search', label: 'Search' },
-      { path: pid ? `/projects/${pid}/settings` : '/settings', icon: 'settings', label: 'Settings' },
+      { path: '/settings', icon: 'admin_panel_settings', label: 'Platform Settings' },
     ];
   });
 
@@ -156,7 +162,9 @@ export class App implements OnInit {
     if (this.activeProjectId()) return; // URL already has a project
 
     // Only restore when user is authenticated and on a non-login page
-    if (!this.auth.isAuthenticated() || this.router.url.includes('/login')) return;
+    // Skip for global routes that don't require project context
+    const globalRoutes = ['/login', '/register', '/profile', '/settings'];
+    if (!this.auth.isAuthenticated() || globalRoutes.some(r => this.router.url.startsWith(r))) return;
 
     const lastPid = localStorage.getItem('promptly-last-project');
     const projects = this.projectsFacade.projects();
@@ -228,6 +236,35 @@ export class App implements OnInit {
     const name = this.auth.displayName();
     if (!name) return '?';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  openHelpDocs(): void {
+    this.helpDocs.toggle();
+  }
+
+  onResizeStart(event: MouseEvent): void {
+    this.isResizing = true;
+    event.preventDefault(); // Prevent text selection
+    this.renderer.setStyle(document.body, 'cursor', 'ew-resize');
+    this.renderer.addClass(document.body, 'is-resizing');
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
+    if (!this.isResizing) return;
+    const newWidth = window.innerWidth - event.clientX;
+    if (newWidth > 300 && newWidth < 800) {
+      this.helpDocsWidth.set(newWidth);
+    }
+  }
+
+  @HostListener('document:mouseup')
+  onMouseUp(): void {
+    if (this.isResizing) {
+      this.isResizing = false;
+      this.renderer.removeStyle(document.body, 'cursor');
+      this.renderer.removeClass(document.body, 'is-resizing');
+    }
   }
 
 
