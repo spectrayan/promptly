@@ -448,3 +448,117 @@
   letter-spacing: var(--tracking-wide);
   margin-top: 2px;
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// MOBILE RESPONSIVE — Sidebar overlay, topbar compact, content fluid
+// ═══════════════════════════════════════════════════════════════════════
+
+// ── Mobile overlay backdrop ──
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  // Shell: switch from grid to flex column on mobile
+  .shell {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  // Topbar: fixed height, no shrink
+  .topbar {
+    flex-shrink: 0;
+    padding: 0 var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .topbar-logo-text {
+    display: none;
+  }
+
+  .topbar-divider {
+    display: none;
+  }
+
+  .project-picker-name {
+    max-width: 100px;
+    font-size: var(--text-sm);
+  }
+
+  .project-picker-btn {
+    padding: 0 var(--space-2);
+    height: 32px;
+    gap: var(--space-1);
+  }
+
+  // Sidebar: overlay from left (fixed position, out of flex flow)
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-height);
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    z-index: var(--z-overlay);
+    transform: translateX(-100%);
+    transition: transform var(--duration-slow) var(--ease-default);
+    box-shadow: none;
+  }
+
+  .shell:not(.sidebar-collapsed) .sidebar {
+    transform: translateX(0);
+    box-shadow: var(--shadow-2xl);
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: var(--topbar-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-overlay) - 1);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .shell:not(.sidebar-collapsed) .sidebar-backdrop {
+    display: block;
+  }
+
+  // Shell-body: fills remaining flex space
+  .shell-body {
+    display: flex !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden;
+  }
+
+  // Main content: fills shell-body, SCROLLS
+  .main-content {
+    flex: 1 !important;
+    min-height: 0 !important;
+    padding: var(--space-4) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Collapsed sidebar overrides
+  .shell.sidebar-collapsed .nav-item {
+    justify-content: flex-start;
+    padding-left: var(--space-3) !important;
+    padding-right: var(--space-3) !important;
+    margin: 2px var(--space-2) !important;
+  }
+}
+
+// ── Tablet (769px - 1024px): Sidebar auto-collapses ──
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-content {
+    padding: var(--space-5);
+  }
+}
+

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, Renderer2, computed, signal, effect } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, Renderer2, computed, signal, effect, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,7 +37,7 @@ export class App implements OnInit, OnDestroy {
   private routerSub?: Subscription;
   private projectAutoSelected = false; // Guard to prevent repeated auto-selection
 
-  sidebarCollapsed = false;
+  sidebarCollapsed = window.innerWidth <= 768;
   isDark = true;
   projectSearch = signal('');
 
@@ -121,6 +121,10 @@ export class App implements OnInit, OnDestroy {
       this.syncProjectIdFromUrl(e.urlAfterRedirects);
       // Re-check after every navigation (e.g. post-login redirect to /dashboard)
       this.restoreProjectIfNeeded();
+      // Auto-close sidebar on mobile after navigation
+      if (window.innerWidth <= 768) {
+        this.sidebarCollapsed = true;
+      }
     });
   }
 
@@ -198,6 +202,14 @@ export class App implements OnInit, OnDestroy {
 
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    // Auto-collapse sidebar when resizing to mobile
+    if (window.innerWidth <= 768 && !this.sidebarCollapsed) {
+      this.sidebarCollapsed = true;
+    }
   }
 
   openCreateProjectModal(): void {
