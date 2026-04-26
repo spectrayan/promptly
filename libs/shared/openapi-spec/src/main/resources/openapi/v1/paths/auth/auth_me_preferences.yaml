@@ -1,0 +1,41 @@
+get:
+  operationId: getUserPreferences
+  summary: Get user preferences
+  description: Returns the notification and platform preferences for the authenticated user.
+  tags: [Auth]
+  security:
+    - BearerAuth: []
+  responses:
+    '200':
+      description: Current user preferences
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/UserPreferences.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
+
+patch:
+  operationId: updateUserPreferences
+  summary: Update user preferences
+  description: Updates notification settings and other preferences.
+  tags: [Auth]
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/UserPreferences.yaml'
+  responses:
+    '200':
+      description: Updated user preferences
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/UserPreferences.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

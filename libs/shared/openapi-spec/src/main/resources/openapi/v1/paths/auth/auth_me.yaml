@@ -14,3 +14,28 @@ get:
             $ref: '../../components/schemas/auth/UserResponse.yaml'
     '401':
       $ref: '../../components/responses/Unauthorized.yaml'
+
+patch:
+  operationId: updateCurrentUser
+  summary: Update current user profile
+  description: Updates the display name and/or avatar of the authenticated user.
+  tags: [Auth]
+  security:
+    - BearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/UpdateUserRequest.yaml'
+  responses:
+    '200':
+      description: Updated user profile
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/UserResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

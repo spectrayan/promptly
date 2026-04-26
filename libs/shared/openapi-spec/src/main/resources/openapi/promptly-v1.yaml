@@ -190,6 +190,8 @@ paths:
     $ref: 'v1/paths/auth/auth_refresh.yaml'
   /api/v1/auth/me:
     $ref: 'v1/paths/auth/auth_me.yaml'
+  /api/v1/auth/me/preferences:
+    $ref: 'v1/paths/auth/auth_me_preferences.yaml'
   /api/v1/users:
     $ref: 'v1/paths/auth/users.yaml'
 

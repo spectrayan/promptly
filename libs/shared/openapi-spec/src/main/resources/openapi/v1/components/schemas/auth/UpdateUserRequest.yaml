@@ -1,0 +1,11 @@
+type: object
+properties:
+  displayName:
+    type: string
+    description: Updated display name
+    example: Alice J.
+  avatarUrl:
+    type: string
+    nullable: true
+    description: Updated avatar URL
+    example: "https://example.com/avatar.png"

@@ -1,0 +1,17 @@
+type: object
+required: [inAppEnabled, emailEnabled]
+properties:
+  inAppEnabled:
+    type: boolean
+    description: Master switch for in-app (bell icon) notifications
+    default: true
+  emailEnabled:
+    type: boolean
+    description: Master switch for email notifications
+    default: true
+  mutedEvents:
+    type: array
+    items:
+      type: string
+    description: List of event types the user has silenced
+    example: ["prompt.created", "workflow.approved"]
