@@ -115,6 +115,23 @@ public class AuthApplicationService implements AuthenticationUseCase, UserQueryU
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("User", id)));
     }
 
+    @Override
+    public Mono<User> updateProfile(String userId, UpdateProfileCommand command) {
+        log.info("Updating profile for user: {}", userId);
+        return userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("User", userId)))
+                .flatMap(user -> {
+                    if (command.displayName() != null && !command.displayName().isBlank()) {
+                        user.setDisplayName(command.displayName().trim());
+                    }
+                    if (command.avatarUrl() != null) {
+                        user.setAvatarUrl(command.avatarUrl().isBlank() ? null : command.avatarUrl().trim());
+                    }
+                    user.setUpdatedAt(Instant.now());
+                    return userRepository.save(user);
+                });
+    }
+
     private Mono<AuthResult> generateAuthResult(User user) {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);

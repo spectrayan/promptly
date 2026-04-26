@@ -9,10 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 /**
  * REST controller for auth endpoints.
@@ -67,6 +71,25 @@ public class AuthController implements AuthApi {
         Flux<UserResponse> users = userQueryUseCase.searchUsers(q, maxResults)
                 .map(this::toUserResponse);
         return Mono.just(ResponseEntity.ok(users));
+    }
+
+    /**
+     * PATCH /api/v1/auth/me — Update the current user's profile (display name, avatar).
+     * Not yet code-generated; manually added to match the OpenAPI spec update.
+     */
+    @PatchMapping("/api/v1/auth/me")
+    public Mono<ResponseEntity<UserResponse>> updateCurrentUser(@RequestBody Map<String, String> body,
+                                                                 ServerWebExchange exchange) {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(ctx -> (String) ctx.getAuthentication().getPrincipal())
+                .flatMap(userId -> {
+                    var command = new AuthenticationUseCase.UpdateProfileCommand(
+                            body.get("displayName"),
+                            body.get("avatarUrl")
+                    );
+                    return authUseCase.updateProfile(userId, command);
+                })
+                .map(user -> ResponseEntity.ok(toUserResponse(user)));
     }
 
     // ── Mapping ──

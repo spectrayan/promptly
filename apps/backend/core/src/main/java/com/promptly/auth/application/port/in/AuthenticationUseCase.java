@@ -16,7 +16,11 @@ public interface AuthenticationUseCase {
 
     Mono<User> getCurrentUser(String userId);
 
+    Mono<User> updateProfile(String userId, UpdateProfileCommand command);
+
     record RegisterCommand(String email, String password, String displayName) {}
+
+    record UpdateProfileCommand(String displayName, String avatarUrl) {}
 
     record AuthResult(String accessToken, String refreshToken, long expiresIn, User user) {}
 }
