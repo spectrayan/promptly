@@ -1,0 +1,44 @@
+{
+  "articles": [
+    {
+      "id": "overview",
+      "title": "Platform Overview",
+      "description": "Introduction to Promptly — navigation, projects, and key concepts.",
+      "file": "articles/overview.md",
+      "category": "getting-started",
+      "sortOrder": 1
+    },
+    {
+      "id": "dashboard",
+      "title": "Dashboard",
+      "description": "Understand your project dashboard, active prompt statistics, and recent activity.",
+      "file": "articles/dashboard.md",
+      "category": "features",
+      "sortOrder": 2
+    },
+    {
+      "id": "registry",
+      "title": "Prompt Registry",
+      "description": "Version control, parameterization, and managing your prompt library.",
+      "file": "articles/registry.md",
+      "category": "features",
+      "sortOrder": 3
+    },
+    {
+      "id": "workflows",
+      "title": "Workflows & Approvals",
+      "description": "Learn about the lifecycle of a prompt from draft to production deployment.",
+      "file": "articles/workflows.md",
+      "category": "features",
+      "sortOrder": 4
+    },
+    {
+      "id": "security",
+      "title": "Security & Vulnerability Scanning",
+      "description": "How Promptly protects against Prompt Injection, PII leaks, and toxic content.",
+      "file": "articles/security.md",
+      "category": "security",
+      "sortOrder": 5
+    }
+  ]
+}

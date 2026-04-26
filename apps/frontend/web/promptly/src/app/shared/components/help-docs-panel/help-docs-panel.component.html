@@ -1,0 +1,50 @@
+<div class="docs-panel">
+  <div class="docs-panel-header">
+    @if (viewMode() === 'article') {
+      <button mat-icon-button (click)="backToList()" aria-label="Back to list">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span class="docs-panel-title">{{ selectedArticle()?.title }}</span>
+    } @else {
+      <div class="drawer-title-group">
+        <mat-icon class="docs-panel-icon">library_books</mat-icon>
+        <span class="docs-panel-title">Help & Documentation</span>
+      </div>
+    }
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="closePanel.emit()" aria-label="Close docs">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="docs-panel-state">
+      <mat-spinner diameter="28"></mat-spinner>
+      <span>Loading...</span>
+    </div>
+  } @else if (error()) {
+    <div class="docs-panel-state docs-panel-state--error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  } @else if (viewMode() === 'article' && selectedArticle()?.content) {
+    <div class="docs-panel-body docs-article" [innerHTML]="selectedArticle()!.content"></div>
+  } @else if (articles().length > 0) {
+    <div class="docs-panel-body">
+      <mat-nav-list>
+        @for (article of articles(); track article.id) {
+          <a mat-list-item (click)="onSelectArticle(article.id)">
+            <mat-icon matListItemIcon>article</mat-icon>
+            <span matListItemTitle>{{ article.title }}</span>
+            <span matListItemLine>{{ article.description }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </div>
+  } @else {
+    <div class="docs-panel-state">
+      <mat-icon>info_outline</mat-icon>
+      <span>No documentation available.</span>
+    </div>
+  }
+</div>
