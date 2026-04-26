@@ -1,7 +1,7 @@
 package com.promptly.audit;
 
 import com.promptly.AbstractIntegrationTest;
-import com.promptly.audit.application.port.out.AuditRepository;
+import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.shared.domain.DomainEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ class AuditModuleIntegrationTest extends AbstractIntegrationTest {
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    private AuditRepository auditRepository;
+    private AuditPersistencePort auditRepository;
 
     record DummyEvent(String aggregateId, Instant occurredAt, String someData) implements DomainEvent {}
 
