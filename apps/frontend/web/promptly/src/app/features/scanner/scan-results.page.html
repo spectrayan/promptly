@@ -33,15 +33,15 @@
           <span mat-sort-header="status">Status</span>
           <mat-form-field appearance="outline" class="column-filter column-filter-select" subscriptSizing="dynamic">
             <mat-select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($event)" multiple placeholder="All">
-              <mat-option value="pass">Pass</mat-option>
-              <mat-option value="warn">Warn</mat-option>
-              <mat-option value="fail">Fail</mat-option>
+              <mat-option value="PASS">Pass</mat-option>
+              <mat-option value="WARN">Warn</mat-option>
+              <mat-option value="FAIL">Fail</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
       </th>
       <td mat-cell *matCellDef="let s">
-        <span class="badge" [class]="s.status === 'pass' ? 'badge-success' : 'badge-danger'">{{ s.status }}</span>
+        <span class="badge" [class]="s.status === 'PASS' ? 'badge-success' : 'badge-danger'">{{ s.status }}</span>
       </td>
     </ng-container>
 
@@ -51,8 +51,8 @@
     </ng-container>
 
     <ng-container matColumnDef="scannedAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Scanned</th>
-      <td mat-cell *matCellDef="let s" class="cell-muted">{{ s.scannedAt | date:'MMM d, h:mm a' }}</td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile">Scanned</th>
+      <td mat-cell *matCellDef="let s" class="cell-muted hide-mobile">{{ s.scannedAt | date:'MMM d, h:mm a' }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

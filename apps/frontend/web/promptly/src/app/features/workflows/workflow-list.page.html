@@ -52,13 +52,13 @@
 
 
       <ng-container matColumnDef="requestedBy">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Requested By</th>
-        <td mat-cell *matCellDef="let w">{{ w.requestedBy }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile">Requested By</th>
+        <td mat-cell *matCellDef="let w" class="hide-mobile">{{ w.requestedBy }}</td>
       </ng-container>
 
       <ng-container matColumnDef="createdAt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Submitted</th>
-        <td mat-cell *matCellDef="let w" class="cell-muted">{{ w.createdAt | date:'MMM d, h:mm a' }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile">Submitted</th>
+        <td mat-cell *matCellDef="let w" class="cell-muted hide-mobile">{{ w.createdAt | date:'MMM d, h:mm a' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">

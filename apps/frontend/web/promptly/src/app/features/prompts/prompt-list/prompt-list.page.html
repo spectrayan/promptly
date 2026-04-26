@@ -59,8 +59,8 @@
 
       <!-- Updated — sortable -->
       <ng-container matColumnDef="updatedAt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Updated</th>
-        <td mat-cell *matCellDef="let p" class="cell-muted">{{ p.updatedAt | date:'MMM d, h:mm a' }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile">Updated</th>
+        <td mat-cell *matCellDef="let p" class="cell-muted hide-mobile">{{ p.updatedAt | date:'MMM d, h:mm a' }}</td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
