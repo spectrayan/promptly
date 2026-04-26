@@ -375,4 +375,116 @@ mat-card:has(.table-filter-bar) {
   align-items: center;
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// MOBILE RESPONSIVE — Global utility classes
+// ═══════════════════════════════════════════════════════════════════════
 
+// ── Tables: prevent overflow on cards ───────────────────────────────
+.mat-mdc-card:has(.mat-mdc-table) {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  // ── Page Header ──
+  .page-header {
+    margin-bottom: var(--space-4);
+
+    h1 {
+      font-size: var(--text-2xl);
+    }
+
+    p {
+      font-size: var(--text-base);
+    }
+  }
+
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  // ── Stat Grid: 2 columns on mobile ──
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  // ── Tables: remove forced min-width, let columns adapt ──
+  .mat-mdc-table {
+    min-width: 0;
+  }
+
+  // ── Inline column filters: hide on mobile ──
+  .header-with-filter {
+    .column-filter,
+    .column-filter-select {
+      display: none !important;
+    }
+  }
+
+  // ── Hide columns marked as mobile-hidden ──
+  .hide-mobile {
+    display: none !important;
+  }
+
+  // ── Filter bars: stack vertically ──
+  .table-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    .filter-spacer {
+      display: none;
+    }
+
+    .clear-filters-btn {
+      align-self: flex-start;
+    }
+  }
+
+  // ── Loading / Empty states: smaller padding ──
+  .loading-center {
+    padding: var(--space-8);
+  }
+
+  .empty-state {
+    padding: var(--space-6);
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      margin-bottom: var(--space-3);
+    }
+
+    p {
+      font-size: var(--text-base);
+    }
+  }
+
+  // ── Header actions ──
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  // ── Clear filters button ──
+  .clear-filters-btn {
+    font-size: var(--text-xs) !important;
+    height: 32px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  // ── Stat Grid: single column on very small screens ──
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}

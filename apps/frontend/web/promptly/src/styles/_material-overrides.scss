@@ -207,3 +207,43 @@
     transition: all var(--transition-base);
   }
 }
+
+// ── Mobile Responsive: Material Overrides ───────────────────────────
+@media (max-width: 768px) {
+  .mat-mdc-card-header {
+    padding: var(--space-3) var(--space-4) var(--space-2) !important;
+  }
+
+  .mat-mdc-card-content {
+    padding: var(--space-2) var(--space-4) var(--space-4) !important;
+
+    &:first-child {
+      padding-top: var(--space-4) !important;
+    }
+  }
+
+  .mat-mdc-card-actions {
+    padding: var(--space-2) var(--space-4) var(--space-4) !important;
+  }
+
+  .mat-mdc-table .mat-mdc-row {
+    height: 48px;
+  }
+
+  .mat-mdc-table .mat-mdc-header-row {
+    height: 40px;
+  }
+
+  .mat-mdc-paginator {
+    .mat-mdc-paginator-container {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: var(--space-2) !important;
+    }
+  }
+
+  // Dialogs: full-width on small screens
+  .mat-mdc-dialog-container {
+    max-width: calc(100vw - 32px) !important;
+  }
+}
