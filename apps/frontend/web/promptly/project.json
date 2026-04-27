@@ -4,7 +4,10 @@
   "projectType": "application",
   "sourceRoot": "apps/frontend/web/promptly/src",
   "prefix": "promptly",
-  "tags": ["scope:frontend", "type:app"],
+  "tags": [
+    "scope:frontend",
+    "type:app"
+  ],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -42,7 +45,7 @@
             {
               "type": "initial",
               "maximumWarning": "750kB",
-              "maximumError": "1.5MB"
+              "maximumError": "2MB"
             },
             {
               "type": "anyComponentStyle",

@@ -252,3 +252,9 @@ coverage/
 connect.lock
 testem.log
 typings/
+
+# E2E & Performance Testing
+test-results/
+playwright-report/
+reports/
+.lighthouseci/
