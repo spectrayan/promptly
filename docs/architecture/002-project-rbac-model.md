@@ -2,7 +2,7 @@
 
 **Status:** Accepted  
 **Date:** 2026-04-23  
-**Authors:** Bharadwaj, Antigravity AI  
+**Authors:** Spectrayan Team  
 
 ---
 
@@ -22,24 +22,28 @@ We need a model that answers:
 **Projects** are the primary organizational and security boundary.  
 **Tags** provide flexible cross-project discovery without granting authority.
 
-```
-┌──────────────────────────────────────────────┐
-│  Organization (implicit via JWT / tenant)     │
-│                                              │
-│  ┌─────────────┐  ┌─────────────────────┐    │
-│  │ Project:    │  │ Project:            │    │
-│  │ customer-ops│  │ data-platform       │    │
-│  │             │  │                     │    │
-│  │ • Classifier│  │ • SQL Generator     │    │
-│  │ • Chatbot   │  │ • Report Builder    │    │
-│  │             │  │                     │    │
-│  │ tags: [nlp, │  │ tags: [sql, data,   │    │
-│  │  support]   │  │  generation]        │    │
-│  └─────────────┘  └─────────────────────┘    │
-│                                              │
-│  Cross-project discovery via tags & search   │
-│  (read-only — no write access granted)       │
-└──────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Org ["Organization (implicit via JWT / tenant)"]
+        subgraph P1 ["Project: customer-ops"]
+            P1A["Classifier"]
+            P1B["Chatbot"]
+            P1T["tags: nlp, support"]
+        end
+        subgraph P2 ["Project: data-platform"]
+            P2A["SQL Generator"]
+            P2B["Report Builder"]
+            P2T["tags: sql, data, generation"]
+        end
+        Discovery["Cross-project discovery via tags & search\n(read-only — no write access granted)"]
+    end
+
+    P1 -.-> Discovery
+    P2 -.-> Discovery
+
+    style P1 fill:#E3F2FD,stroke:#1565C0
+    style P2 fill:#E8F5E9,stroke:#2E7D32
+    style Discovery fill:#FFF3E0,stroke:#E65100
 ```
 
 #### Why Not Sub-groups?
@@ -97,29 +101,36 @@ In regulated industries (healthcare, finance, government), **separation of dutie
 
 ### 3. Approval Workflow
 
-```
-Author (creates/edits prompt)
-  │
-  └─→ Submit for Review
-       │
-       ▼
-Reviewer (technical review)
-  ├─→ REQUEST_CHANGES → back to Author
-  └─→ APPROVE_REVIEW → moves to approval stage
-       │
-       ▼
-Approver (environment promotion)
-  ├─→ REJECT → back to Author with feedback
-  └─→ APPROVE → prompt promoted to target environment
+```mermaid
+flowchart TD
+    A["Author\n(creates/edits prompt)"] -->|Submit for Review| R["Reviewer\n(technical review)"]
+    R -->|REQUEST_CHANGES| A
+    R -->|APPROVE_REVIEW| AP["Approver\n(environment promotion)"]
+    AP -->|REJECT| A
+    AP -->|APPROVE| P["Prompt Promoted"]
+
+    style A fill:#FF9800,color:#fff,stroke:#E65100
+    style R fill:#2196F3,color:#fff,stroke:#1565C0
+    style AP fill:#4CAF50,color:#fff,stroke:#388E3C
+    style P fill:#9C27B0,color:#fff,stroke:#6A1B9A
 ```
 
 #### Workflow States
 
-```
-DRAFT → SUBMITTED → IN_REVIEW → CHANGES_REQUESTED → (back to SUBMITTED)
-                                                   → REVIEWED
-REVIEWED → PENDING_APPROVAL → APPROVED → PROMOTED
-                             → REJECTED → (back to DRAFT)
+```mermaid
+stateDiagram-v2
+    [*] --> DRAFT
+    DRAFT --> SUBMITTED : submit
+    SUBMITTED --> IN_REVIEW : assign reviewer
+    IN_REVIEW --> CHANGES_REQUESTED : request changes
+    CHANGES_REQUESTED --> SUBMITTED : resubmit
+    IN_REVIEW --> REVIEWED : approve review
+    REVIEWED --> PENDING_APPROVAL : assign approver
+    PENDING_APPROVAL --> APPROVED : approve
+    PENDING_APPROVAL --> REJECTED : reject
+    REJECTED --> DRAFT : revise
+    APPROVED --> PROMOTED : deploy
+    PROMOTED --> [*]
 ```
 
 ### 4. Cross-Team Discovery
@@ -183,11 +194,23 @@ spring:
 
 #### How User Resolution Works
 
-```
-LOCAL mode:  POST /api/v1/auth/login → Promptly issues JWT → userId from users collection
-OIDC mode:   External login → IdP issues JWT → userId from JWT sub claim
+```mermaid
+flowchart LR
+    subgraph LOCAL ["LOCAL Mode"]
+        L1["POST /api/v1/auth/login"] --> L2["Promptly issues JWT"]
+        L2 --> L3["userId from users collection"]
+    end
+    subgraph OIDC ["OIDC Mode"]
+        O1["External IdP login"] --> O2["IdP issues JWT"]
+        O2 --> O3["userId from JWT sub claim"]
+    end
+    L3 --> R["project_members lookup"]
+    O3 --> R
+    R --> ROLE["Project role resolved"]
 
-Both modes:  userId → project_members lookup → project role resolved
+    style LOCAL fill:#E3F2FD,stroke:#1565C0
+    style OIDC fill:#E8F5E9,stroke:#2E7D32
+    style ROLE fill:#FF9800,color:#fff,stroke:#E65100
 ```
 
 ### 6. Data Model

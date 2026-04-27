@@ -2,7 +2,7 @@
 
 **Status**: Accepted  
 **Date**: 2026-04-26  
-**Deciders**: Architecture Team
+**Authors:** Spectrayan Team
 
 ---
 

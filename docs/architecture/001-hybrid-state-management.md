@@ -2,16 +2,16 @@
 
 **Status:** Accepted  
 **Date:** 2026-04-23  
-**Decision Makers:** Development Team
+**Authors:** Spectrayan Team
 
 ---
 
 ## Context
 
-Promptly's Angular 21 frontend needs a state management strategy that balances architectural consistency with pragmatic simplicity. The backend exposes 7 bounded contexts (Prompts, Workflows, Scanner, Improver, Delivery, Audit, Search) via a contract-first OpenAPI SDK (`@promptly/client`).
+Promptly's Angular 21 frontend needs a state management strategy that balances architectural consistency with pragmatic simplicity. The backend exposes 12 bounded contexts via a contract-first OpenAPI SDK (`@promptly/client`).
 
 We evaluated two approaches:
-1. **Full NgRx everywhere** — consistent but heavy; 6 files per feature slice × 6 features = 36 state management files
+1. **Full NgRx everywhere** — consistent but heavy; 6 files per feature slice × 10 features = 60 state management files
 2. **No state management** — lightweight but quickly becomes unmanageable with cross-feature state sharing, SSE streams, and optimistic updates
 
 ## Decision
@@ -20,9 +20,43 @@ We evaluated two approaches:
 
 ### Layer Architecture
 
-```
-Component → Facade → NgRx Store         (complex/shared state)
-Component → Facade → Signal / resource() (simple/isolated state)
+```mermaid
+graph TB
+    subgraph Component ["Component Layer (OnPush)"]
+        C["Page Component"]
+    end
+
+    subgraph Facade ["Facade Layer (providedIn: root)"]
+        F["Feature Facade"]
+    end
+
+    subgraph StateA ["NgRx (Complex State)"]
+        S["Store"]
+        E["Effects"]
+        R["Reducer"]
+    end
+
+    subgraph StateB ["Signals (Simple State)"]
+        SIG["signal() / resource()"]
+    end
+
+    subgraph SDK ["Generated SDK"]
+        API["@promptly/client Service"]
+    end
+
+    C --> F
+    F --> S
+    F --> SIG
+    E --> API
+    SIG --> API
+
+    style C fill:#9E9E9E,color:#fff,stroke:#616161
+    style F fill:#FF9800,color:#fff,stroke:#E65100
+    style S fill:#4CAF50,color:#fff,stroke:#388E3C
+    style E fill:#4CAF50,color:#fff,stroke:#388E3C
+    style R fill:#4CAF50,color:#fff,stroke:#388E3C
+    style SIG fill:#2196F3,color:#fff,stroke:#1565C0
+    style API fill:#7B1FA2,color:#fff,stroke:#4A148C
 ```
 
 ### Rules
@@ -41,9 +75,13 @@ Component → Facade → Signal / resource() (simple/isolated state)
 | **Prompts** | NgRx | Shared state (dashboard, workflows, scanner all reference prompts). Full CRUD with optimistic updates. |
 | **Workflows** | NgRx | State machine transitions (PENDING → APPROVED/REJECTED). Cross-references prompts. |
 | **Dashboard** | NgRx | Dedicated backend endpoint. Aggregates metrics from multiple domains. |
+| **Projects** | NgRx | Referenced by every project-scoped feature. Project selection drives global navigation. |
+| **Auth** | NgRx | Session state shared across guards, interceptors, and nav. |
+| **Notifications** | NgRx | SSE push updates, cross-feature snackbar triggers. |
 | **Scanner** | Signal + resource | Triggered from prompt detail page. Results are prompt-scoped, not shared. |
 | **Audit** | Signal + resource | Read-only list with SSE append. No cross-feature sharing. |
 | **Search** | Signal + resource | Stateless query→results. No caching needed. |
+| **Improver** | Signal + resource | One-shot improve action scoped to a single prompt. |
 
 ### Migration Path
 
@@ -66,6 +104,5 @@ If a signal-based feature grows complex enough to warrant NgRx:
 
 ## References
 
-- [spectrayan-health client portal](file:///d:/git/spectrayan-health/apps/frontend/web/client) — Full NgRx + Facade pattern
 - [Angular Signals](https://angular.dev/guide/signals) — Angular 21 stable signal API
 - [Angular resource()](https://angular.dev/guide/signals/resource) — Async data loading with signals
