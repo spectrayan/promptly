@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,8 +13,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { LowerCasePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { PromptsFacade } from '../../state/prompts/prompts.facade';
+import { ProjectsFacade } from '../../state/projects/projects.facade';
+import { SYSTEM_PROJECT_NAME, systemPromptName } from '../../shared/constants/system.constants';
 
 interface LlmConfig {
   provider: string;
@@ -48,11 +52,17 @@ const FEATURES = [
   { value: 'embedding', label: 'Embeddings', icon: 'data_array', description: 'Model used for vector embeddings' },
 ];
 
+const SYSTEM_PROMPT_FEATURES = [
+  { key: 'scanner', label: 'Security Scanner', icon: 'security', description: 'Analyzes prompts for vulnerabilities, PHI exposure, and injection risks' },
+  { key: 'improver', label: 'Prompt Improver', icon: 'auto_fix_high', description: 'Enhances prompts for clarity, safety, and determinism' },
+];
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'promptly-settings',
   imports: [
     FormsModule,
+    LowerCasePipe,
     MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatTabsModule, MatChipsModule,
     MatSlideToggleModule, MatTooltipModule, MatSnackBarModule,
@@ -65,11 +75,17 @@ export class SettingsPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly snackBar = inject(MatSnackBar);
   private readonly apiBase = environment.apiBasePath;
+  private readonly promptsFacade = inject(PromptsFacade);
+  private readonly projectsFacade = inject(ProjectsFacade);
 
   readonly providers = PROVIDERS;
   readonly features = FEATURES;
+  readonly systemPromptFeatures = SYSTEM_PROMPT_FEATURES;
 
-  // State
+  // ═══════════════════════════════════════════════════════════════
+  // LLM Config State
+  // ═══════════════════════════════════════════════════════════════
+
   readonly loading = signal(false);
   readonly saving = signal(false);
   readonly selectedFeature = signal('global');
@@ -78,7 +94,7 @@ export class SettingsPage implements OnInit {
   readonly lockedFields = signal<string[]>([]);
   readonly sources = signal<Record<string, string>>({});
 
-  // Form
+  // LLM Config Form
   provider = 'gemini';
   model = 'gemini-2.5-flash';
   temperature = 0.3;
@@ -88,7 +104,6 @@ export class SettingsPage implements OnInit {
   apiKeyConfigured = false;
   apiKeyHint = '';
 
-  // Computed
   readonly availableModels = computed(() => {
     const p = this.providers.find(pr => pr.value === this.provider);
     return p?.models ?? [];
@@ -98,9 +113,62 @@ export class SettingsPage implements OnInit {
     this.features.find(f => f.value === this.selectedFeature()) ?? this.features[0]
   );
 
+  // ═══════════════════════════════════════════════════════════════
+  // System Prompt State
+  //
+  // Uses the PromptsFacade and ProjectsFacade — no direct SDK calls.
+  // Flow: ProjectsFacade.projects → find __system__ → PromptsFacade
+  // ═══════════════════════════════════════════════════════════════
+
+  readonly selectedPromptFeature = signal('scanner');
+  readonly promptSaving = signal(false);
+  readonly promptIsCustomized = signal(false);
+  readonly promptVersion = signal<number | null>(null);
+
+  /** Resolved __system__ project ID. */
+  private systemProjectId: string | null = null;
+
+  /** Current prompt ID for the selected feature. */
+  private currentPromptId: string | null = null;
+
+  promptContent = '';
+  promptChangeMessage = '';
+
+  /** Delegate loading state to the facade. */
+  readonly promptLoading = this.promptsFacade.loading;
+
+  readonly selectedPromptFeatureInfo = computed(() =>
+    this.systemPromptFeatures.find(f => f.key === this.selectedPromptFeature())
+      ?? this.systemPromptFeatures[0]
+  );
+
+  /**
+   * React to the facade's selectedPrompt signal — when a system prompt
+   * is loaded via loadPrompt(), populate the editor fields.
+   */
+  private readonly syncSelectedPrompt = effect(() => {
+    const prompt = this.promptsFacade.selected();
+    if (!prompt || !this.currentPromptId || prompt.id !== this.currentPromptId) {
+      return;
+    }
+    this.promptContent = prompt.latestContent ?? '';
+    this.promptIsCustomized.set((prompt.currentVersion ?? 1) > 1);
+    this.promptVersion.set(prompt.currentVersion ?? null);
+    this.promptChangeMessage = '';
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // Lifecycle
+  // ═══════════════════════════════════════════════════════════════
+
   ngOnInit(): void {
     this.loadConfig();
+    this.initSystemPrompts();
   }
+
+  // ═══════════════════════════════════════════════════════════════
+  // LLM Config Methods
+  // ═══════════════════════════════════════════════════════════════
 
   isLocked(field: string): boolean {
     return this.lockedFields().includes(field);
@@ -142,7 +210,6 @@ export class SettingsPage implements OnInit {
 
   loadConfig(): void {
     this.loading.set(true);
-    // Use first project or a placeholder — in a real app, use active project from NgRx
     this.http.get<ResolvedConfigResponse>(
       `${this.apiBase}/api/v1/settings/llm-configs/resolved`,
       { params: { projectId: 'default', feature: this.selectedFeature() } }
@@ -162,7 +229,6 @@ export class SettingsPage implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        // Fallback — API not connected, show defaults
         this.loading.set(false);
       }
     });
@@ -202,5 +268,96 @@ export class SettingsPage implements OnInit {
         this.loadConfig();
       }
     });
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // System Prompt Methods — via Facades
+  //
+  // Uses ProjectsFacade.projects to resolve __system__ project,
+  // then PromptsFacade for all prompt CRUD.
+  // ═══════════════════════════════════════════════════════════════
+
+  /**
+   * Bootstrap: load projects, then once the __system__ project is found,
+   * load its prompts and select the default feature.
+   */
+  private initSystemPrompts(): void {
+    // Ensure projects are loaded (facade handles dedup internally)
+    this.projectsFacade.loadProjects();
+
+    // Watch for projects to be populated, then resolve __system__
+    const init = effect(() => {
+      const projects = this.projectsFacade.projects();
+      if (!projects.length) return;
+
+      const sys = projects.find(p => p.name === SYSTEM_PROJECT_NAME);
+      if (sys) {
+        this.systemProjectId = sys.id;
+        // Load system prompts into the NgRx store
+        this.promptsFacade.loadPrompts(sys.id);
+        // After prompts load, select the current feature's prompt
+        this.selectSystemPrompt(this.selectedPromptFeature());
+      }
+      init.destroy(); // One-shot: stop watching after init
+    });
+  }
+
+  selectPromptFeature(feature: string): void {
+    this.selectedPromptFeature.set(feature);
+    this.selectSystemPrompt(feature);
+  }
+
+  /**
+   * Finds the prompt matching the feature in the loaded prompt list,
+   * then dispatches loadPrompt to get full content.
+   */
+  private selectSystemPrompt(feature: string): void {
+    const expectedName = systemPromptName(feature);
+
+    // Watch for the prompts list to be populated, then find the matching prompt
+    const selector = effect(() => {
+      const prompts = this.promptsFacade.prompts();
+      if (!prompts.length) return;
+
+      const match = prompts.find(p => p.name === expectedName);
+      if (match?.id) {
+        this.currentPromptId = match.id;
+        this.promptsFacade.loadPrompt(match.id);
+      } else {
+        this.currentPromptId = null;
+        this.promptContent = '';
+        this.promptIsCustomized.set(false);
+        this.promptVersion.set(null);
+      }
+      selector.destroy();
+    });
+  }
+
+  /**
+   * Saves the system prompt using the PromptsFacade.updatePrompt().
+   */
+  savePrompt(): void {
+    if (!this.currentPromptId) {
+      this.snackBar.open('No system prompt found to update', 'Dismiss', { duration: 4000 });
+      return;
+    }
+
+    this.promptsFacade.updatePrompt(this.currentPromptId, {
+      content: this.promptContent,
+      changeMessage: this.promptChangeMessage || undefined,
+      author: 'admin',
+    });
+    // The facade/effect will handle success/error notifications
+    this.promptChangeMessage = '';
+  }
+
+  /**
+   * Resets the prompt by rolling back to version 1 (the original seeded default).
+   */
+  resetPrompt(): void {
+    if (!this.currentPromptId) return;
+
+    this.promptsFacade.rollbackPrompt(this.currentPromptId, 1);
+    // The facade/effect will reload the prompt after rollback
   }
 }
