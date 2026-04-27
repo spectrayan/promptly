@@ -1,0 +1,160 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Promptly — E2E Test CI Pipeline
+#
+# Runs Playwright E2E tests on pull requests targeting main.
+# Uses Docker Compose for MongoDB and builds/starts the full stack
+# before executing the test suite.
+# ═══════════════════════════════════════════════════════════════════════
+
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'temurin'
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      mongodb:
+        image: mongodb/mongodb-atlas-local:8.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand(\"ping\").ok' --quiet"
+          --health-interval 15s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 30s
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Cache pnpm
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      # ── Seed Database ──────────────────────────────────────
+      - name: Seed MongoDB
+        run: |
+          for collection in users projects project_members prompts workflows scan_results audit_logs; do
+            file="seed-data/${collection}/${collection}.json"
+            if [ -f "$file" ]; then
+              mongoimport --uri="mongodb://localhost:27017/promptly" \
+                --collection="$collection" --jsonArray --file="$file" || true
+              echo "✅ Seeded: $collection"
+            fi
+          done
+          # Run index creation
+          if [ -f "seed-data/init.js" ]; then
+            mongosh mongodb://localhost:27017/promptly < seed-data/init.js
+          fi
+
+      # ── Start Backend ──────────────────────────────────────
+      - name: Start backend
+        run: |
+          mvn spring-boot:run \
+            -f apps/backend/core/pom.xml \
+            -Dspring-boot.run.profiles=dev \
+            -Dspring-boot.run.jvmArguments="-Xmx512m" &
+          echo "Backend starting in background..."
+
+      # ── Start Frontend ─────────────────────────────────────
+      - name: Start frontend dev server
+        run: |
+          npx nx serve promptly &
+          echo "Frontend starting in background..."
+
+      # ── Wait for services ──────────────────────────────────
+      - name: Wait for backend
+        run: |
+          echo "Waiting for backend..."
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
+              echo "✅ Backend is ready"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "❌ Backend did not start in time"
+          exit 1
+
+      - name: Wait for frontend
+        run: |
+          echo "Waiting for frontend..."
+          for i in $(seq 1 40); do
+            if curl -sf http://localhost:4200 > /dev/null 2>&1; then
+              echo "✅ Frontend is ready"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "❌ Frontend did not start in time"
+          exit 1
+
+      # ── Run E2E Tests ──────────────────────────────────────
+      - name: Run Playwright E2E tests
+        run: npx playwright test --config apps/e2e/promptly-e2e/playwright.config.ts
+        env:
+          CI: true
+
+      # ── Upload Reports ─────────────────────────────────────
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: reports/e2e/
+          retention-days: 14
+
+      - name: Upload test traces
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
