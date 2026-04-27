@@ -1,6 +1,7 @@
 package com.promptly.improver.infrastructure.llm;
 
 import com.promptly.improver.application.port.out.LlmImproverPort;
+import com.promptly.shared.systemprompt.SystemPromptPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -8,6 +9,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * Spring AI adapter for LLM-powered prompt improvement.
+ * <p>
+ * The system prompt is resolved via {@link SystemPromptPort}, which supports:
+ * <ul>
+ *   <li>Admin overrides from the {@code __system__} project in the Prompt Registry</li>
+ *   <li>Classpath defaults from {@code resources/prompts/improver-system-prompt.md}</li>
+ * </ul>
  */
 @Slf4j
 @Component
@@ -15,35 +22,18 @@ import org.springframework.stereotype.Component;
 public class SpringAiImproverAdapter implements LlmImproverPort {
 
     private final ChatClient.Builder chatClientBuilder;
-
-    private static final String IMPROVE_SYSTEM_PROMPT = """
-            You are an expert prompt engineer. Your task is to improve the given AI prompt.
-            
-            Improvements should include:
-            1. **Clarity**: Make instructions clearer and more precise
-            2. **Safety**: Add safety guardrails if missing
-            3. **Structure**: Improve the overall structure and organization
-            4. **Examples**: Add examples if they would help (few-shot prompting)
-            5. **Determinism**: Reduce ambiguity to improve consistency
-            6. **Tool-calling**: Improve function/tool descriptions if present
-            
-            Respond with a JSON object:
-            {
-              "improvedContent": "the improved prompt text",
-              "summary": "brief summary of changes made"
-            }
-            
-            Return ONLY the JSON object, no markdown formatting.
-            """;
+    private final SystemPromptPort systemPromptPort;
 
     @Override
     public ImproveResult improveContent(String content) {
         log.info("Running LLM prompt improvement");
 
         try {
+            String systemPrompt = systemPromptPort.getSystemPrompt("improver");
+
             String response = chatClientBuilder.build()
                     .prompt()
-                    .system(IMPROVE_SYSTEM_PROMPT)
+                    .system(systemPrompt)
                     .user("Improve this prompt:\n\n" + content)
                     .call()
                     .content();
