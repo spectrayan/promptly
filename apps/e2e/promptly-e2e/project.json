@@ -1,0 +1,36 @@
+{
+  "name": "promptly-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/e2e/promptly-e2e/src",
+  "tags": ["scope:e2e", "type:test"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-e2e/scripts/run-e2e.ps1"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "e2e:headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-e2e/scripts/run-e2e.ps1 -Headed"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "e2e:debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-e2e/scripts/run-e2e.ps1 -Debug"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}
