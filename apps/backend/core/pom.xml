@@ -82,9 +82,9 @@
 
         <!-- ==================== SSE Server (Spectrayan) ==================== -->
         <dependency>
-            <groupId>com.spectrayan.health</groupId>
+            <groupId>com.spectrayan.sse</groupId>
             <artifactId>sse-server</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${spectrayan.sse-server.version}</version>
         </dependency>
 
         <!-- ==================== Libraries ==================== -->
@@ -179,6 +179,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <excludes>
                         <exclude>

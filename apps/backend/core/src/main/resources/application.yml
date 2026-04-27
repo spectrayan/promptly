@@ -5,11 +5,10 @@ spring:
   profiles:
     active: dev
 
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/promptly
-      database: promptly
-      auto-index-creation: false
+  mongodb:
+    uri: mongodb://localhost:27017/promptly
+    database: promptly
+    auto-index-creation: false
 
   # Spring AI — Google Gemini via Vertex AI
   ai:

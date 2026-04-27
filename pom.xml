@@ -45,6 +45,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <springdoc-openapi.version>3.0.1</springdoc-openapi.version>
         <openapi-generator.version>7.21.0</openapi-generator.version>
+        <spectrayan.sse-server.version>1.1.0</spectrayan.sse-server.version>
 
         <!-- Testing -->
         <testcontainers.version>1.20.4</testcontainers.version>

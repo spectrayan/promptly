@@ -1,0 +1,18 @@
+# Profile-specific config for performance testing (Docker stack).
+# Activated automatically when SPRING_PROFILES_ACTIVE=perf
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://mongodb:27017/promptly}
+      database: ${MONGODB_DATABASE:promptly}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev.promptly.local
+
+logging:
+  level:
+    com.promptly: INFO
+    org.springframework.data.mongodb: WARN
