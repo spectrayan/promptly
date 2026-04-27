@@ -1,0 +1,9 @@
+# k6 output files
+reports/
+*.json.gz
+
+# Lighthouse CI output
+.lighthouseci/
+
+# Docker volumes
+perf-mongo-data/

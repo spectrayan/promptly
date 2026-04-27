@@ -1,0 +1,63 @@
+{
+  "name": "promptly-perf",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/e2e/promptly-perf",
+  "tags": ["scope:perf", "type:test"],
+  "targets": {
+    "perf": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-perf/scripts/run-perf.ps1"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "perf:smoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-perf/scripts/run-perf.ps1 -Scenario smoke"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "perf:api": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-perf/scripts/run-perf.ps1 -Scenario api"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "perf:lighthouse": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-perf/scripts/run-perf.ps1 -Scenario lighthouse"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "perf:soak": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-perf/scripts/run-perf.ps1 -Scenario soak"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "perf:sse": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "powershell -ExecutionPolicy Bypass -File apps/e2e/promptly-perf/scripts/run-perf.ps1 -Scenario sse"
+        ],
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

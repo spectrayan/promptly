@@ -1,0 +1,100 @@
+# ===========================================================================
+# ⚠️ DEPRECATED — This file is kept for reference only.
+#
+# The perf stack has been migrated to Kubernetes.
+# See: k8s/  directory for the active manifests.
+# Run: .\apps\e2e\promptly-perf\scripts\run-perf.ps1
+# ===========================================================================
+#
+# Original Docker Compose stack (for reference):
+#   - MongoDB (single instance)
+#   - 2x Spring Boot backend instances
+#   - Nginx load balancer + frontend static server
+#
+# If you need a quick local Docker Compose alternative (without K8s):
+#   docker compose -f apps/e2e/promptly-perf/docker-compose.perf.yml up -d
+# ===========================================================================
+
+services:
+  # -- MongoDB ---------------------------------------------------------
+  mongodb:
+    image: mongodb/mongodb-atlas-local:8.0
+    container_name: promptly-perf-mongodb
+    ports:
+      - "27117:27017"      # Non-conflicting port for perf stack
+    volumes:
+      - perf-mongo-data:/data/db
+    environment:
+      - MONGODB_INITDB_DATABASE=promptly
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # -- Backend Instance 1 ----------------------------------------------
+  backend-1:
+    build:
+      context: ../../..
+      dockerfile: apps/backend/core/Dockerfile
+    container_name: promptly-perf-backend-1
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/promptly
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=perf
+      - SPRING_AI_VERTEX_AI_GEMINI_ENABLED=false
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  # -- Backend Instance 2 ----------------------------------------------
+  backend-2:
+    build:
+      context: ../../..
+      dockerfile: apps/backend/core/Dockerfile
+    container_name: promptly-perf-backend-2
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/promptly
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=perf
+      - SPRING_AI_VERTEX_AI_GEMINI_ENABLED=false
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  # -- Nginx Load Balancer + Frontend ----------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: promptly-perf-nginx
+    ports:
+      - "8180:8080"    # API load balancer
+      - "4280:4200"    # Frontend static files
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../../../dist/promptly/browser:/usr/share/nginx/html:ro
+    depends_on:
+      backend-1:
+        condition: service_healthy
+      backend-2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  perf-mongo-data:

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promptly-perf
+  labels:
+    app.kubernetes.io/part-of: promptly
+    purpose: performance-testing

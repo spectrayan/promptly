@@ -1,0 +1,157 @@
+# Nginx ConfigMap — reuse existing nginx.conf
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: promptly-perf
+data:
+  nginx.conf: |
+    worker_processes auto;
+
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format perf '$remote_addr - $request_time $upstream_response_time '
+                        '$status $body_bytes_sent "$request"';
+        access_log /var/log/nginx/access.log perf;
+
+        sendfile     on;
+        tcp_nopush   on;
+        gzip         on;
+        gzip_types   text/plain application/json application/javascript text/css;
+
+        # Backend upstream — K8s Service handles load balancing
+        upstream promptly_backend {
+            server backend.promptly-perf.svc.cluster.local:8080;
+        }
+
+        # API Load Balancer (port 8080)
+        server {
+            listen 8080;
+            server_name localhost;
+
+            location /health {
+                return 200 'ok';
+                add_header Content-Type text/plain;
+            }
+
+            location / {
+                proxy_pass http://promptly_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                # SSE support
+                proxy_buffering off;
+                proxy_cache off;
+                proxy_read_timeout 300s;
+                chunked_transfer_encoding on;
+            }
+        }
+
+        # Frontend Static Server (port 4200)
+        server {
+            listen 4200;
+            server_name localhost;
+
+            root /usr/share/nginx/html;
+            index index.html;
+
+            location / {
+                try_files $uri $uri/ /index.html;
+            }
+
+            location /api/ {
+                proxy_pass http://promptly_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                proxy_buffering off;
+                proxy_cache off;
+                proxy_read_timeout 300s;
+            }
+
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: promptly-perf
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: promptly-nginx:perf
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+            - containerPort: 4200
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: promptly-perf
+spec:
+  selector:
+    app: nginx
+  ports:
+    - name: api
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+    - name: frontend
+      port: 4200
+      targetPort: 4200
+      nodePort: 30042
+  type: NodePort
