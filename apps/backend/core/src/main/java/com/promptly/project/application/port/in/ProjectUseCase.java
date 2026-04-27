@@ -6,6 +6,12 @@ import com.promptly.project.domain.model.ProjectRole;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Inbound port combining project lifecycle and RBAC member management use cases.
+ * <p>
+ * Implemented by {@link com.promptly.project.application.service.ProjectApplicationService}.
+ * Consumed by the {@link com.promptly.project.infrastructure.web.ProjectController}.
+ */
 public interface ProjectUseCase {
 
     Mono<Project> createProject(CreateProjectCommand command);

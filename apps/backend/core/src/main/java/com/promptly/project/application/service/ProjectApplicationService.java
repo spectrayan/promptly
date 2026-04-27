@@ -20,6 +20,16 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 
+/**
+ * Application service orchestrating project lifecycle and RBAC membership.
+ * <p>
+ * Implements all project use cases: creation (with automatic OWNER membership),
+ * querying, and member management (add, update role, remove).
+ * Enforces uniqueness constraints on project names and member assignments.
+ *
+ * @see com.promptly.project.domain.model.Project
+ * @see com.promptly.project.domain.model.ProjectRole
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

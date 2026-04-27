@@ -20,6 +20,17 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 
+/**
+ * REST controller for the Project & RBAC module.
+ * Implements the contract-first {@link ProjectsApi} interface generated from the OpenAPI specification.
+ * <p>
+ * Projects are the top-level security boundary — every prompt, workflow, and scan
+ * is scoped to a project. This controller handles project CRUD and member management
+ * (add/update/remove members with role assignments).
+ *
+ * @see com.promptly.project.domain.model.Project
+ * @see com.promptly.project.domain.model.ProjectRole
+ */
 @RestController
 @RequiredArgsConstructor
 public class ProjectController implements ProjectsApi {

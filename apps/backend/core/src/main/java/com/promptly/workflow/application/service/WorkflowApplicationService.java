@@ -17,7 +17,17 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 /**
- * Application service orchestrating workflow use cases.
+ * Application service orchestrating the multi-step approval workflow lifecycle.
+ * <p>
+ * Implements all workflow use cases: submission, approval, rejection, and queries.
+ * Each state transition delegates to the {@link Workflow} aggregate's domain methods,
+ * which enforce business rules via {@link WorkflowSpecifications}.
+ * <p>
+ * Domain events ({@link ReviewSubmitted}, {@link WorkflowApproved}, {@link WorkflowRejected})
+ * are published on successful state transitions for downstream consumers (audit, notification).
+ *
+ * @see com.promptly.workflow.domain.model.Workflow
+ * @see com.promptly.workflow.domain.model.WorkflowSpecifications
  */
 @Slf4j
 @Service
