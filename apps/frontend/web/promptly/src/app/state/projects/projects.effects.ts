@@ -1,3 +1,4 @@
+/** NgRx effects for the Project & RBAC module — handles API calls via `@promptly/client` SDK. */
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';

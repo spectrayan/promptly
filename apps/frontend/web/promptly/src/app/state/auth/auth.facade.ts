@@ -11,6 +11,17 @@ import {
 } from './auth.selectors';
 import * as AuthActions from './auth.actions';
 
+/**
+ * Facade for Authentication and session management.
+ *
+ * Uses NgRx store internally. Manages login, registration, session restore,
+ * and logout. The `isAuthenticated` signal gates all protected routes via
+ * the auth guard.
+ *
+ * @remarks
+ * In OIDC mode, `login()` and `register()` are unused — the external IdP
+ * handles authentication. `restoreSession()` validates the existing JWT.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthFacade {
   private readonly store = inject(Store);

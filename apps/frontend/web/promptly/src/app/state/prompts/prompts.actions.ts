@@ -1,3 +1,4 @@
+/** NgRx actions for the Prompt Registry feature. Groups: Load, Create, Update, Delete, Rollback, Versions. */
 import { createAction, props } from '@ngrx/store';
 import {
   CreatePromptRequest,

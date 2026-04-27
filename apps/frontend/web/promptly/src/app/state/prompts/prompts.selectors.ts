@@ -1,3 +1,4 @@
+/** Memoized selectors for the Prompt Registry feature slice. Consumed by PromptsFacade. */
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { PromptsState } from './prompts.state';
 

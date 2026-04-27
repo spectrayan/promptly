@@ -1,3 +1,4 @@
+/** Memoized selectors for the Dashboard Analytics feature slice. Consumed by DashboardFacade. */
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { DashboardState } from './dashboard.state';
 

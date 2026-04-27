@@ -1,3 +1,4 @@
+/** Pure reducer for the Dashboard Analytics feature slice. */
 import { createReducer, on } from '@ngrx/store';
 import { DashboardState, initialDashboardState } from './dashboard.state';
 import * as DashboardActions from './dashboard.actions';

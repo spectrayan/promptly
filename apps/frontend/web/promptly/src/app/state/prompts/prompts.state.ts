@@ -1,3 +1,4 @@
+/** State shape and initial values for the Prompt Registry NgRx feature slice. */
 import { PromptResponse, PromptSummaryResponse, VersionResponse } from '@promptly/client';
 
 export interface PromptsState {

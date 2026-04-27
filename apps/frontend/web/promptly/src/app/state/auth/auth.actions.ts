@@ -1,3 +1,4 @@
+/** NgRx actions for Authentication — login, register, session restore, logout. */
 import { createAction, props } from '@ngrx/store';
 import { AuthResponse, UserResponse } from '@promptly/client';
 

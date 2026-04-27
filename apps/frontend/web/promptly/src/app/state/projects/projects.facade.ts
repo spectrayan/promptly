@@ -11,6 +11,17 @@ import {
 import * as ProjectsActions from './projects.actions';
 import { AddMemberRequest, UpdateMemberRequest, CreateProjectRequest } from '@promptly/client';
 
+/**
+ * Facade for Project management — controls project selection, creation,
+ * and member RBAC operations.
+ *
+ * Uses NgRx store internally. The selected project drives all project-scoped
+ * routes and feature loading throughout the application.
+ *
+ * @remarks
+ * Project selection triggers side effects that reload prompts, workflows,
+ * and scanner data for the newly selected project.
+ */
 @Injectable({ providedIn: 'root' })
 export class ProjectsFacade {
   private readonly store = inject(Store);

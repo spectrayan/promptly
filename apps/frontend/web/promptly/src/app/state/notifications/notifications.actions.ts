@@ -1,3 +1,4 @@
+/** NgRx actions for real-time Notifications — load, mark-read, SSE events. */
 import { createAction, props } from '@ngrx/store';
 
 /** Represents a single notification */

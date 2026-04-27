@@ -10,6 +10,16 @@ import {
 } from './workflows.selectors';
 import * as WfActions from './workflows.actions';
 
+/**
+ * Facade for the multi-step approval Workflow lifecycle.
+ *
+ * Uses NgRx store internally. Manages workflow submission, approval, and
+ * rejection — the gate between prompt drafting and production deployment.
+ *
+ * @remarks
+ * The `pending` signal exposes workflows awaiting action, used by the
+ * dashboard widget and navigation badge.
+ */
 @Injectable({ providedIn: 'root' })
 export class WorkflowsFacade {
   private readonly store = inject(Store);

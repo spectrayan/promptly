@@ -1,3 +1,4 @@
+/** Pure reducer for the Approval Workflow feature slice. Handles workflow lifecycle state transitions. */
 import { createReducer, on } from '@ngrx/store';
 import { WorkflowsState, initialWorkflowsState } from './workflows.state';
 import * as WfActions from './workflows.actions';

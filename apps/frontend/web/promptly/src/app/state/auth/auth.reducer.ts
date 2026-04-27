@@ -1,3 +1,4 @@
+/** Pure reducer for the Authentication feature slice. Manages user, token, and error state. */
 import { createReducer, on } from '@ngrx/store';
 import { initialAuthState } from './auth.state';
 import * as AuthActions from './auth.actions';

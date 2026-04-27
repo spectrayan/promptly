@@ -1,3 +1,4 @@
+/** State shape and initial values for the Approval Workflow NgRx feature slice. */
 import { WorkflowResponse } from '@promptly/client';
 
 export interface WorkflowsState {

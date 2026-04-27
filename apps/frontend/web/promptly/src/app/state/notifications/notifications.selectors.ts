@@ -1,3 +1,4 @@
+/** Memoized selectors for the Notifications feature slice. Consumed by NotificationsFacade. */
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { NotificationsState } from './notifications.reducer';
 

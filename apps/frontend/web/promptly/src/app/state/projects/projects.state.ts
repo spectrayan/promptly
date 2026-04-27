@@ -1,3 +1,4 @@
+/** State shape and initial values for the Project & RBAC NgRx feature slice. */
 import { ProjectResponse, ProjectMemberResponse } from '@promptly/client';
 
 export interface ProjectsState {

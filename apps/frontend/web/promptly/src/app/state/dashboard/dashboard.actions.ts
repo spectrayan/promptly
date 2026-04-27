@@ -1,3 +1,4 @@
+/** NgRx actions for the Dashboard Analytics module — load aggregated metrics and stats. */
 import { createAction, props } from '@ngrx/store';
 import { DashboardState } from './dashboard.state';
 

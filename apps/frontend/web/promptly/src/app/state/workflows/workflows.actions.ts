@@ -1,3 +1,4 @@
+/** NgRx actions for the Approval Workflow engine — submit, approve, reject, load workflows. */
 import { createAction, props } from '@ngrx/store';
 import { SubmitReviewRequest, ApproveRejectRequest, WorkflowResponse } from '@promptly/client';
 

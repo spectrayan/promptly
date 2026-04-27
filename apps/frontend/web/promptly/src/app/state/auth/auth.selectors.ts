@@ -1,3 +1,4 @@
+/** Memoized selectors for the Authentication feature slice. Consumed by AuthFacade. */
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuthState } from './auth.state';
 

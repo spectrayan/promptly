@@ -1,3 +1,4 @@
+/** State shape and initial values for the Authentication NgRx feature slice. */
 import { UserResponse } from '@promptly/client';
 
 export interface AuthState {

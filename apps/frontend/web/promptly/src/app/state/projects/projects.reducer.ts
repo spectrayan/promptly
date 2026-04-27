@@ -1,3 +1,4 @@
+/** Pure reducer for the Project & RBAC feature slice. Handles project and member state transitions. */
 import { createReducer, on } from '@ngrx/store';
 import { initialProjectsState } from './projects.state';
 import * as ProjectsActions from './projects.actions';

@@ -1,3 +1,4 @@
+/** Memoized selectors for the Approval Workflow feature slice. Consumed by WorkflowsFacade. */
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { WorkflowsState } from './workflows.state';
 

@@ -1,3 +1,4 @@
+/** Pure reducer for the Prompt Registry feature slice. Handles all prompt CRUD state transitions. */
 import { createReducer, on } from '@ngrx/store';
 import { PromptsState, initialPromptsState } from './prompts.state';
 import * as PromptsActions from './prompts.actions';

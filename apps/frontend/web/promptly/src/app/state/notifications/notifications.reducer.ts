@@ -1,3 +1,4 @@
+/** Pure reducer for the Notifications feature slice. Manages notification list and unread count. */
 import { createReducer, on } from '@ngrx/store';
 import {
   Notification,

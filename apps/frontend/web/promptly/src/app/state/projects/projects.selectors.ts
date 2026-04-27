@@ -1,3 +1,4 @@
+/** Memoized selectors for the Project & RBAC feature slice. Consumed by ProjectsFacade. */
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ProjectsState } from './projects.state';
 

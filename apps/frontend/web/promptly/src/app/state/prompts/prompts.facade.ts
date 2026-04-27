@@ -12,6 +12,18 @@ import {
 } from './prompts.selectors';
 import * as PromptsActions from './prompts.actions';
 
+/**
+ * Facade for the Prompt Registry feature — the **single API surface** for all
+ * prompt-related state access and command dispatch.
+ *
+ * Uses NgRx store internally. Exposes Angular signals for `OnPush` components.
+ * Components must inject this facade instead of `@promptly/client` services directly.
+ *
+ * @remarks
+ * Also used by the Settings page to manage `__system__` project prompts.
+ *
+ * @see {@link ../../shared/constants/system.constants.ts} for system prompt naming
+ */
 @Injectable({ providedIn: 'root' })
 export class PromptsFacade {
   private readonly store = inject(Store);

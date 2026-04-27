@@ -1,3 +1,4 @@
+/** NgRx effects for Authentication — handles JWT API calls and token storage. */
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Router } from '@angular/router';

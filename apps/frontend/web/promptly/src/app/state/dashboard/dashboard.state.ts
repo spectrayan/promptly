@@ -1,3 +1,4 @@
+/** State shape and initial values for the Dashboard Analytics NgRx feature slice. */
 export interface DashboardState {
   promptCount: number;
   workflowCount: number;

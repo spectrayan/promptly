@@ -1,3 +1,4 @@
+/** NgRx actions for the Project & RBAC module — load, create, update, delete projects and members. */
 import { createAction, props } from '@ngrx/store';
 import { 
   ProjectResponse, 

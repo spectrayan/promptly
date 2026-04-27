@@ -1,3 +1,4 @@
+/** NgRx effects for the Dashboard Analytics — fetches aggregated metrics from the API. */
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { forkJoin, of } from 'rxjs';
