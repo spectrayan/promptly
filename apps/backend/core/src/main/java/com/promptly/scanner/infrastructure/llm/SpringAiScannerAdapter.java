@@ -5,6 +5,8 @@ import com.promptly.scanner.domain.model.Finding;
 import com.promptly.scanner.domain.model.ScanResult;
 import com.promptly.scanner.domain.model.Severity;
 import com.promptly.shared.systemprompt.SystemPromptPort;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -17,6 +19,9 @@ import java.util.List;
 /**
  * Spring AI adapter for LLM-powered vulnerability scanning.
  * Analyzes prompt content for security issues, PHI exposure, injection risks, etc.
+ * <p>
+ * Resilience4j circuit breaker and retry protect against LLM provider outages.
+ * Configure via {@code resilience4j.circuitbreaker.instances.llm-scanner.*} in YAML.
  * <p>
  * The system prompt is resolved via {@link SystemPromptPort}, which supports:
  * <ul>
@@ -33,24 +38,30 @@ public class SpringAiScannerAdapter implements LlmScannerPort {
     private final SystemPromptPort systemPromptPort;
 
     @Override
+    @CircuitBreaker(name = "llm-scanner", fallbackMethod = "scanFallback")
+    @Retry(name = "llm-scanner")
     public ScanResult analyzePrompt(String promptId, int version, String content) {
         log.info("Running LLM vulnerability scan for prompt {} v{}", promptId, version);
 
-        try {
-            String systemPrompt = systemPromptPort.getSystemPrompt("scanner");
+        String systemPrompt = systemPromptPort.getSystemPrompt("scanner");
 
-            String response = chatClientBuilder.build()
-                    .prompt()
-                    .system(systemPrompt)
-                    .user("Analyze this prompt for vulnerabilities:\n\n" + content)
-                    .call()
-                    .content();
+        String response = chatClientBuilder.build()
+                .prompt()
+                .system(systemPrompt)
+                .user("Analyze this prompt for vulnerabilities:\n\n" + content)
+                .call()
+                .content();
 
-            return parseScanResponse(promptId, version, response);
-        } catch (Exception e) {
-            log.warn("LLM scan failed for prompt {}, returning default safe result: {}", promptId, e.getMessage());
-            return createDefaultResult(promptId, version);
-        }
+        return parseScanResponse(promptId, version, response);
+    }
+
+    /**
+     * Fallback when circuit breaker is open or all retries are exhausted.
+     */
+    @SuppressWarnings("unused")
+    private ScanResult scanFallback(String promptId, int version, String content, Throwable t) {
+        log.warn("LLM scan circuit breaker triggered for prompt {} v{}: {}", promptId, version, t.getMessage());
+        return createDefaultResult(promptId, version);
     }
 
     private ScanResult parseScanResponse(String promptId, int version, String response) {

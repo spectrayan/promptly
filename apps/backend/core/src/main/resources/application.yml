@@ -56,6 +56,12 @@ promptly:
       provider: gemini
       model: text-embedding-004
 
+  # ── Rate Limiting (disabled by default — enable if not using external gateway) ──
+  rate-limit:
+    enabled: false                     # set to true to enable app-level rate limiting
+    requests-per-second: 100
+    login-requests-per-minute: 5
+
 server:
   port: 8080
 
@@ -88,6 +94,41 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+
+# ── Resilience4j (Circuit Breakers + Retries for LLM calls) ──
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+        slow-call-duration-threshold: 30s
+        slow-call-rate-threshold: 80
+    instances:
+      llm-scanner:
+        base-config: default
+      llm-improver:
+        base-config: default
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.io.IOException
+          - java.net.SocketTimeoutException
+          - org.springframework.web.reactive.function.client.WebClientException
+    instances:
+      llm-scanner:
+        base-config: default
+      llm-improver:
+        base-config: default
+
 
 logging:
   level:

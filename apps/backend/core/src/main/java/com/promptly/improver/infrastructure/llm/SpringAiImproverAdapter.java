@@ -2,6 +2,8 @@ package com.promptly.improver.infrastructure.llm;
 
 import com.promptly.improver.application.port.out.LlmImproverPort;
 import com.promptly.shared.systemprompt.SystemPromptPort;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -9,6 +11,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * Spring AI adapter for LLM-powered prompt improvement.
+ * <p>
+ * Resilience4j circuit breaker and retry protect against LLM provider outages.
+ * Configure via {@code resilience4j.circuitbreaker.instances.llm-improver.*} in YAML.
  * <p>
  * The system prompt is resolved via {@link SystemPromptPort}, which supports:
  * <ul>
@@ -25,24 +30,30 @@ public class SpringAiImproverAdapter implements LlmImproverPort {
     private final SystemPromptPort systemPromptPort;
 
     @Override
+    @CircuitBreaker(name = "llm-improver", fallbackMethod = "improveFallback")
+    @Retry(name = "llm-improver")
     public ImproveResult improveContent(String content) {
         log.info("Running LLM prompt improvement");
 
-        try {
-            String systemPrompt = systemPromptPort.getSystemPrompt("improver");
+        String systemPrompt = systemPromptPort.getSystemPrompt("improver");
 
-            String response = chatClientBuilder.build()
-                    .prompt()
-                    .system(systemPrompt)
-                    .user("Improve this prompt:\n\n" + content)
-                    .call()
-                    .content();
+        String response = chatClientBuilder.build()
+                .prompt()
+                .system(systemPrompt)
+                .user("Improve this prompt:\n\n" + content)
+                .call()
+                .content();
 
-            return parseResponse(response, content);
-        } catch (Exception e) {
-            log.warn("LLM improvement failed: {}", e.getMessage());
-            return new ImproveResult(content, "Improvement unavailable — LLM call failed");
-        }
+        return parseResponse(response, content);
+    }
+
+    /**
+     * Fallback when circuit breaker is open or all retries are exhausted.
+     */
+    @SuppressWarnings("unused")
+    private ImproveResult improveFallback(String content, Throwable t) {
+        log.warn("LLM improver circuit breaker triggered: {}", t.getMessage());
+        return new ImproveResult(content, "Improvement unavailable — LLM service is temporarily down");
     }
 
     private ImproveResult parseResponse(String response, String originalContent) {
