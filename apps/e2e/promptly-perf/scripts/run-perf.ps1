@@ -1,4 +1,4 @@
-﻿# =======================================================================
+# =======================================================================
 # Promptly - Performance Test Orchestration Script (Kubernetes)
 #
 # Builds the backend image, deploys to a local K8s cluster (Docker Desktop),
@@ -201,20 +201,24 @@ try {
     foreach ($seed in $seedCollections) {
         $jsonPath = Join-Path $RootDir $seed.file
         if (Test-Path $jsonPath) {
-            # Drop and re-import
+            # Drop existing collection
             & cmd /c "kubectl exec -n $Namespace $mongoPod -- mongosh promptly --quiet --eval `"db.$($seed.collection).drop()`" 2>&1" | Out-Null
-            # Copy JSON file to pod, then import
-            & cmd /c "kubectl cp `"$jsonPath`" ${Namespace}/${mongoPod}:/tmp/seed.json 2>&1" | Out-Null
-            & cmd /c "kubectl exec -n $Namespace $mongoPod -- mongoimport --db promptly --collection $($seed.collection) --jsonArray --file /tmp/seed.json --quiet 2>&1" | Out-Null
-            Ok "Seeded: $($seed.collection)"
+            # Pipe JSON via stdin (kubectl cp requires tar which Alpine mongo image lacks)
+            $importResult = Get-Content $jsonPath -Raw | kubectl exec -i -n $Namespace $mongoPod -- mongoimport --db promptly --collection $($seed.collection) --jsonArray --quiet 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                Warn "Failed to seed $($seed.collection): $importResult"
+            } else {
+                Ok "Seeded: $($seed.collection)"
+            }
+        } else {
+            Warn "Seed file not found: $jsonPath"
         }
     }
 
     # Run indexes
     $initJs = Join-Path $RootDir "seed-data\init.js"
     if (Test-Path $initJs) {
-        & cmd /c "kubectl cp `"$initJs`" ${Namespace}/${mongoPod}:/tmp/init.js 2>&1" | Out-Null
-        & cmd /c "kubectl exec -n $Namespace $mongoPod -- mongosh promptly --quiet --file /tmp/init.js 2>&1" | Out-Null
+        Get-Content $initJs -Raw | kubectl exec -i -n $Namespace $mongoPod -- mongosh promptly --quiet 2>&1 | Out-Null
     }
     Ok "Database seeded."
 
@@ -225,48 +229,76 @@ try {
     Write-Host "===========================================================" -ForegroundColor Green
     Write-Host ""
 
+    # Start port-forward so Docker k6 container can reach the API via host.docker.internal
+    # (Docker Desktop doesn't reliably expose K8s NodePorts to Docker containers)
+    Log "Starting API port-forward (localhost:30080 -> svc/nginx:8080)..."
+    $apiPortForwardJob = Start-Job -ScriptBlock {
+        param($ns)
+        kubectl port-forward svc/nginx 30080:8080 -n $ns 2>&1
+    } -ArgumentList $Namespace
+    Start-Sleep 3
+
+    $apiReady = Wait-ForEndpoint -Url "http://localhost:30080/actuator" -Label "Backend API (via port-forward)" -TimeoutSeconds 60
+    if (-not $apiReady) {
+        Err "Backend API not reachable on localhost:30080. Check pods:"
+        Err "  kubectl get pods -n $Namespace"
+        Err "  kubectl logs -l app=backend -n $Namespace --tail=30"
+        $TestExitCode = 1
+    }
+
     $k6Scripts = Join-Path $PerfDir "k6\scripts"
-    # k6 runs against the NodePort URL
     $baseUrl = "http://host.docker.internal:30080"
+    $SmokeOk = $true
 
-    # ── k6 Smoke ──
+    # ── k6 Smoke (always runs first as a gate) ──
     if ($Scenario -eq "all" -or $Scenario -eq "smoke") {
-        Log "Running k6 smoke test..."
-        & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run /scripts/smoke.js 2>&1" | ForEach-Object { Write-Host $_ }
+        Log "Running k6 smoke test (auth + health validation)..."
+        & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run --out csv=/reports/smoke-timeseries.csv /scripts/smoke.js 2>&1" | ForEach-Object { Write-Host $_ }
         if ($LASTEXITCODE -ne 0) {
-            Warn "Smoke test failed."
+            Err "Smoke test FAILED - login or health check failed."
+            Err "Skipping all subsequent tests (auth must succeed first)."
+            $SmokeOk = $false
             $TestExitCode = 1
-        } else { Ok "Smoke test passed." }
+        } else { Ok "Smoke test passed - auth and health validated." }
     }
 
-    # ── k6 API (prompt CRUD) ──
-    if ($Scenario -eq "all" -or $Scenario -eq "api") {
-        Log "Running k6 prompt-crud test..."
-        & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run /scripts/prompt-crud.js 2>&1" | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -ne 0) {
-            Warn "Prompt CRUD test had failures."
-            $TestExitCode = 1
-        } else { Ok "Prompt CRUD test passed." }
+    # ── Gate: only proceed if smoke test passed ──
+    if (-not $SmokeOk -and $Scenario -eq "all") {
+        Warn "──────────────────────────────────────────────────────────"
+        Warn "  SKIPPING remaining tests: smoke test failed."
+        Warn "  Check backend logs:  kubectl logs -l app=backend -n $Namespace --tail=50"
+        Warn "──────────────────────────────────────────────────────────"
     }
+    else {
+        # ── k6 API (prompt CRUD) ──
+        if ($Scenario -eq "all" -or $Scenario -eq "api") {
+            Log "Running k6 prompt-crud test..."
+            & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run --out csv=/reports/prompt-crud-timeseries.csv /scripts/prompt-crud.js 2>&1" | ForEach-Object { Write-Host $_ }
+            if ($LASTEXITCODE -ne 0) {
+                Warn "Prompt CRUD test had failures."
+                $TestExitCode = 1
+            } else { Ok "Prompt CRUD test passed." }
+        }
 
-    # ── k6 Soak ──
-    if ($Scenario -eq "soak") {
-        Log "Running k6 soak test (5-minute sustained load)..."
-        & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run /scripts/soak.js 2>&1" | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -ne 0) {
-            Warn "Soak test had failures."
-            $TestExitCode = 1
-        } else { Ok "Soak test passed." }
-    }
+        # ── k6 Soak ──
+        if ($Scenario -eq "soak") {
+            Log "Running k6 soak test (5-minute sustained load)..."
+            & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run --out csv=/reports/soak-timeseries.csv /scripts/soak.js 2>&1" | ForEach-Object { Write-Host $_ }
+            if ($LASTEXITCODE -ne 0) {
+                Warn "Soak test had failures."
+                $TestExitCode = 1
+            } else { Ok "Soak test passed." }
+        }
 
-    # ── k6 SSE ──
-    if ($Scenario -eq "all" -or $Scenario -eq "sse") {
-        Log "Running k6 SSE streaming test..."
-        & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run /scripts/ai-stream.js 2>&1" | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -ne 0) {
-            Warn "SSE streaming test had failures."
-            $TestExitCode = 1
-        } else { Ok "SSE streaming test passed." }
+        # ── k6 SSE ──
+        if ($Scenario -eq "all" -or $Scenario -eq "sse") {
+            Log "Running k6 SSE streaming test..."
+            & cmd /c "docker run --rm --add-host=host.docker.internal:host-gateway -v `"${k6Scripts}:/scripts`" -v `"${ReportsDir}:/reports`" -e `"BASE_URL=$baseUrl`" grafana/k6:latest run --out csv=/reports/ai-stream-timeseries.csv /scripts/ai-stream.js 2>&1" | ForEach-Object { Write-Host $_ }
+            if ($LASTEXITCODE -ne 0) {
+                Warn "SSE streaming test had failures."
+                $TestExitCode = 1
+            } else { Ok "SSE streaming test passed." }
+        }
     }
 
     # ── Lighthouse CI ──
@@ -317,10 +349,14 @@ catch {
     $TestExitCode = 1
 }
 finally {
-    # Stop port-forward
+    # Stop port-forwards
     if ($portForwardJob) {
         Stop-Job $portForwardJob -ErrorAction SilentlyContinue
         Remove-Job $portForwardJob -Force -ErrorAction SilentlyContinue
+    }
+    if ($apiPortForwardJob) {
+        Stop-Job $apiPortForwardJob -ErrorAction SilentlyContinue
+        Remove-Job $apiPortForwardJob -Force -ErrorAction SilentlyContinue
     }
 
     if (-not $KeepStack) {
