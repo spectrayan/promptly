@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Logback configuration for Promptly Backend.
+  - dev profile:  human-readable console output (default)
+  - prod profile: structured JSON for log aggregation (ELK, Loki, CloudWatch)
+  - perf profile: same as prod (structured JSON)
+-->
+<configuration>
+
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="promptly"/>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Dev / Default: colored console output
+         ══════════════════════════════════════════════════════════════ -->
+    <springProfile name="dev | default">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%15.15thread] %cyan(%-40.40logger{39}) : %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Prod / Perf: structured JSON for log aggregation
+         ══════════════════════════════════════════════════════════════ -->
+    <springProfile name="prod | perf">
+        <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeMdcKeyName>traceId</includeMdcKeyName>
+                <includeMdcKeyName>spanId</includeMdcKeyName>
+                <includeMdcKeyName>userId</includeMdcKeyName>
+                <customFields>{"app":"${appName}","env":"${SPRING_PROFILES_ACTIVE:-unknown}"}</customFields>
+                <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</timestampPattern>
+                <fieldNames>
+                    <timestamp>@timestamp</timestamp>
+                    <version>[ignore]</version>
+                </fieldNames>
+            </encoder>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="JSON_CONSOLE"/>
+        </root>
+    </springProfile>
+
+</configuration>

@@ -45,9 +45,12 @@ ENV JAVA_OPTS="-XX:+UseContainerSupport \
                -XX:InitialRAMPercentage=50.0 \
                -Djava.security.egd=file:/dev/./urandom"
 
+# Install curl for healthcheck (wget is not available in JRE Alpine)
+RUN apk add --no-cache curl
+
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=45s \
+  CMD curl -sf http://localhost:8080/actuator/health || exit 1
 
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher $SPRING_ARGS"]

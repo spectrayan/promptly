@@ -6,8 +6,8 @@ spring:
     active: dev
 
   mongodb:
-    uri: mongodb://localhost:27017/promptly
-    database: promptly
+    uri: ${MONGODB_URI:mongodb://localhost:27017/promptly?maxPoolSize=50&minPoolSize=5&connectTimeoutMS=5000&socketTimeoutMS=30000&serverSelectionTimeoutMS=5000}
+    database: ${MONGODB_DATABASE:promptly}
     auto-index-creation: false
 
   # Spring AI — Google Gemini via Vertex AI
