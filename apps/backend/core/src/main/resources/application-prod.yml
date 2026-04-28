@@ -1,0 +1,87 @@
+# ═══════════════════════════════════════════════════════════════
+# Promptly — Production Profile
+# ═══════════════════════════════════════════════════════════════
+# Activated via: SPRING_PROFILES_ACTIVE=prod
+#
+# All secrets MUST be provided via environment variables.
+# The app will fail to start if required secrets are missing.
+
+spring:
+  mongodb:
+    uri: ${MONGODB_URI:}
+    database: ${MONGODB_DATABASE:promptly}
+
+# ── Auth ──
+promptly:
+  auth:
+    provider: ${PROMPTLY_AUTH_PROVIDER:local}
+    jwt:
+      secret: ${JWT_SECRET:}                     # REQUIRED — no default, fail fast
+      expiration-ms: 3600000                     # 1 hour
+      refresh-expiration-ms: 604800000           # 7 days
+
+  deployment:
+    mode: ${PROMPTLY_DEPLOYMENT_MODE:self-hosted}
+
+  llm:
+    provider: ${PROMPTLY_LLM_PROVIDER:gemini}
+    model: ${PROMPTLY_LLM_MODEL:gemini-2.5-flash}
+    api-key: ${PROMPTLY_LLM_API_KEY:}
+
+# ── CORS (comma-separated origins) ──
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}    # e.g. https://app.promptly.dev
+    allow-credentials: true
+
+# ── Server ──
+server:
+  shutdown: graceful
+
+spring.lifecycle:
+  timeout-per-shutdown-phase: 30s
+
+# ── Actuator: restrict to health + prometheus only ──
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: promptly
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      slo:
+        http.server.requests: 50ms, 100ms, 250ms, 500ms, 1s, 5s
+    export:
+      prometheus:
+        enabled: true
+
+# ── SSE ──
+spectrayan:
+  sse:
+    server:
+      cors:
+        allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+
+# ── Logging: structured, minimal ──
+logging:
+  level:
+    root: WARN
+    com.promptly: INFO
+    org.springframework.data.mongodb: WARN
+    org.springframework.security: WARN
+    org.springframework.modulith: WARN
+
+# ── Swagger: disabled in prod ──
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false

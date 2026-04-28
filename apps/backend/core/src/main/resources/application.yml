@@ -32,7 +32,7 @@ promptly:
   auth:
     provider: local                    # local | oidc
     jwt:
-      secret: promptly-dev-secret-key-change-in-production-min-32-chars
+      secret: ${JWT_SECRET:promptly-dev-secret-key-DO-NOT-USE-IN-PRODUCTION}
       expiration-ms: 3600000           # 1 hour
       refresh-expiration-ms: 604800000 # 7 days
 

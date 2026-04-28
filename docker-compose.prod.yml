@@ -39,7 +39,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/promptly
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_MONGODB_URI=mongodb://mongodb:27017/promptly
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
       - PROMPTLY_LLM_API_KEY=${PROMPTLY_LLM_API_KEY:-}
       - PROMPTLY_LLM_PROVIDER=${PROMPTLY_LLM_PROVIDER:-gemini}
       - PROMPTLY_LLM_MODEL=${PROMPTLY_LLM_MODEL:-gemini-2.5-flash}
