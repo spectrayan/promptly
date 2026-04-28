@@ -4,14 +4,19 @@ properties:
   name:
     type: string
     description: Project name (unique)
+    minLength: 1
+    maxLength: 200
     example: customer-ops
   description:
     type: string
     description: Brief description of the project
+    maxLength: 1000
     example: Customer operations AI prompts
   tags:
     type: array
+    maxItems: 50
     items:
       type: string
+      maxLength: 100
     description: Tags for cross-project discovery
     example: ["support", "nlp"]

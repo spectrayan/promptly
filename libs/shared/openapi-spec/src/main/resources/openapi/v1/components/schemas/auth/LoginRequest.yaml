@@ -5,9 +5,13 @@ properties:
     type: string
     format: email
     description: User's email address
+    minLength: 5
+    maxLength: 254
     example: alice@promptly.ai
   password:
     type: string
     format: password
     description: User's password
+    minLength: 8
+    maxLength: 128
     example: P@ssw0rd123

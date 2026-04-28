@@ -4,10 +4,15 @@ properties:
   content:
     type: string
     description: Updated prompt content
+    minLength: 1
+    maxLength: 51200
   changeMessage:
     type: string
     description: Description of what changed
+    maxLength: 500
     example: Added safety guardrails
   author:
     type: string
     description: User making the update
+    minLength: 1
+    maxLength: 100
