@@ -4,4 +4,6 @@ properties:
   refreshToken:
     type: string
     description: The refresh token to exchange for a new access token
+    minLength: 1
+    maxLength: 4096
     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...

@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * UpdateUserRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T16:27:22.798239400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class UpdateUserRequest {
 
   private @Nullable String displayName;
@@ -34,7 +34,7 @@ public class UpdateUserRequest {
    * Updated display name
    * @return displayName
    */
-  
+  @Size(min = 1, max = 200) 
   @Schema(name = "displayName", example = "Alice J.", description = "Updated display name", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("displayName")
   public @Nullable String getDisplayName() {
@@ -55,7 +55,7 @@ public class UpdateUserRequest {
    * Updated avatar URL
    * @return avatarUrl
    */
-  
+  @Size(max = 2048) 
   @Schema(name = "avatarUrl", example = "https://example.com/avatar.png", description = "Updated avatar URL", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("avatarUrl")
   public @Nullable String getAvatarUrl() {

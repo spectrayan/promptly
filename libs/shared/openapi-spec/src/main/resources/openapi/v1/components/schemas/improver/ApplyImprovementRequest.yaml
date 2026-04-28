@@ -3,5 +3,11 @@ required: [improvedContent, author]
 properties:
   improvedContent:
     type: string
+    description: The improved prompt content to apply
+    minLength: 1
+    maxLength: 51200
   author:
     type: string
+    description: User applying the improvement
+    minLength: 1
+    maxLength: 100

@@ -1,5 +1,8 @@
 package com.promptly.workflow.infrastructure.persistence.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,15 +25,25 @@ public class WorkflowDocument {
     @Id
     private String id;
 
+    @NotBlank
+    @Size(max = 100)
     private String projectId;
 
+    @NotBlank
     @Indexed
     private String promptId;
 
     private int promptVersion;
+
+    @NotBlank
     private String type;
+
+    @NotNull
     private String status;
     private int currentStep;
+
+    @NotBlank
+    @Size(max = 100)
     private String requestedBy;
     private List<WorkflowStepSubdocument> steps;
 

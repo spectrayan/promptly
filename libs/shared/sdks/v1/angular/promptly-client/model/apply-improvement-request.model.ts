@@ -10,7 +10,13 @@
 
 
 export interface ApplyImprovementRequest { 
+    /**
+     * The improved prompt content to apply
+     */
     improvedContent: string;
+    /**
+     * User applying the improvement
+     */
     author: string;
 }
 

@@ -1,5 +1,7 @@
 package com.promptly.project.infrastructure.persistence.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,11 +20,17 @@ public class ProjectDocument {
     @Id
     private String id;
 
+    @NotBlank
+    @Size(max = 200)
     @Indexed(unique = true)
     private String name;
 
+    @Size(max = 1000)
     private String description;
     private List<String> tags;
+
+    @NotBlank
+    @Size(max = 100)
     private String createdBy;
 
     @CreatedDate

@@ -4,6 +4,8 @@ properties:
   userId:
     type: string
     description: User ID to add as member
+    minLength: 1
+    maxLength: 100
     example: usr-002
   role:
     $ref: '../common/enums/ProjectRole.yaml'

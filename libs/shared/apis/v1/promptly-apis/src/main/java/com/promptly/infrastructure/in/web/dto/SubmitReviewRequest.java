@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * SubmitReviewRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T16:27:22.798239400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class SubmitReviewRequest {
 
   private String promptId;
@@ -48,11 +48,11 @@ public class SubmitReviewRequest {
   }
 
   /**
-   * Get promptId
+   * ID of the prompt to submit for review
    * @return promptId
    */
-  @NotNull 
-  @Schema(name = "promptId", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Size(min = 1, max = 100) 
+  @Schema(name = "promptId", description = "ID of the prompt to submit for review", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("promptId")
   public String getPromptId() {
     return promptId;
@@ -72,7 +72,7 @@ public class SubmitReviewRequest {
    * Project the prompt belongs to (for filtering)
    * @return projectId
    */
-  
+  @Size(max = 100) 
   @Schema(name = "projectId", description = "Project the prompt belongs to (for filtering)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("projectId")
   public @Nullable String getProjectId() {
@@ -90,11 +90,12 @@ public class SubmitReviewRequest {
   }
 
   /**
-   * Get promptVersion
+   * Version number of the prompt to review
+   * minimum: 1
    * @return promptVersion
    */
-  @NotNull 
-  @Schema(name = "promptVersion", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Min(value = 1) 
+  @Schema(name = "promptVersion", description = "Version number of the prompt to review", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("promptVersion")
   public Integer getPromptVersion() {
     return promptVersion;
@@ -111,11 +112,11 @@ public class SubmitReviewRequest {
   }
 
   /**
-   * Get requestedBy
+   * User requesting the review
    * @return requestedBy
    */
-  @NotNull 
-  @Schema(name = "requestedBy", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Size(min = 1, max = 100) 
+  @Schema(name = "requestedBy", description = "User requesting the review", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("requestedBy")
   public String getRequestedBy() {
     return requestedBy;

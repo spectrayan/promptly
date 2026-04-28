@@ -3,10 +3,19 @@ required: [promptId, promptVersion, requestedBy]
 properties:
   promptId:
     type: string
+    description: ID of the prompt to submit for review
+    minLength: 1
+    maxLength: 100
   projectId:
     type: string
     description: Project the prompt belongs to (for filtering)
+    maxLength: 100
   promptVersion:
     type: integer
+    minimum: 1
+    description: Version number of the prompt to review
   requestedBy:
     type: string
+    description: User requesting the review
+    minLength: 1
+    maxLength: 100

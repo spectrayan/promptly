@@ -1,5 +1,9 @@
 package com.promptly.auth.infrastructure.persistence.entity;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,13 +26,24 @@ public class UserDocument {
     @Id
     private String id;
 
+    @NotBlank
+    @Email
+    @Size(max = 254)
     @Indexed(unique = true)
     private String email;
 
+    @NotBlank
+    @Size(max = 200)
     private String displayName;
+
+    @NotBlank
     private String passwordHash;
     private String avatarUrl;
+
+    @NotNull
     private String orgRole;
+
+    @NotNull
     private String status;
     private Instant lastLoginAt;
 

@@ -10,12 +10,21 @@
 
 
 export interface SubmitReviewRequest { 
+    /**
+     * ID of the prompt to submit for review
+     */
     promptId: string;
     /**
      * Project the prompt belongs to (for filtering)
      */
     projectId?: string;
+    /**
+     * Version number of the prompt to review
+     */
     promptVersion: number;
+    /**
+     * User requesting the review
+     */
     requestedBy: string;
 }
 

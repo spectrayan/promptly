@@ -3,9 +3,12 @@ properties:
   displayName:
     type: string
     description: Updated display name
+    minLength: 1
+    maxLength: 200
     example: Alice J.
   avatarUrl:
     type: string
     nullable: true
     description: Updated avatar URL
+    maxLength: 2048
     example: "https://example.com/avatar.png"

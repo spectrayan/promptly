@@ -1,5 +1,8 @@
 package com.promptly.prompt.infrastructure.persistence.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -27,12 +30,17 @@ public class PromptDocument {
     @Id
     private String id;
 
+    @NotBlank
+    @Size(max = 200)
     @Field("name")
     private String name;
 
+    @Size(max = 1000)
     @Field("description")
     private String description;
 
+    @NotBlank
+    @Size(max = 100)
     @Field("projectId")
     private String projectId;
 
@@ -48,6 +56,7 @@ public class PromptDocument {
     @Field("currentVersion")
     private int currentVersion;
 
+    @NotNull
     @Field("status")
     private String status;
 

@@ -4,7 +4,10 @@ properties:
   idea:
     type: string
     description: A short natural-language description of the prompt the user wants to create
+    minLength: 5
+    maxLength: 5000
     example: "classify customer support tickets into billing, technical, and account categories"
   projectId:
     type: string
     description: Optional project context to ground the generation
+    maxLength: 100

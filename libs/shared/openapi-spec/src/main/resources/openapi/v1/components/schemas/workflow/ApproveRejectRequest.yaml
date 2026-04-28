@@ -4,6 +4,9 @@ properties:
   actor:
     type: string
     description: User performing the action
+    minLength: 1
+    maxLength: 100
   comment:
     type: string
     description: Optional comment
+    maxLength: 2000

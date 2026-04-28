@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * ApplyImprovementRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T16:27:22.798239400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class ApplyImprovementRequest {
 
   private String improvedContent;
@@ -43,11 +43,11 @@ public class ApplyImprovementRequest {
   }
 
   /**
-   * Get improvedContent
+   * The improved prompt content to apply
    * @return improvedContent
    */
-  @NotNull 
-  @Schema(name = "improvedContent", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Size(min = 1, max = 51200) 
+  @Schema(name = "improvedContent", description = "The improved prompt content to apply", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("improvedContent")
   public String getImprovedContent() {
     return improvedContent;
@@ -64,11 +64,11 @@ public class ApplyImprovementRequest {
   }
 
   /**
-   * Get author
+   * User applying the improvement
    * @return author
    */
-  @NotNull 
-  @Schema(name = "author", requiredMode = Schema.RequiredMode.REQUIRED)
+  @NotNull @Size(min = 1, max = 100) 
+  @Schema(name = "author", description = "User applying the improvement", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("author")
   public String getAuthor() {
     return author;

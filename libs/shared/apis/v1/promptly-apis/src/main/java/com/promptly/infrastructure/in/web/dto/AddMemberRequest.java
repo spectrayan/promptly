@@ -20,7 +20,7 @@ import jakarta.annotation.Generated;
  * AddMemberRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T16:27:22.798239400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class AddMemberRequest {
 
   private String userId;
@@ -48,7 +48,7 @@ public class AddMemberRequest {
    * User ID to add as member
    * @return userId
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 100) 
   @Schema(name = "userId", example = "usr-002", description = "User ID to add as member", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("userId")
   public String getUserId() {

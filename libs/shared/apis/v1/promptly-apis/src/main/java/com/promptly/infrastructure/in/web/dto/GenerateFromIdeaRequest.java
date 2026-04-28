@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * GenerateFromIdeaRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T16:27:22.798239400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class GenerateFromIdeaRequest {
 
   private String idea;
@@ -45,7 +45,7 @@ public class GenerateFromIdeaRequest {
    * A short natural-language description of the prompt the user wants to create
    * @return idea
    */
-  @NotNull 
+  @NotNull @Size(min = 5, max = 5000) 
   @Schema(name = "idea", example = "classify customer support tickets into billing, technical, and account categories", description = "A short natural-language description of the prompt the user wants to create", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("idea")
   public String getIdea() {
@@ -66,7 +66,7 @@ public class GenerateFromIdeaRequest {
    * Optional project context to ground the generation
    * @return projectId
    */
-  
+  @Size(max = 100) 
   @Schema(name = "projectId", description = "Optional project context to ground the generation", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("projectId")
   public @Nullable String getProjectId() {
