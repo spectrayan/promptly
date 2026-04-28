@@ -28,8 +28,9 @@ public class LocalAuthSecurityConfig {
                         // Public endpoints
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        // SSE endpoint — auth via query param token (EventSource cannot send headers)
-                        .pathMatchers(HttpMethod.GET, "/api/v1/sse/**").permitAll()
+                        // SSE endpoint — auth via ?token= query param (EventSource API cannot send headers).
+                        // JwtAuthenticationFilter already extracts the token from the query param.
+                        .pathMatchers(HttpMethod.GET, "/api/v1/sse/**").authenticated()
                         // Actuator — only health and prometheus are public
                         .pathMatchers("/actuator/health", "/actuator/health/**", "/actuator/prometheus").permitAll()
                         // Swagger — open (disabled entirely in prod via springdoc.enabled=false)
