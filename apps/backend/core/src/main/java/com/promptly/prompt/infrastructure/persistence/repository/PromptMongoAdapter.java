@@ -4,6 +4,7 @@ import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.prompt.infrastructure.persistence.mapper.PromptPersistenceMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -38,8 +39,20 @@ public class PromptMongoAdapter implements PromptPersistencePort {
     }
 
     @Override
+    public Flux<Prompt> findByProjectId(String projectId, Pageable pageable) {
+        return mongoRepository.findByProjectId(projectId, pageable)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public Flux<Prompt> findAll() {
         return mongoRepository.findAll()
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Flux<Prompt> findAll(Pageable pageable) {
+        return mongoRepository.findAllBy(pageable)
                 .map(mapper::toDomain);
     }
 

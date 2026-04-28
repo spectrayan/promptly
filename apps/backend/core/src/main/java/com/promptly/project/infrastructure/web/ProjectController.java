@@ -41,10 +41,15 @@ public class ProjectController implements ProjectsApi {
     private final com.promptly.auth.application.port.in.UserQueryUseCase userQueryUseCase;
 
     @Override
-    public Mono<ResponseEntity<Flux<ProjectResponse>>> listProjects(ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Flux<ProjectResponse>>> listProjects(
+            Integer page, Integer size, String sort, ServerWebExchange exchange) {
+        int p = (page != null) ? page : 0;
+        int s = (size != null) ? size : 20;
         return getCurrentUserId()
                 .flatMap(userId -> getProjectUseCase.listProjects(userId)
                         .map(this::toResponse)
+                        .skip((long) p * s)
+                        .take(s)
                         .collectList()
                         .map(list -> ResponseEntity.ok(Flux.fromIterable(list)))
                 );

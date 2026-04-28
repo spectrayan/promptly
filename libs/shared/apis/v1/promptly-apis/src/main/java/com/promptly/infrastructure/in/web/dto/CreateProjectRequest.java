@@ -21,7 +21,7 @@ import jakarta.annotation.Generated;
  * CreateProjectRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class CreateProjectRequest {
 
   private String name;
@@ -29,7 +29,7 @@ public class CreateProjectRequest {
   private @Nullable String description;
 
   @Valid
-  private List<String> tags = new ArrayList<>();
+  private List<@Size(max = 100)String> tags = new ArrayList<>();
 
   public CreateProjectRequest() {
     super();
@@ -51,7 +51,7 @@ public class CreateProjectRequest {
    * Project name (unique)
    * @return name
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 200) 
   @Schema(name = "name", example = "customer-ops", description = "Project name (unique)", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -72,7 +72,7 @@ public class CreateProjectRequest {
    * Brief description of the project
    * @return description
    */
-  
+  @Size(max = 1000) 
   @Schema(name = "description", example = "Customer operations AI prompts", description = "Brief description of the project", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("description")
   public @Nullable String getDescription() {
@@ -84,7 +84,7 @@ public class CreateProjectRequest {
     this.description = description;
   }
 
-  public CreateProjectRequest tags(List<String> tags) {
+  public CreateProjectRequest tags(List<@Size(max = 100)String> tags) {
     this.tags = tags;
     return this;
   }
@@ -101,15 +101,15 @@ public class CreateProjectRequest {
    * Tags for cross-project discovery
    * @return tags
    */
-  
+  @Size(max = 50) 
   @Schema(name = "tags", example = "[support, nlp]", description = "Tags for cross-project discovery", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("tags")
-  public List<String> getTags() {
+  public List<@Size(max = 100)String> getTags() {
     return tags;
   }
 
   @JsonProperty("tags")
-  public void setTags(List<String> tags) {
+  public void setTags(List<@Size(max = 100)String> tags) {
     this.tags = tags;
   }
 

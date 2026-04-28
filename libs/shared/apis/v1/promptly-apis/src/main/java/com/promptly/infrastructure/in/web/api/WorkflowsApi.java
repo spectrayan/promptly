@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Workflows", description = "Workflow Engine — multi-step approval and environment promotion")
 public interface WorkflowsApi {
@@ -120,17 +120,20 @@ public interface WorkflowsApi {
 
     String PATH_LIST_WORKFLOWS = "/api/v1/workflows";
     /**
-     * GET /api/v1/workflows : List workflows
+     * GET /api/v1/workflows : List workflows (paginated)
      * Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
      *
      * @param projectId Filter workflows by project ID (optional)
      * @param promptId Filter by prompt ID (optional)
      * @param pendingOnly Only return pending workflows (optional, default to false)
+     * @param page Page number (0-indexed) (optional, default to 0)
+     * @param size Number of items per page (optional, default to 20)
+     * @param sort Sort criteria (e.g. createdAt,desc) (optional)
      * @return List of workflows (status code 200)
      */
     @Operation(
         operationId = "listWorkflows",
-        summary = "List workflows",
+        summary = "List workflows (paginated)",
         description = "Returns workflows, optionally filtered by prompt ID, project ID, or pending status.",
         tags = { "Workflows" },
         responses = {
@@ -148,6 +151,9 @@ public interface WorkflowsApi {
         @Parameter(name = "projectId", description = "Filter workflows by project ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "projectId", required = false) @Nullable String projectId,
         @Parameter(name = "promptId", description = "Filter by prompt ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "promptId", required = false) @Nullable String promptId,
         @Parameter(name = "pendingOnly", description = "Only return pending workflows", in = ParameterIn.QUERY) @Valid @RequestParam(value = "pendingOnly", required = false, defaultValue = "false") Boolean pendingOnly,
+        @Min(value = 0) @Parameter(name = "page", description = "Page number (0-indexed)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(value = 1) @Max(value = 100) @Parameter(name = "size", description = "Number of items per page", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+        @Parameter(name = "sort", description = "Sort criteria (e.g. createdAt,desc)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "sort", required = false) @Nullable String sort,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

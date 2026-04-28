@@ -182,7 +182,7 @@ export class WorkflowsService extends BaseService implements WorkflowsServiceInt
     }
 
     /**
-     * List workflows
+     * List workflows (paginated)
      * Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
      * @endpoint get /api/v1/workflows
      * @param requestParameters
@@ -197,6 +197,9 @@ export class WorkflowsService extends BaseService implements WorkflowsServiceInt
         const projectId = requestParameters?.projectId;
         const promptId = requestParameters?.promptId;
         const pendingOnly = requestParameters?.pendingOnly;
+        const page = requestParameters?.page;
+        const size = requestParameters?.size;
+        const sort = requestParameters?.sort;
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -222,6 +225,33 @@ export class WorkflowsService extends BaseService implements WorkflowsServiceInt
             localVarQueryParameters,
             'pendingOnly',
             <any>pendingOnly,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page',
+            <any>page,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'size',
+            <any>size,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'sort',
+            <any>sort,
             QueryParamStyle.Form,
             true,
         );

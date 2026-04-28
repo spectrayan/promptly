@@ -11,8 +11,11 @@ import com.promptly.infrastructure.in.web.dto.VersionResponse;
 import com.promptly.prompt.application.port.in.*;
 import com.promptly.prompt.domain.model.Prompt;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
@@ -52,10 +55,12 @@ public class PromptController implements PromptsApi {
 
     @Override
     public Mono<ResponseEntity<Flux<PromptSummaryResponse>>> listPrompts(
-            String projectId, ServerWebExchange exchange) {
+            @Nullable String projectId, Integer page, Integer size, @Nullable String sort,
+            ServerWebExchange exchange) {
+        var pageable = buildPageRequest(page, size, sort);
         Flux<Prompt> prompts = (projectId != null)
-                ? getPromptUseCase.getPromptsByProjectId(projectId)
-                : getPromptUseCase.getAllPrompts();
+                ? getPromptUseCase.getPromptsByProjectId(projectId, pageable)
+                : getPromptUseCase.getAllPrompts(pageable);
         return Mono.just(ResponseEntity.ok(prompts.map(mapper::toSummaryResponse)));
     }
 
@@ -121,6 +126,22 @@ public class PromptController implements PromptsApi {
             Mono<GenerateFromIdeaRequest> generateFromIdeaRequest, ServerWebExchange exchange) {
         // TODO: Implement AI-powered prompt generation from an idea
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build());
+    }
+
+    /**
+     * Builds a PageRequest from query params. Parses sort string like "createdAt,desc".
+     */
+    private PageRequest buildPageRequest(Integer page, Integer size, String sort) {
+        int p = (page != null) ? page : 0;
+        int s = (size != null) ? size : 20;
+        if (sort != null && !sort.isBlank()) {
+            String[] parts = sort.split(",");
+            String property = parts[0].trim();
+            Sort.Direction direction = (parts.length > 1 && "desc".equalsIgnoreCase(parts[1].trim()))
+                    ? Sort.Direction.DESC : Sort.Direction.ASC;
+            return PageRequest.of(p, s, Sort.by(direction, property));
+        }
+        return PageRequest.of(p, s, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
 }

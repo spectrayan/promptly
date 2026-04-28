@@ -439,8 +439,8 @@ export class PromptsService extends BaseService implements PromptsServiceInterfa
     }
 
     /**
-     * List all prompts
-     * Returns a list of prompt summaries. Optionally filter by project ID.
+     * List prompts (paginated)
+     * Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
      * @endpoint get /api/v1/prompts
      * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
@@ -452,6 +452,9 @@ export class PromptsService extends BaseService implements PromptsServiceInterfa
     public listPrompts(requestParameters?: ListPromptsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<PromptSummaryResponse>>>;
     public listPrompts(requestParameters?: ListPromptsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         const projectId = requestParameters?.projectId;
+        const page = requestParameters?.page;
+        const size = requestParameters?.size;
+        const sort = requestParameters?.sort;
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -459,6 +462,33 @@ export class PromptsService extends BaseService implements PromptsServiceInterfa
             localVarQueryParameters,
             'projectId',
             <any>projectId,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page',
+            <any>page,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'size',
+            <any>size,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'sort',
+            <any>sort,
             QueryParamStyle.Form,
             true,
         );

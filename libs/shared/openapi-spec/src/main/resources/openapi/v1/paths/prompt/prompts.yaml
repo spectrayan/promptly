@@ -23,14 +23,37 @@ post:
 
 get:
   operationId: listPrompts
-  summary: List all prompts
-  description: Returns a list of prompt summaries. Optionally filter by project ID.
+  summary: List prompts (paginated)
+  description: Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
   tags: [Prompts, PromptlyQuery]
   parameters:
     - name: projectId
       in: query
       required: false
       description: Filter prompts by project ID
+      schema:
+        type: string
+    - name: page
+      in: query
+      required: false
+      description: Page number (0-indexed)
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    - name: size
+      in: query
+      required: false
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    - name: sort
+      in: query
+      required: false
+      description: "Sort criteria (e.g. createdAt,desc)"
       schema:
         type: string
   responses:

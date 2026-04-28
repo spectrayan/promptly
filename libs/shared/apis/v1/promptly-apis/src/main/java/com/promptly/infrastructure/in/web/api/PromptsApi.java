@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Prompts", description = "Prompt Registry — CRUD, versioning, and rollback")
 public interface PromptsApi {
@@ -270,16 +270,19 @@ public interface PromptsApi {
 
     String PATH_LIST_PROMPTS = "/api/v1/prompts";
     /**
-     * GET /api/v1/prompts : List all prompts
-     * Returns a list of prompt summaries. Optionally filter by project ID.
+     * GET /api/v1/prompts : List prompts (paginated)
+     * Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
      *
      * @param projectId Filter prompts by project ID (optional)
+     * @param page Page number (0-indexed) (optional, default to 0)
+     * @param size Number of items per page (optional, default to 20)
+     * @param sort Sort criteria (e.g. createdAt,desc) (optional)
      * @return List of prompt summaries (status code 200)
      */
     @Operation(
         operationId = "listPrompts",
-        summary = "List all prompts",
-        description = "Returns a list of prompt summaries. Optionally filter by project ID.",
+        summary = "List prompts (paginated)",
+        description = "Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.",
         tags = { "Prompts", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of prompt summaries", content = {
@@ -294,6 +297,9 @@ public interface PromptsApi {
     )
     Mono<ResponseEntity<Flux<PromptSummaryResponse>>> listPrompts(
         @Parameter(name = "projectId", description = "Filter prompts by project ID", in = ParameterIn.QUERY) @Valid @RequestParam(value = "projectId", required = false) @Nullable String projectId,
+        @Min(value = 0) @Parameter(name = "page", description = "Page number (0-indexed)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(value = 1) @Max(value = 100) @Parameter(name = "size", description = "Number of items per page", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+        @Parameter(name = "sort", description = "Sort criteria (e.g. createdAt,desc)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "sort", required = false) @Nullable String sort,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

@@ -7,6 +7,7 @@ package com.promptly.infrastructure.in.web.api;
 
 import com.promptly.infrastructure.in.web.dto.AddMemberRequest;
 import com.promptly.infrastructure.in.web.dto.CreateProjectRequest;
+import org.springframework.lang.Nullable;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.ProjectMemberResponse;
 import com.promptly.infrastructure.in.web.dto.ProjectResponse;
@@ -39,7 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Projects", description = "Projects — RBAC boundaries, team management")
 public interface ProjectsApi {
@@ -204,15 +205,18 @@ public interface ProjectsApi {
 
     String PATH_LIST_PROJECTS = "/api/v1/projects";
     /**
-     * GET /api/v1/projects : List all projects
-     * Returns all projects the current user has access to.
+     * GET /api/v1/projects : List projects (paginated)
+     * Returns a paginated list of projects the current user has access to.
      *
+     * @param page Page number (0-indexed) (optional, default to 0)
+     * @param size Number of items per page (optional, default to 20)
+     * @param sort Sort criteria (e.g. createdAt,desc) (optional)
      * @return List of projects (status code 200)
      */
     @Operation(
         operationId = "listProjects",
-        summary = "List all projects",
-        description = "Returns all projects the current user has access to.",
+        summary = "List projects (paginated)",
+        description = "Returns a paginated list of projects the current user has access to.",
         tags = { "Projects", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of projects", content = {
@@ -229,6 +233,9 @@ public interface ProjectsApi {
         produces = { "application/json" }
     )
     Mono<ResponseEntity<Flux<ProjectResponse>>> listProjects(
+        @Min(value = 0) @Parameter(name = "page", description = "Page number (0-indexed)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @Min(value = 1) @Max(value = 100) @Parameter(name = "size", description = "Number of items per page", in = ParameterIn.QUERY) @Valid @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+        @Parameter(name = "sort", description = "Sort criteria (e.g. createdAt,desc)", in = ParameterIn.QUERY) @Valid @RequestParam(value = "sort", required = false) @Nullable String sort,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

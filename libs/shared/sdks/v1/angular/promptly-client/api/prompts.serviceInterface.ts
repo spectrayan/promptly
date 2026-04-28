@@ -51,6 +51,9 @@ export interface GetVersionHistoryRequestParams {
 
 export interface ListPromptsRequestParams {
     projectId?: string;
+    page?: number;
+    size?: number;
+    sort?: string;
 }
 
 export interface RollbackPromptRequestParams {
@@ -118,8 +121,8 @@ export interface PromptsServiceInterface {
     getVersionHistory(requestParameters: GetVersionHistoryRequestParams, extraHttpRequestParams?: any): Observable<Array<VersionResponse>>;
 
     /**
-     * List all prompts
-     * Returns a list of prompt summaries. Optionally filter by project ID.
+     * List prompts (paginated)
+     * Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
      * @endpoint get /api/v1/prompts
 * @param requestParameters
      */

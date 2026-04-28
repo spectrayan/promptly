@@ -39,6 +39,7 @@ import {
     CreateProjectRequestParams,
     GetProjectRequestParams,
     ListProjectMembersRequestParams,
+    ListProjectsRequestParams,
     RemoveProjectMemberRequestParams,
     UpdateProjectMemberRequestParams
 } from './projects.serviceInterface';
@@ -323,17 +324,50 @@ export class ProjectsService extends BaseService implements ProjectsServiceInter
     }
 
     /**
-     * List all projects
-     * Returns all projects the current user has access to.
+     * List projects (paginated)
+     * Returns a paginated list of projects the current user has access to.
      * @endpoint get /api/v1/projects
+     * @param requestParameters
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public listProjects(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ProjectResponse>>;
-    public listProjects(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ProjectResponse>>>;
-    public listProjects(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ProjectResponse>>>;
-    public listProjects(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public listProjects(requestParameters?: ListProjectsRequestParams, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<ProjectResponse>>;
+    public listProjects(requestParameters?: ListProjectsRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<ProjectResponse>>>;
+    public listProjects(requestParameters?: ListProjectsRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<ProjectResponse>>>;
+    public listProjects(requestParameters?: ListProjectsRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        const page = requestParameters?.page;
+        const size = requestParameters?.size;
+        const sort = requestParameters?.sort;
+
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'page',
+            <any>page,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'size',
+            <any>size,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'sort',
+            <any>sort,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -368,6 +402,7 @@ export class ProjectsService extends BaseService implements ProjectsServiceInter
         return this.httpClient.request<Array<ProjectResponse>>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

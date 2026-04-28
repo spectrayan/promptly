@@ -39,6 +39,12 @@ export interface ListProjectMembersRequestParams {
     projectId: string;
 }
 
+export interface ListProjectsRequestParams {
+    page?: number;
+    size?: number;
+    sort?: string;
+}
+
 export interface RemoveProjectMemberRequestParams {
     projectId: string;
     userId: string;
@@ -88,11 +94,12 @@ export interface ProjectsServiceInterface {
     listProjectMembers(requestParameters: ListProjectMembersRequestParams, extraHttpRequestParams?: any): Observable<Array<ProjectMemberResponse>>;
 
     /**
-     * List all projects
-     * Returns all projects the current user has access to.
+     * List projects (paginated)
+     * Returns a paginated list of projects the current user has access to.
      * @endpoint get /api/v1/projects
-*/
-    listProjects(extraHttpRequestParams?: any): Observable<Array<ProjectResponse>>;
+* @param requestParameters
+     */
+    listProjects(requestParameters: ListProjectsRequestParams, extraHttpRequestParams?: any): Observable<Array<ProjectResponse>>;
 
     /**
      * Remove a member from a project

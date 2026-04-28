@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * RegisterRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class RegisterRequest {
 
   private String email;
@@ -49,7 +49,7 @@ public class RegisterRequest {
    * User's email address (used as login identifier)
    * @return email
    */
-  @NotNull @jakarta.validation.constraints.Email 
+  @NotNull @Size(min = 5, max = 254) @jakarta.validation.constraints.Email 
   @Schema(name = "email", example = "alice@promptly.ai", description = "User's email address (used as login identifier)", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("email")
   public String getEmail() {
@@ -70,7 +70,7 @@ public class RegisterRequest {
    * Password (min 8 characters)
    * @return password
    */
-  @NotNull @Size(min = 8) 
+  @NotNull @Size(min = 8, max = 128) 
   @Schema(name = "password", example = "P@ssw0rd123", description = "Password (min 8 characters)", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("password")
   public String getPassword() {
@@ -91,7 +91,7 @@ public class RegisterRequest {
    * User's display name
    * @return displayName
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 200) 
   @Schema(name = "displayName", example = "Alice Johnson", description = "User's display name", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("displayName")
   public String getDisplayName() {

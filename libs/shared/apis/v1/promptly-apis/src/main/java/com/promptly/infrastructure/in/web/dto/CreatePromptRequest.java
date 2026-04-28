@@ -20,7 +20,7 @@ import jakarta.annotation.Generated;
  * CreatePromptRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class CreatePromptRequest {
 
   private String name;
@@ -58,7 +58,7 @@ public class CreatePromptRequest {
    * Human-readable prompt name
    * @return name
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 200) 
   @Schema(name = "name", example = "Care Plan Summary", description = "Human-readable prompt name", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -79,7 +79,7 @@ public class CreatePromptRequest {
    * Brief description of the prompt's purpose
    * @return description
    */
-  
+  @Size(max = 1000) 
   @Schema(name = "description", example = "Generates patient care plan summaries", description = "Brief description of the prompt's purpose", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("description")
   public @Nullable String getDescription() {
@@ -100,7 +100,7 @@ public class CreatePromptRequest {
    * Project/application this prompt belongs to
    * @return projectId
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 100) 
   @Schema(name = "projectId", example = "healthcare", description = "Project/application this prompt belongs to", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("projectId")
   public String getProjectId() {
@@ -142,7 +142,7 @@ public class CreatePromptRequest {
    * The prompt content (5KB–50KB supported)
    * @return content
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 51200) 
   @Schema(name = "content", example = "You are a clinical AI assistant...", description = "The prompt content (5KB–50KB supported)", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("content")
   public String getContent() {
@@ -163,7 +163,7 @@ public class CreatePromptRequest {
    * User who created the prompt
    * @return author
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 100) 
   @Schema(name = "author", example = "admin", description = "User who created the prompt", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("author")
   public String getAuthor() {

@@ -58,13 +58,19 @@ public class WorkflowController implements WorkflowsApi {
 
     @Override
     public Mono<ResponseEntity<Flux<WorkflowResponse>>> listWorkflows(
-            String projectId, String promptId, Boolean pendingOnly, ServerWebExchange exchange) {
+            String projectId, String promptId, Boolean pendingOnly,
+            Integer page, Integer size, String sort, ServerWebExchange exchange) {
+
+        int p = (page != null) ? page : 0;
+        int s = (size != null) ? size : 20;
+
+        Flux<WorkflowResponse> responseFlux;
 
         if (projectId != null && !projectId.isBlank()) {
             // Find all promptIds in this project, then return workflows
             // that have this projectId OR whose promptId belongs to this project.
-            Flux<WorkflowResponse> responseFlux = promptRepository.findByProjectId(projectId)
-                    .map(p -> p.getId())
+            responseFlux = promptRepository.findByProjectId(projectId)
+                    .map(pr -> pr.getId())
                     .collect(Collectors.toSet())
                     .flatMapMany(promptIds ->
                             workflowRepository.findAll()
@@ -72,17 +78,15 @@ public class WorkflowController implements WorkflowsApi {
                                             || promptIds.contains(wf.getPromptId()))
                     )
                     .map(this::toResponse);
-            return Mono.just(ResponseEntity.ok(responseFlux));
         } else if (promptId != null) {
-            Flux<WorkflowResponse> flux = getWorkflowUseCase.getWorkflowsByPromptId(promptId).map(this::toResponse);
-            return Mono.just(ResponseEntity.ok(flux));
+            responseFlux = getWorkflowUseCase.getWorkflowsByPromptId(promptId).map(this::toResponse);
         } else if (Boolean.TRUE.equals(pendingOnly)) {
-            Flux<WorkflowResponse> flux = getWorkflowUseCase.getPendingWorkflows().map(this::toResponse);
-            return Mono.just(ResponseEntity.ok(flux));
+            responseFlux = getWorkflowUseCase.getPendingWorkflows().map(this::toResponse);
         } else {
-            Flux<WorkflowResponse> flux = workflowRepository.findAll().map(this::toResponse);
-            return Mono.just(ResponseEntity.ok(flux));
+            responseFlux = workflowRepository.findAll().map(this::toResponse);
         }
+
+        return Mono.just(ResponseEntity.ok(responseFlux.skip((long) p * s).take(s)));
     }
 
     @Override

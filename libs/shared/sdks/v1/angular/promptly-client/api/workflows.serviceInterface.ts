@@ -33,6 +33,9 @@ export interface ListWorkflowsRequestParams {
     projectId?: string;
     promptId?: string;
     pendingOnly?: boolean;
+    page?: number;
+    size?: number;
+    sort?: string;
 }
 
 export interface RejectWorkflowRequestParams {
@@ -66,7 +69,7 @@ export interface WorkflowsServiceInterface {
     getWorkflow(requestParameters: GetWorkflowRequestParams, extraHttpRequestParams?: any): Observable<WorkflowResponse>;
 
     /**
-     * List workflows
+     * List workflows (paginated)
      * Returns workflows, optionally filtered by prompt ID, project ID, or pending status.
      * @endpoint get /api/v1/workflows
 * @param requestParameters

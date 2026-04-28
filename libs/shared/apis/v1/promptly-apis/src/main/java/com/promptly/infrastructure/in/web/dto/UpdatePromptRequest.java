@@ -18,7 +18,7 @@ import jakarta.annotation.Generated;
  * UpdatePromptRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class UpdatePromptRequest {
 
   private String content;
@@ -48,7 +48,7 @@ public class UpdatePromptRequest {
    * Updated prompt content
    * @return content
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 51200) 
   @Schema(name = "content", description = "Updated prompt content", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("content")
   public String getContent() {
@@ -69,7 +69,7 @@ public class UpdatePromptRequest {
    * Description of what changed
    * @return changeMessage
    */
-  
+  @Size(max = 500) 
   @Schema(name = "changeMessage", example = "Added safety guardrails", description = "Description of what changed", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("changeMessage")
   public @Nullable String getChangeMessage() {
@@ -90,7 +90,7 @@ public class UpdatePromptRequest {
    * User making the update
    * @return author
    */
-  @NotNull 
+  @NotNull @Size(min = 1, max = 100) 
   @Schema(name = "author", description = "User making the update", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("author")
   public String getAuthor() {
