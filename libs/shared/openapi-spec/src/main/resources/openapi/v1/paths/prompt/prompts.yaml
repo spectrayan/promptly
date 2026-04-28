@@ -25,7 +25,7 @@ get:
   operationId: listPrompts
   summary: List all prompts
   description: Returns a list of prompt summaries. Optionally filter by project ID.
-  tags: [Prompts]
+  tags: [Prompts, PromptlyQuery]
   parameters:
     - name: projectId
       in: query

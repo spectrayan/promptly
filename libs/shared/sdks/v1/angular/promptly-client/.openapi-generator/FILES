@@ -2,7 +2,6 @@
 README.md
 api.base.service.ts
 api.module.ts
-api/api.ts
 api/audit.service.ts
 api/audit.serviceInterface.ts
 api/auth.service.ts
@@ -60,6 +59,8 @@ model/step-action.model.ts
 model/submit-review-request.model.ts
 model/update-member-request.model.ts
 model/update-prompt-request.model.ts
+model/update-user-request.model.ts
+model/user-preferences.model.ts
 model/user-response.model.ts
 model/user-status.model.ts
 model/validation-error.model.ts

@@ -43,6 +43,8 @@ src/main/java/com/promptly/infrastructure/in/web/dto/StepAction.java
 src/main/java/com/promptly/infrastructure/in/web/dto/SubmitReviewRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UpdateMemberRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UpdatePromptRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/UpdateUserRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/UserPreferences.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UserResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UserStatus.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ValidationError.java

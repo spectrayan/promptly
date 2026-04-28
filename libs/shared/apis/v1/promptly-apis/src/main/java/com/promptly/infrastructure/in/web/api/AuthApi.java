@@ -11,6 +11,8 @@ import org.springframework.lang.Nullable;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.RefreshTokenRequest;
 import com.promptly.infrastructure.in.web.dto.RegisterRequest;
+import com.promptly.infrastructure.in.web.dto.UpdateUserRequest;
+import com.promptly.infrastructure.in.web.dto.UserPreferences;
 import com.promptly.infrastructure.in.web.dto.UserResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Auth", description = "Authentication — registration, login, token management (LOCAL mode)")
 public interface AuthApi {
@@ -78,6 +80,43 @@ public interface AuthApi {
         produces = { "application/json", "application/problem+json" }
     )
     Mono<ResponseEntity<UserResponse>> getCurrentUser(
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_GET_USER_PREFERENCES = "/api/v1/auth/me/preferences";
+    /**
+     * GET /api/v1/auth/me/preferences : Get user preferences
+     * Returns the notification and platform preferences for the authenticated user.
+     *
+     * @return Current user preferences (status code 200)
+     *         or Authentication is required and has failed or has not been provided (status code 401)
+     */
+    @Operation(
+        operationId = "getUserPreferences",
+        summary = "Get user preferences",
+        description = "Returns the notification and platform preferences for the authenticated user.",
+        tags = { "Auth" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Current user preferences", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = UserPreferences.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = UserPreferences.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Authentication is required and has failed or has not been provided", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = AuthApi.PATH_GET_USER_PREFERENCES,
+        produces = { "application/json", "application/problem+json" }
+    )
+    Mono<ResponseEntity<UserPreferences>> getUserPreferences(
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 
@@ -235,6 +274,96 @@ public interface AuthApi {
     )
     Mono<ResponseEntity<AuthResponse>> register(
         @Parameter(name = "RegisterRequest", description = "", required = true) @Valid @RequestBody Mono<RegisterRequest> registerRequest,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_UPDATE_CURRENT_USER = "/api/v1/auth/me";
+    /**
+     * PATCH /api/v1/auth/me : Update current user profile
+     * Updates the display name and/or avatar of the authenticated user.
+     *
+     * @param updateUserRequest  (required)
+     * @return Updated user profile (status code 200)
+     *         or The request was invalid or malformed (validation errors, missing required fields, etc.) (status code 400)
+     *         or Authentication is required and has failed or has not been provided (status code 401)
+     */
+    @Operation(
+        operationId = "updateCurrentUser",
+        summary = "Update current user profile",
+        description = "Updates the display name and/or avatar of the authenticated user.",
+        tags = { "Auth" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Updated user profile", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = UserResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "The request was invalid or malformed (validation errors, missing required fields, etc.)", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Authentication is required and has failed or has not been provided", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PATCH,
+        value = AuthApi.PATH_UPDATE_CURRENT_USER,
+        produces = { "application/json", "application/problem+json" },
+        consumes = { "application/json" }
+    )
+    Mono<ResponseEntity<UserResponse>> updateCurrentUser(
+        @Parameter(name = "UpdateUserRequest", description = "", required = true) @Valid @RequestBody Mono<UpdateUserRequest> updateUserRequest,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_UPDATE_USER_PREFERENCES = "/api/v1/auth/me/preferences";
+    /**
+     * PATCH /api/v1/auth/me/preferences : Update user preferences
+     * Updates notification settings and other preferences.
+     *
+     * @param userPreferences  (required)
+     * @return Updated user preferences (status code 200)
+     *         or The request was invalid or malformed (validation errors, missing required fields, etc.) (status code 400)
+     *         or Authentication is required and has failed or has not been provided (status code 401)
+     */
+    @Operation(
+        operationId = "updateUserPreferences",
+        summary = "Update user preferences",
+        description = "Updates notification settings and other preferences.",
+        tags = { "Auth" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Updated user preferences", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = UserPreferences.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = UserPreferences.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "The request was invalid or malformed (validation errors, missing required fields, etc.)", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Authentication is required and has failed or has not been provided", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.PATCH,
+        value = AuthApi.PATH_UPDATE_USER_PREFERENCES,
+        produces = { "application/json", "application/problem+json" },
+        consumes = { "application/json" }
+    )
+    Mono<ResponseEntity<UserPreferences>> updateUserPreferences(
+        @Parameter(name = "UserPreferences", description = "", required = true) @Valid @RequestBody Mono<UserPreferences> userPreferences,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

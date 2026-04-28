@@ -2,7 +2,7 @@ get:
   operationId: getVersionHistory
   summary: Get version history
   description: Returns all versions of a prompt, ordered by version number.
-  tags: [Prompts]
+  tags: [Prompts, PromptlyQuery]
   parameters:
     - $ref: '../../components/parameters/PromptId.yaml'
   responses:

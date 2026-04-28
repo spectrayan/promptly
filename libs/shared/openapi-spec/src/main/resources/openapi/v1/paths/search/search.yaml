@@ -2,7 +2,7 @@ get:
   operationId: searchPrompts
   summary: Semantic search for prompts
   description: Uses embedding-based vector search to find prompts similar to the query text.
-  tags: [Search]
+  tags: [Search, PromptlyQuery]
   parameters:
     - name: q
       in: query

@@ -26,7 +26,7 @@ import jakarta.annotation.Generated;
  */
 
 @Schema(name = "ProblemDetails", description = "RFC 9457 Problem Details for HTTP APIs — Standard error response format. Extension members (code, timestamp, traceId, errors) are permitted per §3.1.")
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class ProblemDetails {
 
   private URI type;

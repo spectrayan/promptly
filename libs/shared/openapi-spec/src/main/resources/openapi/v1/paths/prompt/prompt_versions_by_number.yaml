@@ -2,7 +2,7 @@ get:
   operationId: getSpecificVersion
   summary: Get a specific version
   description: Returns the content and metadata of a specific prompt version.
-  tags: [Prompts]
+  tags: [Prompts, PromptlyQuery]
   parameters:
     - $ref: '../../components/parameters/PromptId.yaml'
     - name: versionNumber

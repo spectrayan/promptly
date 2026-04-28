@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Projects", description = "Projects — RBAC boundaries, team management")
 public interface ProjectsApi {
@@ -145,7 +145,7 @@ public interface ProjectsApi {
     @Operation(
         operationId = "getProject",
         summary = "Get project by ID",
-        tags = { "Projects" },
+        tags = { "Projects", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Project details", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ProjectResponse.class)),
@@ -213,7 +213,7 @@ public interface ProjectsApi {
         operationId = "listProjects",
         summary = "List all projects",
         description = "Returns all projects the current user has access to.",
-        tags = { "Projects" },
+        tags = { "Projects", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of projects", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProjectResponse.class)))

@@ -2,7 +2,7 @@ get:
   operationId: getPrompt
   summary: Get prompt details
   description: Returns full prompt details including latest content, tags, and timestamps.
-  tags: [Prompts]
+  tags: [Prompts, PromptlyQuery]
   parameters:
     - $ref: '../../components/parameters/PromptId.yaml'
   responses:

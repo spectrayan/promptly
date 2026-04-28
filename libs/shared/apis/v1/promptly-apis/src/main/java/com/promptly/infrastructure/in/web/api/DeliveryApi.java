@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Delivery", description = "Runtime Delivery — low-latency prompt serving for AI agents")
 public interface DeliveryApi {
@@ -56,7 +56,7 @@ public interface DeliveryApi {
         operationId = "deliverPrompt",
         summary = "Deliver prompt to AI agent",
         description = "Low-latency endpoint for AI agents to fetch the latest active prompt by application ID and optional use case / agent identifiers. ",
-        tags = { "Delivery" },
+        tags = { "Delivery", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Prompt content delivered", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = DeliveryResponse.class)),

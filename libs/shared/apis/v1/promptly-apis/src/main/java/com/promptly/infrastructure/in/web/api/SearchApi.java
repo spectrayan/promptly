@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Search", description = "Semantic Search — embedding-based prompt discovery")
 public interface SearchApi {
@@ -112,7 +112,7 @@ public interface SearchApi {
         operationId = "searchPrompts",
         summary = "Semantic search for prompts",
         description = "Uses embedding-based vector search to find prompts similar to the query text.",
-        tags = { "Search" },
+        tags = { "Search", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Search results with relevance scores", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = SearchResponse.class)))

@@ -16,6 +16,8 @@ import { LoginRequest } from '../model/models';
 import { ProblemDetails } from '../model/models';
 import { RefreshTokenRequest } from '../model/models';
 import { RegisterRequest } from '../model/models';
+import { UpdateUserRequest } from '../model/models';
+import { UserPreferences } from '../model/models';
 import { UserResponse } from '../model/models';
 
 
@@ -39,6 +41,14 @@ export interface RegisterRequestParams {
     registerRequest: RegisterRequest;
 }
 
+export interface UpdateCurrentUserRequestParams {
+    updateUserRequest: UpdateUserRequest;
+}
+
+export interface UpdateUserPreferencesRequestParams {
+    userPreferences: UserPreferences;
+}
+
 
 export interface AuthServiceInterface {
     defaultHeaders: HttpHeaders;
@@ -50,6 +60,13 @@ export interface AuthServiceInterface {
      * @endpoint get /api/v1/auth/me
 */
     getCurrentUser(extraHttpRequestParams?: any): Observable<UserResponse>;
+
+    /**
+     * Get user preferences
+     * Returns the notification and platform preferences for the authenticated user.
+     * @endpoint get /api/v1/auth/me/preferences
+*/
+    getUserPreferences(extraHttpRequestParams?: any): Observable<UserPreferences>;
 
     /**
      * Search users
@@ -82,5 +99,21 @@ export interface AuthServiceInterface {
 * @param requestParameters
      */
     register(requestParameters: RegisterRequestParams, extraHttpRequestParams?: any): Observable<AuthResponse>;
+
+    /**
+     * Update current user profile
+     * Updates the display name and/or avatar of the authenticated user.
+     * @endpoint patch /api/v1/auth/me
+* @param requestParameters
+     */
+    updateCurrentUser(requestParameters: UpdateCurrentUserRequestParams, extraHttpRequestParams?: any): Observable<UserResponse>;
+
+    /**
+     * Update user preferences
+     * Updates notification settings and other preferences.
+     * @endpoint patch /api/v1/auth/me/preferences
+* @param requestParameters
+     */
+    updateUserPreferences(requestParameters: UpdateUserPreferencesRequestParams, extraHttpRequestParams?: any): Observable<UserPreferences>;
 
 }

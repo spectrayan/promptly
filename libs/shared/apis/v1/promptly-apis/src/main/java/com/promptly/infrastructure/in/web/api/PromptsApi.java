@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-25T18:29:22.472644400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T09:45:02.890745600-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Prompts", description = "Prompt Registry — CRUD, versioning, and rollback")
 public interface PromptsApi {
@@ -171,7 +171,7 @@ public interface PromptsApi {
         operationId = "getPrompt",
         summary = "Get prompt details",
         description = "Returns full prompt details including latest content, tags, and timestamps.",
-        tags = { "Prompts" },
+        tags = { "Prompts", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Prompt details", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = PromptResponse.class)),
@@ -208,7 +208,7 @@ public interface PromptsApi {
         operationId = "getSpecificVersion",
         summary = "Get a specific version",
         description = "Returns the content and metadata of a specific prompt version.",
-        tags = { "Prompts" },
+        tags = { "Prompts", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Version details", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = VersionResponse.class)),
@@ -245,7 +245,7 @@ public interface PromptsApi {
         operationId = "getVersionHistory",
         summary = "Get version history",
         description = "Returns all versions of a prompt, ordered by version number.",
-        tags = { "Prompts" },
+        tags = { "Prompts", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Version history", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = VersionResponse.class))),
@@ -280,7 +280,7 @@ public interface PromptsApi {
         operationId = "listPrompts",
         summary = "List all prompts",
         description = "Returns a list of prompt summaries. Optionally filter by project ID.",
-        tags = { "Prompts" },
+        tags = { "Prompts", "PromptlyQuery" },
         responses = {
             @ApiResponse(responseCode = "200", description = "List of prompt summaries", content = {
                 @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = PromptSummaryResponse.class)))

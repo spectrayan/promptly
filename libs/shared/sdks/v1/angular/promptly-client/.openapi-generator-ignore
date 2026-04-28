@@ -21,3 +21,9 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+# Exclude external PromptlyQuery SDK service files — these are for external consumers only
+api/promptly-query.service.ts
+api/promptly-query.serviceInterface.ts
+# Barrel file is maintained manually to avoid broken PromptlyQuery references
+api/api.ts

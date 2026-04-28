@@ -32,6 +32,8 @@ export * from './step-action.model';
 export * from './submit-review-request.model';
 export * from './update-member-request.model';
 export * from './update-prompt-request.model';
+export * from './update-user-request.model';
+export * from './user-preferences.model';
 export * from './user-response.model';
 export * from './user-status.model';
 export * from './validation-error.model';

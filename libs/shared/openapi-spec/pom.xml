@@ -151,6 +151,96 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             Profile: query-sdks
+             Generates read-only (GET-only) client SDKs for external consumers.
+             Filters by the "PublicApi" tag — only operations tagged with
+             PublicApi are included. Currently targets Python and TypeScript.
+             Usage: mvn generate-sources -f libs/shared/openapi-spec/pom.xml -P openapi-gen,query-sdks
+             ════════════════════════════════════════════════════════════════ -->
+        <profile>
+            <id>query-sdks</id>
+            <properties>
+                <query.sdk.output>${project.basedir}/../sdks/v1/query</query.sdk.output>
+                <query.sdk.version>1.0.0</query.sdk.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <version>${openapi-generator.version}</version>
+                        <executions>
+
+                            <!-- ─── Python SDK ─── -->
+                            <execution>
+                                <id>query-sdk-python</id>
+                                <phase>generate-sources</phase>
+                                <goals><goal>generate</goal></goals>
+                                <configuration>
+                                    <inputSpec>${openapi.bundled.spec}</inputSpec>
+                                    <generatorName>python</generatorName>
+                                    <output>${query.sdk.output}/python/promptly-query</output>
+
+                                    <generateApiTests>false</generateApiTests>
+                                    <generateModelTests>false</generateModelTests>
+
+                                    <openapiNormalizer>
+                                        <REF_AS_PARENT_IN_ALLOF>true</REF_AS_PARENT_IN_ALLOF>
+                                    </openapiNormalizer>
+
+                                    <globalProperties>
+                                        <apis>PromptlyQuery</apis>
+                                        <models>ProjectResponse,PromptResponse,PromptSummaryResponse,PromptStatus,ContentFormat,VersionResponse,DeliveryResponse,SearchResponse,ProblemDetails,ValidationError</models>
+                                        <supportingFiles/>
+                                    </globalProperties>
+
+                                    <configOptions>
+                                        <packageName>promptly_query</packageName>
+                                        <projectName>promptly-query</projectName>
+                                        <packageVersion>${query.sdk.version}</packageVersion>
+                                    </configOptions>
+                                </configuration>
+                            </execution>
+
+                            <!-- ─── TypeScript (fetch-based, framework-agnostic) SDK ─── -->
+                            <execution>
+                                <id>query-sdk-typescript</id>
+                                <phase>generate-sources</phase>
+                                <goals><goal>generate</goal></goals>
+                                <configuration>
+                                    <inputSpec>${openapi.bundled.spec}</inputSpec>
+                                    <generatorName>typescript-fetch</generatorName>
+                                    <output>${query.sdk.output}/typescript/promptly-query</output>
+
+                                    <generateApiTests>false</generateApiTests>
+                                    <generateModelTests>false</generateModelTests>
+
+                                    <openapiNormalizer>
+                                        <REF_AS_PARENT_IN_ALLOF>true</REF_AS_PARENT_IN_ALLOF>
+                                    </openapiNormalizer>
+
+                                    <globalProperties>
+                                        <apis>PromptlyQuery</apis>
+                                        <models>ProjectResponse,PromptResponse,PromptSummaryResponse,PromptStatus,ContentFormat,VersionResponse,DeliveryResponse,SearchResponse,ProblemDetails,ValidationError</models>
+                                        <supportingFiles/>
+                                    </globalProperties>
+
+                                    <configOptions>
+                                        <npmName>@promptly/query</npmName>
+                                        <npmVersion>${query.sdk.version}</npmVersion>
+                                        <supportsES6>true</supportsES6>
+                                        <typescriptThreePlus>true</typescriptThreePlus>
+                                    </configOptions>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
 </project>

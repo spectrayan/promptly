@@ -1,7 +1,7 @@
 get:
   operationId: getProject
   summary: Get project by ID
-  tags: [Projects]
+  tags: [Projects, PromptlyQuery]
   security:
     - BearerAuth: []
   parameters:

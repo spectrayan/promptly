@@ -4,7 +4,7 @@ get:
   description: |
     Low-latency endpoint for AI agents to fetch the latest active prompt
     by application ID and optional use case / agent identifiers.
-  tags: [Delivery]
+  tags: [Delivery, PromptlyQuery]
   parameters:
     - name: appId
       in: query

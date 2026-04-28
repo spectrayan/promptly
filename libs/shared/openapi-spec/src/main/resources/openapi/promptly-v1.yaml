@@ -180,6 +180,10 @@ tags:
   - name: Search
     description: Semantic Search — embedding-based prompt discovery
 
+  # ── External SDK ──
+  - name: PromptlyQuery
+    description: External read-only API — query projects, prompts, delivery, and search for external consumers
+
 paths:
   # ── Authentication ──
   /api/v1/auth/register:

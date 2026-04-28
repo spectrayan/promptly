@@ -2,7 +2,7 @@ get:
   operationId: listProjects
   summary: List all projects
   description: Returns all projects the current user has access to.
-  tags: [Projects]
+  tags: [Projects, PromptlyQuery]
   security:
     - BearerAuth: []
   responses:
