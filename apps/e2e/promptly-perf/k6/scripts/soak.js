@@ -9,7 +9,7 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Trend } from 'k6/metrics';
-import { getAuthHeaders } from './helpers/auth.js';
+import { requireAuth } from './helpers/auth.js';
 import { generateReport } from './helpers/report.js';
 
 const responseTrend = new Trend('api_response_time', true);
@@ -32,7 +32,7 @@ const PROJECT_ID = __ENV.PROJECT_ID || 'proj-001';
 
 // Acquire JWT token once before all iterations
 export function setup() {
-  return getAuthHeaders();
+  return requireAuth();
 }
 
 export default function (data) {

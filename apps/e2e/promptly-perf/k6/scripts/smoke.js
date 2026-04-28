@@ -4,11 +4,14 @@
  * Quick validation that the perf stack is healthy before running
  * full load tests. 1 VU, 10 seconds.
  *
+ * If the smoke test fails, the orchestrator script will NOT
+ * proceed to run the heavier performance tests.
+ *
  * Run: k6 run k6/scripts/smoke.js
  */
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { getAuthHeaders } from './helpers/auth.js';
+import { requireAuth } from './helpers/auth.js';
 import { generateReport } from './helpers/report.js';
 
 export const options = {
@@ -17,15 +20,16 @@ export const options = {
   thresholds: {
     http_req_duration: ['p(99)<2000'],
     http_req_failed: ['rate<0.05'],
+    checks: ['rate>0.95'],           // 95% of all checks must pass
   },
 };
 
 const BASE_URL = __ENV.BASE_URL || 'http://nginx:8080';
 const PROJECT_ID = __ENV.PROJECT_ID || 'proj-001';
 
-// Acquire JWT token once before all iterations
+// Acquire JWT token once before all iterations — aborts test on failure
 export function setup() {
-  return getAuthHeaders();
+  return requireAuth();
 }
 
 export default function (data) {

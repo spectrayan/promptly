@@ -21,7 +21,7 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Counter, Rate, Trend } from 'k6/metrics';
-import { getAuthHeaders } from './helpers/auth.js';
+import { requireAuth } from './helpers/auth.js';
 import { generateReport } from './helpers/report.js';
 
 // ── Custom Metrics (per-scenario) ───────────────────────
@@ -38,66 +38,81 @@ const promptsCreated = new Counter('prompts_created');
 // Modify 'target' values to match your expected traffic ratios.
 export const options = {
   scenarios: {
-    // ── GET /prompts — highest traffic ──
+    // ── GET /prompts — highest traffic (50% of 1000 = 500 req/s peak) ──
     list_prompts: {
-      executor: 'ramping-vus',
+      executor: 'ramping-arrival-rate',
       exec: 'listPrompts',
+      timeUnit: '1s',
+      preAllocatedVUs: 100,
+      maxVUs: 200,
       stages: [
-        { duration: '30s', target: 20 },
-        { duration: '1m', target: 60 },
-        { duration: '1m', target: 10 },
-        { duration: '30s', target: 0 },
+        { duration: '30s', target: 50 },    // warm up
+        { duration: '1m',  target: 300 },   // ramp to moderate
+        { duration: '1m',  target: 500 },   // peak: 500 req/s
+        { duration: '30s', target: 0 },     // cool down
       ],
     },
 
-    // ── GET /prompts/:id — second highest ──
+    // ── GET /prompts/:id — second highest (30% = 300 req/s peak) ──
     get_prompt: {
-      executor: 'ramping-vus',
+      executor: 'ramping-arrival-rate',
       exec: 'getPrompt',
-      startTime: '10s',  // slight offset to avoid cold-start contention
+      startTime: '10s',
+      timeUnit: '1s',
+      preAllocatedVUs: 60,
+      maxVUs: 150,
       stages: [
-        { duration: '30s', target: 15 },
-        { duration: '1m', target: 50 },
-        { duration: '1m', target: 80 },
+        { duration: '30s', target: 30 },
+        { duration: '1m',  target: 200 },
+        { duration: '1m',  target: 300 },   // peak: 300 req/s
         { duration: '30s', target: 0 },
       ],
     },
 
-    // ── POST /prompts — moderate writes ──
+    // ── POST /prompts — moderate writes (12% = 120 req/s peak) ──
     create_prompt: {
-      executor: 'ramping-vus',
+      executor: 'ramping-arrival-rate',
       exec: 'createPrompt',
       startTime: '10s',
+      timeUnit: '1s',
+      preAllocatedVUs: 30,
+      maxVUs: 80,
       stages: [
-        { duration: '30s', target: 5 },
-        { duration: '1m', target: 15 },
-        { duration: '1m', target: 20 },
+        { duration: '30s', target: 10 },
+        { duration: '1m',  target: 60 },
+        { duration: '1m',  target: 120 },   // peak: 120 req/s
         { duration: '30s', target: 0 },
       ],
     },
 
-    // ── PUT /prompts/:id — light edits ──
+    // ── PUT /prompts/:id — light edits (6% = 60 req/s peak) ──
     update_prompt: {
-      executor: 'ramping-vus',
+      executor: 'ramping-arrival-rate',
       exec: 'updatePrompt',
       startTime: '15s',
+      timeUnit: '1s',
+      preAllocatedVUs: 15,
+      maxVUs: 40,
       stages: [
-        { duration: '30s', target: 3 },
-        { duration: '1m', target: 8 },
-        { duration: '1m', target: 10 },
+        { duration: '30s', target: 5 },
+        { duration: '1m',  target: 30 },
+        { duration: '1m',  target: 60 },    // peak: 60 req/s
         { duration: '30s', target: 0 },
       ],
     },
 
-    // ── DELETE /prompts/:id — rare ──
+    // ── DELETE /prompts/:id — rare (2% = 20 req/s peak) ──
     delete_prompt: {
-      executor: 'ramping-vus',
+      executor: 'ramping-arrival-rate',
       exec: 'deletePrompt',
       startTime: '20s',
+      timeUnit: '1s',
+      preAllocatedVUs: 10,
+      maxVUs: 30,
       stages: [
         { duration: '30s', target: 2 },
-        { duration: '1m', target: 4 },
-        { duration: '1m', target: 5 },
+        { duration: '1m',  target: 10 },
+        { duration: '1m',  target: 20 },    // peak: 20 req/s
         { duration: '30s', target: 0 },
       ],
     },
@@ -108,12 +123,12 @@ export const options = {
     http_req_failed: ['rate<0.01'],
     prompt_error_rate: ['rate<0.05'],
 
-    // ── Per-API latency thresholds ──
-    prompt_list_duration: ['p(95)<500', 'p(99)<1500'],
-    prompt_get_duration: ['p(95)<300', 'p(99)<800'],
-    prompt_create_duration: ['p(95)<800', 'p(99)<2000'],
-    prompt_update_duration: ['p(95)<800', 'p(99)<2000'],
-    prompt_delete_duration: ['p(95)<500', 'p(99)<1500'],
+    // ── Per-API latency thresholds (relaxed for high-load testing) ──
+    prompt_list_duration: ['p(95)<800', 'p(99)<2000'],
+    prompt_get_duration: ['p(95)<500', 'p(99)<1500'],
+    prompt_create_duration: ['p(95)<1000', 'p(99)<3000'],
+    prompt_update_duration: ['p(95)<1000', 'p(99)<3000'],
+    prompt_delete_duration: ['p(95)<800', 'p(99)<2000'],
   },
 };
 
@@ -122,7 +137,7 @@ const PROJECT_ID = __ENV.PROJECT_ID || 'proj-001';
 
 // ── Shared setup — acquire JWT once ─────────────────────
 export function setup() {
-  const authData = getAuthHeaders();
+  const authData = requireAuth();
 
   // Pre-create a pool of prompts for GET/PUT/DELETE scenarios to target
   const seedIds = [];

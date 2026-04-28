@@ -10,7 +10,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
-import { getAuthHeaders } from './helpers/auth.js';
+import { requireAuth } from './helpers/auth.js';
 import { generateReport } from './helpers/report.js';
 
 const sseConnections = new Counter('sse_connections');
@@ -33,7 +33,7 @@ const PROJECT_ID = __ENV.PROJECT_ID || 'proj-001';
 
 // Acquire JWT token once before all iterations
 export function setup() {
-  return getAuthHeaders();
+  return requireAuth();
 }
 
 export default function (data) {
