@@ -8,8 +8,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.promptly.infrastructure.in.web.dto.OrgRole;
 import com.promptly.infrastructure.in.web.dto.UserStatus;
 import java.time.OffsetDateTime;
+import org.jspecify.annotations.Nullable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -23,7 +23,7 @@ import jakarta.annotation.Generated;
  * UserResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class UserResponse {
 
   private String id;

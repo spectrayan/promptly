@@ -8,7 +8,7 @@ package com.promptly.infrastructure.in.web.api;
 import com.promptly.infrastructure.in.web.dto.CreatePromptRequest;
 import com.promptly.infrastructure.in.web.dto.GenerateFromIdeaRequest;
 import com.promptly.infrastructure.in.web.dto.GenerateFromIdeaResponse;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.PromptResponse;
 import com.promptly.infrastructure.in.web.dto.PromptSummaryResponse;
@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Prompts", description = "Prompt Registry — CRUD, versioning, and rollback")
 public interface PromptsApi {

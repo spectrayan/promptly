@@ -6,7 +6,7 @@
 package com.promptly.infrastructure.in.web.api;
 
 import com.promptly.infrastructure.in.web.dto.ApproveRejectRequest;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import com.promptly.infrastructure.in.web.dto.SubmitReviewRequest;
 import com.promptly.infrastructure.in.web.dto.WorkflowResponse;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Workflows", description = "Workflow Engine — multi-step approval and environment promotion")
 public interface WorkflowsApi {

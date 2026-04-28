@@ -8,7 +8,7 @@ import com.promptly.infrastructure.in.web.dto.SearchResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
  * DuplicateCheckResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:10:16.805941300-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T15:21:29.885753700-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class DuplicateCheckResponse {
 
   private @Nullable String promptId;

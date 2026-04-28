@@ -105,7 +105,14 @@
                                         <documentationProvider>springdoc</documentationProvider>
                                         <useTags>true</useTags>
                                         <sourceFolder>src/main/java</sourceFolder>
+                                        <!-- TODO: replace importMapping with <useJspecify>true</useJspecify>
+                                             when upgrading openapi-generator beyond 7.21.0 -->
                                     </configOptions>
+
+                                    <!-- Use jspecify @Nullable instead of deprecated Spring @Nullable (Spring 7+) -->
+                                    <importMappings>
+                                        <importMapping>Nullable=org.jspecify.annotations.Nullable</importMapping>
+                                    </importMappings>
                                 </configuration>
                             </execution>
 
