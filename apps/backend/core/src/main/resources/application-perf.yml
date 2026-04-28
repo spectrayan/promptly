@@ -1,18 +1,46 @@
 # Profile-specific config for performance testing (Docker stack).
 # Activated automatically when SPRING_PROFILES_ACTIVE=perf
 spring:
-  data:
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://mongodb:27017/promptly}
-      database: ${MONGODB_DATABASE:promptly}
+  # Override the base spring.mongodb.uri with the K8s-internal service address.
+  # Must match the same property path as application.yml (spring.mongodb, not spring.data.mongodb).
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://mongodb.promptly-perf.svc.cluster.local:27017/promptly}
+    database: ${MONGODB_DATABASE:promptly}
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://dev.promptly.local
+# ── Auth: use local JWT (same as dev/default) ──
+promptly:
+  auth:
+    provider: local
+    jwt:
+      secret: promptly-perf-secret-key-for-performance-testing-32ch
+      expiration-ms: 7200000           # 2 hours — long enough for soak tests
+      refresh-expiration-ms: 604800000
+
+# ── Actuator: expose all endpoints + Prometheus metrics ──
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: promptly
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      slo:
+        http.server.requests: 50ms, 100ms, 250ms, 500ms, 1s, 5s
+    export:
+      prometheus:
+        enabled: true
 
 logging:
   level:
     com.promptly: INFO
     org.springframework.data.mongodb: WARN
+    org.springframework.security: WARN
