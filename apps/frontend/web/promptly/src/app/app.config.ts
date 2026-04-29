@@ -8,7 +8,7 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideApi } from '@promptly/client';
 import { provideMockApi, mockApiInterceptor } from '@promptly/mock-assets';
-import { provideSseClient } from '@spectrayan-sse/ng-sse-client';
+import { provideSseClient } from '@spectrayan/ng-sse-client';
 
 import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';

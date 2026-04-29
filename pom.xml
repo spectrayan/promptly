@@ -45,7 +45,7 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <springdoc-openapi.version>3.0.1</springdoc-openapi.version>
         <openapi-generator.version>7.21.0</openapi-generator.version>
-        <spectrayan.sse-server.version>1.1.0</spectrayan.sse-server.version>
+        <spectrayan.sse-server.version>1.2.0</spectrayan.sse-server.version>
 
         <!-- Testing -->
         <testcontainers.version>1.20.4</testcontainers.version>
@@ -134,6 +134,17 @@
             <url>https://repo.spring.io/milestone</url>
             <snapshots>
                 <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>github-maven-public</id>
+            <name>Spectrayan GitHub Packages</name>
+            <url>https://maven.pkg.github.com/spectrayan/maven-public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>

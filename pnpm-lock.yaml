@@ -60,8 +60,8 @@ importers:
         specifier: ^4.60.2
         version: 4.60.2
       '@spectrayan/ng-sse-client':
-        specifier: 1.1.0
-        version: 1.1.0(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+        specifier: 1.2.0
+        version: 1.2.0(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       dompurify:
         specifier: ^3.4.1
         version: 3.4.1
@@ -3235,8 +3235,8 @@ packages:
   '@sinonjs/fake-timers@15.3.2':
     resolution: {integrity: sha512-mrn35Jl2pCpns+mE3HaZa1yPN5EYCRgiMI+135COjr2hr8Cls9DXqIZ57vZe2cz7y2XVSq92tcs6kGQcT1J8Rw==}
 
-  '@spectrayan/ng-sse-client@1.1.0':
-    resolution: {integrity: sha512-WG4xk7M7sk5x4w6FkLmKlPx108GHobk/zGGTE7xTKDZiBp0iUUXMeOZELViTZ4oXrCJryjjYsp5hmjMx84IBuA==, tarball: https://npm.pkg.github.com/download/@spectrayan/ng-sse-client/1.1.0/7cf7af8e9abf39bbebdb48a934852fcad0949f85}
+  '@spectrayan/ng-sse-client@1.2.0':
+    resolution: {integrity: sha512-ic5mkBHzxP7gmCdi/w+bVmHS19Gj9Y2Fq6rv79F7WT25qmRhtQoa+x4qp9vSPG6QpnunzhSCx4cOVrUci/69Jg==, tarball: https://npm.pkg.github.com/download/@spectrayan/ng-sse-client/1.2.0/f97a06c57def83dd2fc042ff66783fbb38b5baca}
     peerDependencies:
       '@angular/common': '>=16 <23'
       '@angular/core': '>=16 <23'
@@ -12851,7 +12851,7 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@spectrayan/ng-sse-client@1.1.0(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
+  '@spectrayan/ng-sse-client@1.2.0(@angular/common@21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
     dependencies:
       '@angular/common': 21.2.5(@angular/core@21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/core': 21.2.5(@angular/compiler@21.2.5)(rxjs@7.8.2)(zone.js@0.15.1)

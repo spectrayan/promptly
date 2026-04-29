@@ -1,6 +1,6 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
-import { SseClient, StreamOptions } from '@spectrayan-sse/ng-sse-client';
-import { SseClientHooks } from '@spectrayan-sse/ng-sse-client';
+import { SseClient, StreamOptions } from '@spectrayan/ng-sse-client';
+import { SseClientHooks } from '@spectrayan/ng-sse-client';
 import { Observable, Subject, EMPTY, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -8,9 +8,13 @@ import { environment } from '../../../environments/environment';
 /**
  * Promptly SSE service — thin wrapper over the Spectrayan SSE client library.
  *
- * Manages the lifecycle of SSE topic subscriptions, injects the JWT token
- * via query parameter (EventSource cannot send custom Authorization headers),
- * and provides a clean Observable API for consumers.
+ * Uses the fetch-based transport (v1.2.0+) so that the JWT token is sent via
+ * the standard `Authorization: Bearer <token>` header instead of a query
+ * parameter. This eliminates token leakage through server logs, browser
+ * history, and Referrer headers.
+ *
+ * Falls back to the EventSource transport if no token is available (public
+ * topics, if any).
  */
 @Injectable({ providedIn: 'root' })
 export class SseService implements OnDestroy {
@@ -19,7 +23,7 @@ export class SseService implements OnDestroy {
 
   /**
    * Connect to the given SSE topic and receive a typed stream of events.
-   * The JWT token is appended as a query parameter for authentication.
+   * The JWT token is sent via the Authorization header (fetch transport).
    *
    * @param topic The SSE topic to subscribe to (e.g. 'project-abc123')
    * @param events Optional named SSE event types to listen to
@@ -28,8 +32,7 @@ export class SseService implements OnDestroy {
     if (!topic) return EMPTY;
 
     const token = localStorage.getItem('promptly_access_token');
-    const baseUrl = `${environment.apiBasePath}/api/v1/sse/${topic}`;
-    const url = token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
+    const url = `${environment.apiBasePath}/api/v1/sse/${topic}`;
 
     const hooks: SseClientHooks = {
       onConnect: (u: string) => console.log('[SSE] Connecting:', u),
@@ -45,7 +48,7 @@ export class SseService implements OnDestroy {
       onClose: (info: { reason: string }) => console.log('[SSE] Closed:', info.reason),
     };
 
-    return this.sseClient.stream<T>(url, {
+    const streamOpts: StreamOptions<T> = {
       events,
       reconnection: {
         enabled: true,
@@ -56,7 +59,13 @@ export class SseService implements OnDestroy {
         jitterRatio: 0.2,
       },
       hooks,
-    }).pipe(
+      // v1.2.0: use fetch transport so we can send the JWT via Authorization header
+      // instead of leaking it in the URL query string.
+      transport: token ? 'fetch' : 'eventsource',
+      headers: token ? { 'Authorization': `Bearer ${token}` } : undefined,
+    };
+
+    return this.sseClient.stream<T>(url, streamOpts).pipe(
       takeUntil(this.destroy$),
     );
   }

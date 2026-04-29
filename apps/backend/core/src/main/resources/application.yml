@@ -81,6 +81,12 @@ spectrayan:
         connected-event-enabled: true
         retry-enabled: true
         retry: 3s
+      # v1.2.0: Automatic cleanup of idle topics (no subscribers)
+      idle-ttl: 5m
+      # v1.2.0: Micrometer metrics for SSE observability
+      metrics:
+        enabled: true
+        per-topic: true
       cors:
         enabled: true
         allowed-origins:
@@ -94,7 +100,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,modulith
+        include: health,info,metrics,modulith,prometheus
   endpoint:
     health:
       show-details: when-authorized
