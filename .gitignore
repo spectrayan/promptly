@@ -258,3 +258,5 @@ test-results/
 playwright-report/
 reports/
 .lighthouseci/
+
+META-INF/
