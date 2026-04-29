@@ -108,9 +108,16 @@ describe('NotificationBellComponent', () => {
       expect(mockFacade.markAllAsRead).not.toHaveBeenCalled();
     });
 
-    it('calls clearAll', () => {
+    it('calls clearAll with projectId from first item', () => {
+      mockFacade.items.set([mockNotification]);
       component.onClearAll();
-      expect(mockFacade.clearAll).toHaveBeenCalled();
+      expect(mockFacade.clearAll).toHaveBeenCalledWith('proj-1');
+    });
+
+    it('does NOT call clearAll when items are empty', () => {
+      mockFacade.items.set([]);
+      component.onClearAll();
+      expect(mockFacade.clearAll).not.toHaveBeenCalled();
     });
   });
 });

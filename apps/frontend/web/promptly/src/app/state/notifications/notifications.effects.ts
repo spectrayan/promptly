@@ -1,5 +1,5 @@
 /** NgRx effects for real-time Notifications — handles API calls and SSE stream subscription. */
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, OnDestroy } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,9 +20,11 @@ import {
   markAllAsRead,
   dismissApi,
   dismissNotification,
+  clearAllApi,
+  clearAll,
   Notification,
 } from './notifications.actions';
-import { EMPTY, Subject, switchMap, map, tap, takeUntil, catchError, mergeMap } from 'rxjs';
+import { EMPTY, Subject, switchMap, map, tap, takeUntil, catchError, mergeMap, timer, exhaustMap } from 'rxjs';
 
 /** Maps SSE event types to human-readable notification details */
 const EVENT_META: Record<string, { icon: string; title: string }> = {
@@ -64,7 +66,7 @@ interface NotificationListResponse {
 }
 
 @Injectable()
-export class NotificationsEffects {
+export class NotificationsEffects implements OnDestroy {
   private readonly actions$ = inject(Actions);
   private readonly http = inject(HttpClient);
   private readonly sse = inject(SseService);
@@ -73,9 +75,22 @@ export class NotificationsEffects {
   private readonly apiBase = environment.apiBasePath;
 
   /**
+   * Timestamp after which SSE events should trigger snackbars.
+   * Set to ~3s after each SSE connect to suppress REPLAY'd events.
+   * Replayed events still update the notification list via API reload.
+   */
+  private sseReadyAt = 0;
+
+  /**
    * Connect to SSE — when an event arrives, refresh from the API.
    * The backend already persists the notification during fan-out,
    * so we just reload to get properly formatted data with real IDs.
+   *
+   * Uses mergeMap on inner events so rapid SSE emissions (fan-out
+   * emits per-member) don't cancel each other's API reload.
+   *
+   * Snackbar notifications are suppressed for the first 3 seconds
+   * after connect to avoid showing toasts for REPLAY'd (old) events.
    */
   readonly connectSse$ = createEffect(() =>
     this.actions$.pipe(
@@ -84,12 +99,15 @@ export class NotificationsEffects {
         this.disconnect$.next();
         this.currentProjectId = projectId;
 
+        // Suppress snackbar for replayed events (replay is instant, real events come later)
+        this.sseReadyAt = Date.now() + 3_000;
+
         const topic = `project-${projectId}`;
         const events = Object.keys(EVENT_META);
 
         return this.sse.connect<SseEvent>(topic, events).pipe(
           takeUntil(this.disconnect$),
-          switchMap(event => {
+          mergeMap(event => {
             const eventType = (event as any)?.eventType ?? 'notification';
             const meta = EVENT_META[eventType] ?? { icon: 'notifications', title: 'Notification' };
 
@@ -97,17 +115,19 @@ export class NotificationsEffects {
             const title = (event as any)?._title ?? meta.title;
             const message = (event as any)?._message ?? this.buildMessage(eventType, event);
 
-            // Show snackbar for real-time feedback
-            this.snackBar.open(
-              `${title}: ${message}`,
-              'Dismiss',
-              {
-                duration: 5000,
-                horizontalPosition: 'end',
-                verticalPosition: 'bottom',
-                panelClass: [`snack-${eventType.split('.')[0]}`],
-              },
-            );
+            // Only show snackbar for genuinely new events (not REPLAY'd ones)
+            if (Date.now() >= this.sseReadyAt) {
+              this.snackBar.open(
+                `${title}: ${message}`,
+                'Dismiss',
+                {
+                  duration: 5000,
+                  horizontalPosition: 'end',
+                  verticalPosition: 'bottom',
+                  panelClass: [`snack-${eventType.split('.')[0]}`],
+                },
+              );
+            }
 
             // Reload persisted notifications from the API
             return [
@@ -117,6 +137,25 @@ export class NotificationsEffects {
           }),
         );
       }),
+    ),
+  );
+
+  /**
+   * Polling fallback — refreshes notifications every 10s while connected.
+   * Ensures the UI stays current even if the SSE transport silently drops.
+   */
+  readonly pollNotifications$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(connectSse),
+      switchMap(({ projectId }) =>
+        timer(10_000, 10_000).pipe(
+          takeUntil(this.disconnect$),
+          exhaustMap(() => [
+            loadNotifications({ projectId }),
+            loadUnreadCount({ projectId }),
+          ]),
+        ),
+      ),
     ),
   );
 
@@ -211,8 +250,19 @@ export class NotificationsEffects {
     this.actions$.pipe(
       ofType(dismissApi),
       mergeMap(({ id }) => {
-        this.http.delete(`${this.apiBase}/api/v1/notifications/${id}`).subscribe();
+        this.http.delete(`${this.apiBase}/api/v1/notifications/${id}/read`).subscribe();
         return [dismissNotification({ id })];
+      }),
+    ),
+  );
+
+  /** Clear all — delete from backend + clear local store */
+  readonly clearAllApi$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(clearAllApi),
+      mergeMap(({ projectId }) => {
+        this.http.delete(`${this.apiBase}/api/v1/notifications?projectId=${projectId}`).subscribe();
+        return [clearAll()];
       }),
     ),
   );
@@ -226,7 +276,10 @@ export class NotificationsEffects {
     { dispatch: false },
   );
 
-
+  ngOnDestroy(): void {
+    this.disconnect$.next();
+    this.disconnect$.complete();
+  }
 
   /** Map API response to frontend Notification */
   private mapApiNotification(item: NotificationListResponse['items'][0]): Notification {

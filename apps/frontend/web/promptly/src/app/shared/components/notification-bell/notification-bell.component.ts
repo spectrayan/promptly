@@ -24,9 +24,10 @@ import { NotificationsFacade } from '../../../state/notifications/notifications.
             [matBadgeHidden]="unreadCount() === 0"
             matBadgeColor="warn"
             matBadgeSize="small"
-            matTooltip="Notifications"
-            aria-label="Notifications">
-      <mat-icon>notifications</mat-icon>
+            [matTooltip]="unreadCount() > 0 ? unreadCount() + ' unread notifications' : 'Notifications'"
+            aria-label="Notifications"
+            [class.has-unread]="unreadCount() > 0">
+      <mat-icon>{{ unreadCount() > 0 ? 'notifications_active' : 'notifications' }}</mat-icon>
     </button>
 
     <mat-menu #notifMenu="matMenu" class="notification-menu" xPosition="before">
@@ -79,7 +80,25 @@ import { NotificationsFacade } from '../../../state/notifications/notifications.
   styles: [`
     :host { display: inline-flex; }
 
-    /* Force the menu panel wider via global selector */
+    /* Pulse animation on the bell when there are unread notifications */
+    .has-unread mat-icon {
+      animation: bell-ring 2s ease-in-out infinite;
+    }
+
+    @keyframes bell-ring {
+      0%, 80%, 100% { transform: rotate(0); }
+      85% { transform: rotate(12deg); }
+      90% { transform: rotate(-12deg); }
+      95% { transform: rotate(6deg); }
+    }
+
+    /* Ensure badge is visible on dark backgrounds */
+    ::ng-deep .has-unread .mat-badge-content {
+      background: #ef5350 !important;
+      color: #fff !important;
+      font-weight: 700;
+      box-shadow: 0 0 6px rgba(239, 83, 80, 0.5);
+    }
     ::ng-deep .mat-mdc-menu-panel.notification-menu {
       max-width: 460px !important;
       min-width: 400px !important;
@@ -272,6 +291,9 @@ export class NotificationBellComponent {
   }
 
   onClearAll(): void {
-    this.notifications.clearAll();
+    const firstItem = this.items()[0];
+    if (firstItem?.projectId) {
+      this.notifications.clearAll(firstItem.projectId);
+    }
   }
 }
