@@ -137,9 +137,9 @@
             </snapshots>
         </repository>
         <repository>
-            <id>github-maven-public</id>
+            <id>spectrayan-github-server-sent-events</id>
             <name>Spectrayan GitHub Packages</name>
-            <url>https://maven.pkg.github.com/spectrayan/maven-public</url>
+            <url>https://maven.pkg.github.com/spectrayan/server-sent-events</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

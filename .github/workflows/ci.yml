@@ -57,7 +57,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: maven
-          server-id: github-maven-public
+          server-id: spectrayan-github-server-sent-events
           server-username: MAVEN_USERNAME
           server-password: MAVEN_TOKEN
 
@@ -139,7 +139,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: maven
-          server-id: github-maven-public
+          server-id: spectrayan-github-server-sent-events
           server-username: MAVEN_USERNAME
           server-password: MAVEN_TOKEN
 
@@ -195,7 +195,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: maven
-          server-id: github-maven-public
+          server-id: spectrayan-github-server-sent-events
           server-username: MAVEN_USERNAME
           server-password: MAVEN_TOKEN
 
