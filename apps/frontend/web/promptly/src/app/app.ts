@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, Renderer2, computed, signal, effect, HostListener, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, Renderer2, computed, signal, effect, HostListener, DestroyRef, untracked } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -62,6 +62,26 @@ export class App implements OnInit {
     }
     if (active) {
       this.projectAutoSelected = true;
+    }
+  });
+
+  /**
+   * When auth state transitions to authenticated (after restoreSession),
+   * re-sync the project context from the URL. This ensures SSE connection
+   * and notification loading only happen AFTER we have a valid JWT in the store.
+   */
+  private readonly _authReadyEffect = effect(() => {
+    const authed = this.auth.isAuthenticated();
+    if (authed) {
+      untracked(() => {
+        // If a project was already parsed from the URL but SSE wasn't
+        // connected (because auth wasn't ready), connect now.
+        const pid = this.activeProjectId();
+        if (pid) {
+          this.notificationsFacade.connectSse(pid);
+        }
+        this.restoreProjectIfNeeded();
+      });
     }
   });
 
@@ -145,8 +165,11 @@ export class App implements OnInit {
       if (pid) {
         this.projectsFacade.selectProject(pid);
         localStorage.setItem('promptly-last-project', pid);
-        // Connect SSE for this project
-        this.notificationsFacade.connectSse(pid);
+        // Only connect SSE + load notifications if authenticated
+        // (prevents 401 race on page refresh before restoreSession completes)
+        if (this.auth.isAuthenticated()) {
+          this.notificationsFacade.connectSse(pid);
+        }
       } else {
         this.notificationsFacade.disconnectSse();
       }

@@ -32,7 +32,13 @@ export class SseService implements OnDestroy {
     if (!topic) return EMPTY;
 
     const token = localStorage.getItem('promptly_access_token');
-    const url = `${environment.apiBasePath}/api/v1/sse/${topic}`;
+    // Use eventsource transport: it properly delivers events via subscriber.next().
+    // The fetch transport has a known issue where events are parsed but never
+    // emitted to the Observable subscriber (processEventData doesn't call subscriber.next).
+    // Token is passed via query parameter since EventSource API cannot send custom headers.
+    // The backend JwtAuthenticationFilter already supports ?token= fallback.
+    const baseUrl = `${environment.apiBasePath}/api/v1/sse/${topic}`;
+    const url = token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
 
     const hooks: SseClientHooks = {
       onConnect: (u: string) => console.log('[SSE] Connecting:', u),
@@ -59,10 +65,7 @@ export class SseService implements OnDestroy {
         jitterRatio: 0.2,
       },
       hooks,
-      // v1.2.0: use fetch transport so we can send the JWT via Authorization header
-      // instead of leaking it in the URL query string.
-      transport: token ? 'fetch' : 'eventsource',
-      headers: token ? { 'Authorization': `Bearer ${token}` } : undefined,
+      transport: 'eventsource',
     };
 
     return this.sseClient.stream<T>(url, streamOpts).pipe(

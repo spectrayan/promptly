@@ -15,7 +15,7 @@ import {
   markAsReadApi,
   markAllAsReadApi,
   dismissApi,
-  clearAll,
+  clearAllApi,
 } from './notifications.actions';
 
 /**
@@ -67,7 +67,7 @@ export class NotificationsFacade {
     this.store.dispatch(dismissApi({ id }));
   }
 
-  clearAll(): void {
-    this.store.dispatch(clearAll());
+  clearAll(projectId: string): void {
+    this.store.dispatch(clearAllApi({ projectId }));
   }
 }

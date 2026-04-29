@@ -10,7 +10,7 @@ import {
   markAsReadApi,
   markAllAsReadApi,
   dismissApi,
-  clearAll,
+  clearAllApi,
 } from './notifications.actions';
 import {
   selectNotificationItems,
@@ -106,9 +106,9 @@ describe('NotificationsFacade', () => {
       expect(store.dispatch).toHaveBeenCalledWith(dismissApi({ id: 'n-1' }));
     });
 
-    it('dispatches clearAll', () => {
-      facade.clearAll();
-      expect(store.dispatch).toHaveBeenCalledWith(clearAll());
+    it('dispatches clearAllApi', () => {
+      facade.clearAll('proj-1');
+      expect(store.dispatch).toHaveBeenCalledWith(clearAllApi({ projectId: 'proj-1' }));
     });
   });
 });

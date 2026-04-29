@@ -96,3 +96,8 @@ export const dismissApi = createAction(
   '[Notifications] Dismiss API',
   props<{ id: string }>()
 );
+
+export const clearAllApi = createAction(
+  '[Notifications] Clear All API',
+  props<{ projectId: string }>()
+);
