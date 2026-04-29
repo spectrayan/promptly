@@ -13,14 +13,46 @@ function Ok($msg)   { Write-Host "[promptly] $msg" -ForegroundColor Green }
 function Warn($msg) { Write-Host "[promptly] $msg" -ForegroundColor Yellow }
 function Err($msg)  { Write-Host "[promptly] $msg" -ForegroundColor Red }
 
-# ── Kill everything on a given port ──
+# ── Walk up the process tree to find the root ancestor ──
+function Get-RootAncestorPid {
+    param([int]$Pid)
+    $current = $Pid
+    $visited = @{}
+    while ($true) {
+        if ($visited.ContainsKey($current)) { break }
+        $visited[$current] = $true
+        $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $current" -ErrorAction SilentlyContinue
+        if (-not $proc -or -not $proc.ParentProcessId) { break }
+        $parentName = (Get-Process -Id $proc.ParentProcessId -ErrorAction SilentlyContinue).ProcessName
+        if ($parentName -in @("explorer", "services", "svchost", "wininit", "csrss", "System", "powershell", "pwsh", "WindowsTerminal", "Code")) {
+            break
+        }
+        $current = $proc.ParentProcessId
+    }
+    return $current
+}
+
+# ── Kill entire process tree rooted at a PID ──
+function Stop-ProcessTree {
+    param([int]$Pid, [string]$Label)
+    taskkill /T /F /PID $Pid 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Log "Stopped $Label process tree (root PID $Pid)"
+    }
+}
+
+# ── Kill everything on a given port (walk up to root, kill entire tree) ──
 function Stop-Port {
     param([int]$Port, [string]$Label)
     $pids = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
             Select-Object -ExpandProperty OwningProcess -Unique
+    $roots = @{}
     foreach ($p in $pids) {
-        Stop-Process -Id $p -Force -ErrorAction SilentlyContinue
-        Log "Stopped $Label (PID $p, port $Port)"
+        $rootPid = Get-RootAncestorPid -Pid $p
+        $roots[$rootPid] = $true
+    }
+    foreach ($rootPid in $roots.Keys) {
+        Stop-ProcessTree -Pid $rootPid -Label $Label
     }
 }
 
@@ -29,6 +61,14 @@ function Stop-DevServices {
     Log "Shutting down..."
     Stop-Port -Port 4200 -Label "Frontend"
     Stop-Port -Port 8080 -Label "Backend"
+
+    # Kill any orphaned cmd.exe wrappers from this script
+    $orphans = Get-CimInstance Win32_Process -Filter "Name = 'cmd.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -match "spring-boot:run" -or $_.CommandLine -match "nx serve" }
+    foreach ($proc in $orphans) {
+        Stop-ProcessTree -Pid $proc.ProcessId -Label "Orphan cmd"
+    }
+
     Ok "All services stopped."
 }
 
@@ -52,7 +92,24 @@ try {
             if ($LASTEXITCODE -ne 0) {
                 docker-compose up -d 2>$null
             }
-            Ok "Infrastructure ready."
+
+            # Wait for MongoDB to accept connections (up to 30s)
+            $maxWait = 30
+            $waited = 0
+            Log "Waiting for MongoDB to become ready..."
+            while ($waited -lt $maxWait) {
+                $ready = Get-NetTCPConnection -LocalPort $MongoPort -State Listen -ErrorAction SilentlyContinue
+                if ($ready) { break }
+                Start-Sleep -Seconds 1
+                $waited++
+            }
+            if ($waited -ge $maxWait) {
+                Err "MongoDB did not start within ${maxWait}s. Check Docker logs."
+                return
+            }
+            # Give MongoDB a moment to finish replica set init
+            Start-Sleep -Seconds 2
+            Ok "Infrastructure ready (MongoDB up in ${waited}s)."
         }
         else {
             Err "Docker not found and MongoDB is not running. Please start MongoDB on port $MongoPort."

@@ -59,7 +59,8 @@ public class AuthController implements AuthApi {
         return ReactiveSecurityContextHolder.getContext()
                 .map(ctx -> (String) ctx.getAuthentication().getPrincipal())
                 .flatMap(authUseCase::getCurrentUser)
-                .map(user -> ResponseEntity.ok(toUserResponse(user)));
+                .map(user -> ResponseEntity.ok(toUserResponse(user)))
+                .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
     }
 
     @Override

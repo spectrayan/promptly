@@ -60,6 +60,14 @@ public class GlobalExceptionHandler {
                 ex.getMessage(), "conflict", ErrorCode.BUSINESS_RULE_VIOLATION, exchange));
     }
 
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public Mono<ResponseEntity<ProblemDetails>> handleAuthenticationFailed(
+            AuthenticationFailedException ex, ServerWebExchange exchange) {
+        log.warn("Authentication failed: {}", ex.getMessage());
+        return Mono.just(respond(HttpStatus.UNAUTHORIZED, "Unauthorized",
+                ex.getMessage(), "unauthorized", ex.getCode(), exchange));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public Mono<ResponseEntity<ProblemDetails>> handleBadRequest(
             IllegalArgumentException ex, ServerWebExchange exchange) {

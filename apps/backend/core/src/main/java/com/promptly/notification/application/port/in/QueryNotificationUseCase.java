@@ -33,4 +33,6 @@ public interface QueryNotificationUseCase {
     Mono<Void> markAllRead(String userId, String projectId);
 
     Mono<Void> dismiss(String notificationId, String userId);
+
+    Mono<Void> clearAll(String userId, String projectId);
 }

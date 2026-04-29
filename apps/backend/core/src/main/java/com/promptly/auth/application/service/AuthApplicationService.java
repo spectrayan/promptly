@@ -7,6 +7,7 @@ import com.promptly.auth.domain.model.OrgRole;
 import com.promptly.auth.domain.model.User;
 import com.promptly.auth.domain.model.UserStatus;
 import com.promptly.auth.infrastructure.security.JwtService;
+import com.promptly.shared.exception.AuthenticationFailedException;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,7 @@ public class AuthApplicationService implements AuthenticationUseCase, UserQueryU
         return userRepository.findByEmail(email)
                 .switchIfEmpty(Mono.defer(() -> {
                     log.warn("User not found for email: {}", email);
-                    return Mono.error(new IllegalArgumentException("Invalid email or password"));
+                    return Mono.error(new AuthenticationFailedException("Invalid email or password"));
                 }))
                 .flatMap(user -> {
                     log.debug("Found user: id={}, email={}, status={}, hashPrefix={}",
@@ -73,10 +74,10 @@ public class AuthApplicationService implements AuthenticationUseCase, UserQueryU
                             user.getPasswordHash() != null ? user.getPasswordHash().substring(0, 7) : "NULL");
                     if (!passwordEncoder.matches(password, user.getPasswordHash())) {
                         log.warn("Password mismatch for user: {}", email);
-                        return Mono.error(new IllegalArgumentException("Invalid email or password"));
+                        return Mono.error(new AuthenticationFailedException("Invalid email or password"));
                     }
                     if (user.getStatus() != UserStatus.ACTIVE) {
-                        return Mono.error(new IllegalArgumentException("Account is inactive"));
+                        return Mono.error(new AuthenticationFailedException("Account is inactive"));
                     }
 
                     // Update last login
@@ -90,7 +91,7 @@ public class AuthApplicationService implements AuthenticationUseCase, UserQueryU
     public Mono<AuthResult> refresh(String refreshToken) {
         String userId = jwtService.extractUserId(refreshToken);
         if (userId == null || !jwtService.isTokenValid(refreshToken)) {
-            return Mono.error(new IllegalArgumentException("Invalid refresh token"));
+            return Mono.error(new AuthenticationFailedException("Invalid refresh token"));
         }
 
         return userRepository.findById(userId)

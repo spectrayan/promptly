@@ -27,4 +27,6 @@ public interface NotificationPersistencePort {
     Mono<Void> markAllReadByUserAndProject(String userId, String projectId);
 
     Mono<Void> deleteByIdAndUserId(String id, String userId);
+
+    Mono<Void> deleteAllByUserAndProject(String userId, String projectId);
 }

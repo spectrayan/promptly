@@ -81,12 +81,18 @@ spectrayan:
         connected-event-enabled: true
         retry-enabled: true
         retry: 3s
-      # v1.2.0: Automatic cleanup of idle topics (no subscribers)
-      idle-ttl: 5m
+      topics:
+        # v1.2.0: Automatic cleanup of idle topics (no subscribers)
+        idle-ttl: 5m
       # v1.2.0: Micrometer metrics for SSE observability
       metrics:
         enabled: true
         per-topic: true
+      # Use REPLAY sink so events aren't dropped during subscriber connection setup.
+      # MULTICAST (default) drops events instantly if no subscriber is listening.
+      emitter:
+        sink-type: REPLAY
+        replay-size: 5
       cors:
         enabled: true
         allowed-origins:
@@ -145,3 +151,7 @@ logging:
     com.promptly: DEBUG
     org.springframework.modulith: DEBUG
     org.springframework.data.mongodb: DEBUG
+    # Suppress WARN from SSE EmissionService when emitting to topics with no subscribers.
+    # FAIL_NON_SERIALIZED is Reactor's Sinks.EmitResult for "no subscribers" — not a serialization error.
+    # The SseNotificationAdapter already handles this gracefully at DEBUG level.
+    com.spectrayan.sse.server.emitter.EmissionService: ERROR

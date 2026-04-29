@@ -85,6 +85,14 @@ public class NotificationMongoAdapter implements NotificationPersistencePort {
         return mongoRepo.deleteByIdAndUserId(id, userId);
     }
 
+    @Override
+    public Mono<Void> deleteAllByUserAndProject(String userId, String projectId) {
+        Query query = new Query(
+                Criteria.where("userId").is(userId)
+                        .and("projectId").is(projectId));
+        return mongoTemplate.remove(query, NotificationDocument.class).then();
+    }
+
     // ── Mapping ──
 
     private NotificationDocument toDocument(Notification n) {

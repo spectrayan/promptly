@@ -1,6 +1,14 @@
 package com.promptly.notification.infrastructure.web;
 
-import com.promptly.notification.application.port.in.CreateNotificationUseCase;
+import com.promptly.infrastructure.in.web.api.NotificationsApi;
+import com.promptly.infrastructure.in.web.dto.NotificationCountResponse;
+import com.promptly.infrastructure.in.web.dto.NotificationEventTypeInfo;
+import com.promptly.infrastructure.in.web.dto.NotificationListResponse;
+import com.promptly.infrastructure.in.web.dto.NotificationPreferenceResponse;
+import com.promptly.infrastructure.in.web.dto.NotificationResponse;
+import com.promptly.infrastructure.in.web.dto.ProjectNotificationSettingsResponse;
+import com.promptly.infrastructure.in.web.dto.UpdateNotificationPreferenceRequest;
+import com.promptly.infrastructure.in.web.dto.UpdateProjectNotificationSettingsRequest;
 import com.promptly.notification.application.port.in.ManageNotificationPreferencesUseCase;
 import com.promptly.notification.application.port.in.QueryNotificationUseCase;
 import com.promptly.notification.domain.model.Notification;
@@ -8,220 +16,217 @@ import com.promptly.notification.domain.model.NotificationEventType;
 import com.promptly.notification.domain.model.NotificationPreference;
 import com.promptly.notification.domain.model.ProjectNotificationSettings;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.security.Principal;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 /**
  * REST controller for notification management.
- * All endpoints extract the userId from the JWT principal.
+ * Implements the contract-first {@link NotificationsApi} interface generated from the OpenAPI specification.
+ * All endpoints extract the userId from the JWT principal via {@link ServerWebExchange}.
  */
 @RestController
-@RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
-public class NotificationController {
+public class NotificationController implements NotificationsApi {
 
     private final QueryNotificationUseCase queryNotificationUseCase;
     private final ManageNotificationPreferencesUseCase managePreferencesUseCase;
 
-    /**
-     * Cursor-based notification list.
-     * GET /api/v1/notifications?projectId=X&unreadOnly=true&before=ISO&limit=20
-     */
-    @GetMapping
-    public Mono<ResponseEntity<Map<String, Object>>> listNotifications(
-            Principal principal,
-            @RequestParam String projectId,
-            @RequestParam(defaultValue = "false") boolean unreadOnly,
-            @RequestParam(required = false) String before,
-            @RequestParam(defaultValue = "20") int limit) {
+    // ── Notifications ──
 
-        String userId = principal.getName();
-        Instant cursor = before != null ? Instant.parse(before) : null;
-        int fetchLimit = Math.min(limit, 50); // Cap at 50
+    @Override
+    public Mono<ResponseEntity<NotificationListResponse>> listNotifications(
+            String projectId, Boolean unreadOnly,
+            @Nullable OffsetDateTime before, Integer limit,
+            ServerWebExchange exchange) {
 
-        return queryNotificationUseCase.getByUserAndProject(userId, projectId, unreadOnly, cursor, fetchLimit + 1)
-                .collectList()
-                .map(items -> {
-                    boolean hasMore = items.size() > fetchLimit;
-                    List<Notification> page = hasMore ? items.subList(0, fetchLimit) : items;
+        return exchange.getPrincipal().flatMap(principal -> {
+            String userId = principal.getName();
+            Instant cursor = before != null ? before.toInstant() : null;
+            int fetchLimit = Math.min(limit != null ? limit : 20, 50);
 
-                    Map<String, Object> response = new LinkedHashMap<>();
-                    response.put("items", page.stream().map(this::toResponse).toList());
-                    response.put("hasMore", hasMore);
-                    if (!page.isEmpty()) {
-                        response.put("oldestTimestamp", page.get(page.size() - 1).getCreatedAt().toString());
-                    }
-                    return ResponseEntity.ok(response);
-                });
+            return queryNotificationUseCase.getByUserAndProject(userId, projectId, unreadOnly, cursor, fetchLimit + 1)
+                    .collectList()
+                    .map(items -> {
+                        boolean hasMore = items.size() > fetchLimit;
+                        List<Notification> page = hasMore ? items.subList(0, fetchLimit) : items;
+
+                        var response = new NotificationListResponse();
+                        response.setItems(page.stream().map(this::toNotificationResponse).toList());
+                        response.setHasMore(hasMore);
+                        if (!page.isEmpty()) {
+                            response.setOldestTimestamp(toOffsetDateTime(page.get(page.size() - 1).getCreatedAt()));
+                        }
+                        return ResponseEntity.ok(response);
+                    });
+        });
     }
 
-    /**
-     * Unread count for the bell badge.
-     * GET /api/v1/notifications/count?projectId=X
-     */
-    @GetMapping("/count")
-    public Mono<ResponseEntity<Map<String, Long>>> unreadCount(
-            Principal principal,
-            @RequestParam String projectId) {
+    @Override
+    public Mono<ResponseEntity<NotificationCountResponse>> getUnreadNotificationCount(
+            String projectId, ServerWebExchange exchange) {
 
-        String userId = principal.getName();
-        return queryNotificationUseCase.countUnread(userId, projectId)
-                .map(count -> ResponseEntity.ok(Map.of("unread", count)));
+        return exchange.getPrincipal().flatMap(principal -> {
+            String userId = principal.getName();
+            return queryNotificationUseCase.countUnread(userId, projectId)
+                    .map(count -> {
+                        var response = new NotificationCountResponse();
+                        response.setUnread(count);
+                        return ResponseEntity.ok(response);
+                    });
+        });
     }
 
-    /**
-     * Mark a single notification as read.
-     * PATCH /api/v1/notifications/{id}/read
-     */
-    @PatchMapping("/{id}/read")
-    public Mono<ResponseEntity<Void>> markAsRead(
-            Principal principal,
-            @PathVariable String id) {
+    @Override
+    public Mono<ResponseEntity<Void>> markNotificationAsRead(
+            String id, ServerWebExchange exchange) {
 
-        return queryNotificationUseCase.markAsRead(id, principal.getName())
-                .then(Mono.just(ResponseEntity.noContent().<Void>build()));
+        return exchange.getPrincipal().flatMap(principal ->
+                queryNotificationUseCase.markAsRead(id, principal.getName())
+                        .then(Mono.just(ResponseEntity.noContent().<Void>build())));
     }
 
-    /**
-     * Mark all notifications as read for a project.
-     * POST /api/v1/notifications/mark-all-read?projectId=X
-     */
-    @PostMapping("/mark-all-read")
-    public Mono<ResponseEntity<Void>> markAllRead(
-            Principal principal,
-            @RequestParam String projectId) {
+    @Override
+    public Mono<ResponseEntity<Void>> markAllNotificationsRead(
+            String projectId, ServerWebExchange exchange) {
 
-        return queryNotificationUseCase.markAllRead(principal.getName(), projectId)
-                .then(Mono.just(ResponseEntity.noContent().<Void>build()));
+        return exchange.getPrincipal().flatMap(principal ->
+                queryNotificationUseCase.markAllRead(principal.getName(), projectId)
+                        .then(Mono.just(ResponseEntity.noContent().<Void>build())));
     }
 
-    /**
-     * Dismiss (delete) a notification.
-     * DELETE /api/v1/notifications/{id}
-     */
-    @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> dismiss(
-            Principal principal,
-            @PathVariable String id) {
+    @Override
+    public Mono<ResponseEntity<Void>> dismissNotification(
+            String id, ServerWebExchange exchange) {
 
-        return queryNotificationUseCase.dismiss(id, principal.getName())
-                .then(Mono.just(ResponseEntity.noContent().<Void>build()));
+        return exchange.getPrincipal().flatMap(principal ->
+                queryNotificationUseCase.dismiss(id, principal.getName())
+                        .then(Mono.just(ResponseEntity.noContent().<Void>build())));
+    }
+
+    @Override
+    public Mono<ResponseEntity<Void>> clearAllNotifications(
+            String projectId, ServerWebExchange exchange) {
+
+        return exchange.getPrincipal().flatMap(principal ->
+                queryNotificationUseCase.clearAll(principal.getName(), projectId)
+                        .then(Mono.just(ResponseEntity.noContent().<Void>build())));
     }
 
     // ── Preferences ──
 
-    /**
-     * Get current user's notification preferences for a project.
-     * GET /api/v1/notifications/preferences?projectId=X
-     */
-    @GetMapping("/preferences")
-    public Mono<ResponseEntity<Map<String, Object>>> getPreferences(
-            Principal principal,
-            @RequestParam String projectId) {
+    @Override
+    public Mono<ResponseEntity<NotificationPreferenceResponse>> getNotificationPreferences(
+            String projectId, ServerWebExchange exchange) {
 
-        return managePreferencesUseCase.getPreferences(principal.getName(), projectId)
-                .map(pref -> ResponseEntity.ok(prefToResponse(pref)));
+        return exchange.getPrincipal().flatMap(principal ->
+                managePreferencesUseCase.getPreferences(principal.getName(), projectId)
+                        .map(pref -> ResponseEntity.ok(toPreferenceResponse(pref))));
     }
 
-    /**
-     * Update notification preferences.
-     * PUT /api/v1/notifications/preferences
-     */
-    @PutMapping("/preferences")
-    public Mono<ResponseEntity<Map<String, Object>>> updatePreferences(
-            Principal principal,
-            @RequestBody Map<String, Object> body) {
+    @Override
+    public Mono<ResponseEntity<NotificationPreferenceResponse>> updateNotificationPreferences(
+            Mono<UpdateNotificationPreferenceRequest> request,
+            ServerWebExchange exchange) {
 
-        String projectId = (String) body.get("projectId");
-        @SuppressWarnings("unchecked")
-        List<String> mutedList = (List<String>) body.getOrDefault("mutedEvents", List.of());
-        boolean inAppEnabled = (boolean) body.getOrDefault("inAppEnabled", true);
-        boolean emailEnabled = (boolean) body.getOrDefault("emailEnabled", true);
+        return exchange.getPrincipal().flatMap(principal ->
+                request.flatMap(body -> {
+                    NotificationPreference pref = NotificationPreference.builder()
+                            .mutedEvents(new HashSet<>(body.getMutedEvents() != null ? body.getMutedEvents() : List.of()))
+                            .inAppEnabled(body.getInAppEnabled() != null ? body.getInAppEnabled() : true)
+                            .emailEnabled(body.getEmailEnabled() != null ? body.getEmailEnabled() : true)
+                            .build();
 
-        NotificationPreference pref = NotificationPreference.builder()
-                .mutedEvents(new HashSet<>(mutedList))
-                .inAppEnabled(inAppEnabled)
-                .emailEnabled(emailEnabled)
-                .build();
-
-        return managePreferencesUseCase.updatePreferences(principal.getName(), projectId, pref)
-                .map(saved -> ResponseEntity.ok(prefToResponse(saved)));
+                    return managePreferencesUseCase.updatePreferences(
+                                    principal.getName(), body.getProjectId(), pref)
+                            .map(saved -> ResponseEntity.ok(toPreferenceResponse(saved)));
+                }));
     }
 
     // ── Project Settings (admin-level) ──
 
-    /**
-     * GET /api/v1/notifications/project-settings?projectId=X
-     */
-    @GetMapping("/project-settings")
-    public Mono<ResponseEntity<Map<String, Object>>> getProjectSettings(
-            @RequestParam String projectId) {
+    @Override
+    public Mono<ResponseEntity<ProjectNotificationSettingsResponse>> getProjectNotificationSettings(
+            String projectId, ServerWebExchange exchange) {
 
         return managePreferencesUseCase.getProjectSettings(projectId)
-                .map(s -> ResponseEntity.ok(settingsToResponse(s)));
+                .map(s -> ResponseEntity.ok(toSettingsResponse(s)));
     }
 
-    /**
-     * PUT /api/v1/notifications/project-settings
-     */
-    @PutMapping("/project-settings")
-    public Mono<ResponseEntity<Map<String, Object>>> updateProjectSettings(
-            @RequestBody Map<String, Object> body) {
+    @Override
+    public Mono<ResponseEntity<ProjectNotificationSettingsResponse>> updateProjectNotificationSettings(
+            Mono<UpdateProjectNotificationSettingsRequest> request,
+            ServerWebExchange exchange) {
 
-        String projectId = (String) body.get("projectId");
-        @SuppressWarnings("unchecked")
-        List<String> enabledList = (List<String>) body.getOrDefault("enabledEvents",
-                new ArrayList<>(NotificationEventType.allKeys()));
+        return request.flatMap(body -> {
+            ProjectNotificationSettings settings = ProjectNotificationSettings.builder()
+                    .enabledEvents(new HashSet<>(
+                            body.getEnabledEvents() != null
+                                    ? body.getEnabledEvents()
+                                    : new ArrayList<>(NotificationEventType.allKeys())))
+                    .build();
 
-        ProjectNotificationSettings settings = ProjectNotificationSettings.builder()
-                .enabledEvents(new HashSet<>(enabledList))
-                .build();
-
-        return managePreferencesUseCase.updateProjectSettings(projectId, settings)
-                .map(saved -> ResponseEntity.ok(settingsToResponse(saved)));
+            return managePreferencesUseCase.updateProjectSettings(body.getProjectId(), settings)
+                    .map(saved -> ResponseEntity.ok(toSettingsResponse(saved)));
+        });
     }
 
-    // ── Response Mapping ──
+    // ── Domain → DTO mapping ──────────────────────────────────────────
 
-    private Map<String, Object> toResponse(Notification n) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", n.getId());
-        map.put("userId", n.getUserId());
-        map.put("projectId", n.getProjectId());
-        map.put("type", n.getType());
-        map.put("title", n.getTitle());
-        map.put("message", n.getMessage());
-        map.put("icon", n.getIcon());
-        map.put("payload", n.getPayload());
-        map.put("read", n.isRead());
-        map.put("createdAt", n.getCreatedAt() != null ? n.getCreatedAt().toString() : null);
-        return map;
+    private NotificationResponse toNotificationResponse(Notification n) {
+        var dto = new NotificationResponse();
+        dto.setId(n.getId());
+        dto.setUserId(n.getUserId());
+        dto.setProjectId(n.getProjectId());
+        dto.setType(n.getType());
+        dto.setTitle(n.getTitle());
+        dto.setMessage(n.getMessage());
+        dto.setIcon(n.getIcon());
+        dto.setPayload(n.getPayload());
+        dto.setRead(n.isRead());
+        dto.setCreatedAt(toOffsetDateTime(n.getCreatedAt()));
+        return dto;
     }
 
-    private Map<String, Object> prefToResponse(NotificationPreference p) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("userId", p.getUserId());
-        map.put("projectId", p.getProjectId());
-        map.put("mutedEvents", p.getMutedEvents());
-        map.put("inAppEnabled", p.isInAppEnabled());
-        map.put("emailEnabled", p.isEmailEnabled());
+    private NotificationPreferenceResponse toPreferenceResponse(NotificationPreference p) {
+        var dto = new NotificationPreferenceResponse();
+        dto.setUserId(p.getUserId());
+        dto.setProjectId(p.getProjectId());
+        dto.setMutedEvents(p.getMutedEvents() != null ? new ArrayList<>(p.getMutedEvents()) : List.of());
+        dto.setInAppEnabled(p.isInAppEnabled());
+        dto.setEmailEnabled(p.isEmailEnabled());
         // Include all available event types for the UI toggle grid
-        map.put("availableEvents", NotificationEventType.values());
-        return map;
+        dto.setAvailableEvents(Arrays.stream(NotificationEventType.values())
+                .map(this::toEventTypeInfo).toList());
+        return dto;
     }
 
-    private Map<String, Object> settingsToResponse(ProjectNotificationSettings s) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("projectId", s.getProjectId());
-        map.put("enabledEvents", s.getEnabledEvents());
-        map.put("availableEvents", NotificationEventType.values());
-        return map;
+    private ProjectNotificationSettingsResponse toSettingsResponse(ProjectNotificationSettings s) {
+        var dto = new ProjectNotificationSettingsResponse();
+        dto.setProjectId(s.getProjectId());
+        dto.setEnabledEvents(s.getEnabledEvents() != null ? new ArrayList<>(s.getEnabledEvents()) : List.of());
+        dto.setAvailableEvents(Arrays.stream(NotificationEventType.values())
+                .map(this::toEventTypeInfo).toList());
+        return dto;
+    }
+
+    private NotificationEventTypeInfo toEventTypeInfo(NotificationEventType e) {
+        var info = new NotificationEventTypeInfo();
+        info.setKey(e.getKey());
+        info.setTitle(e.getTitle());
+        info.setIcon(e.getIcon());
+        info.setMessageTemplate(e.getMessageTemplate());
+        return info;
+    }
+
+    private OffsetDateTime toOffsetDateTime(Instant instant) {
+        return instant != null ? instant.atOffset(ZoneOffset.UTC) : null;
     }
 }

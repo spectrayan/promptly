@@ -3,15 +3,17 @@ package com.promptly.auth.infrastructure.security;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
  * Security configuration for LOCAL auth mode.
  * Auth endpoints are public; all others require a valid JWT.
- * Active only in prod profile — in dev, SecurityConfig.devSecurityFilterChain permits all.
+ * <p>
+ * CORS is handled inside the security chain (via {@code .cors()}) so that
+ * error responses (401, 403) also carry the correct CORS headers.
  */
 @Configuration
 @ConditionalOnProperty(name = "promptly.auth.provider", havingValue = "local", matchIfMissing = true)
@@ -21,6 +23,8 @@ public class LocalAuthSecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
                                                          JwtAuthenticationFilter jwtAuthFilter) {
         return http
+                // Enable CORS inside security so 401/403 responses include CORS headers
+                .cors(Customizer.withDefaults())
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
@@ -44,3 +48,4 @@ public class LocalAuthSecurityConfig {
                 .build();
     }
 }
+

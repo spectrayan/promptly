@@ -48,4 +48,9 @@ public class QueryNotificationService implements QueryNotificationUseCase {
     public Mono<Void> dismiss(String notificationId, String userId) {
         return notifRepo.deleteByIdAndUserId(notificationId, userId);
     }
+
+    @Override
+    public Mono<Void> clearAll(String userId, String projectId) {
+        return notifRepo.deleteAllByUserAndProject(userId, projectId);
+    }
 }
