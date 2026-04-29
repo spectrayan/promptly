@@ -19,6 +19,7 @@ Promptly closes this gap by becoming the **control plane for AI behavior**:
 - **Security by default** — automated vulnerability scanning for prompt injection, PHI/PII exposure, and missing guardrails
 - **Business-user empowerment** — update prompts without code changes or redeployments
 - **Immutable audit trail** — full compliance readiness for SOC2, HIPAA, and regulated industries
+- **Self-hostable** — run it on your own infrastructure, your data never leaves your network
 
 ---
 
@@ -319,46 +320,26 @@ Configure via environment variables:
 
 ---
 
-## Roadmap
+## Contributing
 
-### ✅ Completed
-- Nx monorepo with Spring Boot 4 + Angular 21
-- Full prompt lifecycle (CRUD, versioning, rollback, diff)
-- Workflow approval state machine
-- LLM vulnerability scanner (Spring AI)
-- AI-powered prompt improver
-- Semantic search with Atlas Vector Search
-- Immutable audit logging
-- Auth with JWT + project RBAC
-- Mock API interceptor + seed data
-- M3 Material design system (dark/light theme)
-- Export / Import APIs for CI/CD-driven deployments
-- OpenAPI codegen pipeline (Java + Angular)
+We welcome contributions of all kinds — bug reports, feature requests, documentation improvements, and code. Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-### 🔲 Up Next
-- [ ] Monaco Editor integration for prompt editing
-- [ ] Redis cache for Runtime Delivery API
-
-- [ ] LLM provider management CRUD + UI
-- [ ] Notification system (email / Slack webhooks)
-- [ ] Audit log export (CSV/JSON for SOC2/HIPAA)
-- [ ] API key management for runtime delivery
-- [ ] E2E testing (backend integration + Playwright)
-- [ ] Production Docker multi-stage builds
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
-## Target Markets
+## Community
 
-| Primary | Secondary |
-|---------|-----------|
-| Healthcare (PHI/HIPAA) | AI consultancies |
-| Finance (PCI) | Multi-agent platform builders |
-| Insurance & Legal | LLM-powered product teams |
-| Government | Enterprise SaaS |
+- 🐛 [Report a Bug](https://github.com/spectrayan/promptly/issues/new?template=bug_report.md)
+- 💡 [Request a Feature](https://github.com/spectrayan/promptly/issues/new?template=feature_request.md)
+- 💬 [Discussions](https://github.com/spectrayan/promptly/discussions)
 
 ---
 
 ## License
 
-This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License 2.0** — see the [LICENSE](LICENSE) file for details.
