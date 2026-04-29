@@ -1,0 +1,22 @@
+type: object
+properties:
+  userId:
+    type: string
+  projectId:
+    type: string
+  mutedEvents:
+    type: array
+    items:
+      type: string
+    description: Event type keys that the user has muted
+  inAppEnabled:
+    type: boolean
+    description: Whether in-app notifications are enabled
+  emailEnabled:
+    type: boolean
+    description: Whether email notifications are enabled
+  availableEvents:
+    type: array
+    items:
+      $ref: 'NotificationEventTypeInfo.yaml'
+    description: All available notification event types for the UI toggle grid

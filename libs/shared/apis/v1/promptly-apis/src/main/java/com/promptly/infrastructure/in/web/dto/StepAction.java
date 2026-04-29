@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Action taken on a workflow approval step
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-28T16:27:22.798239400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-29T16:30:34.655679900-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public enum StepAction {
   
   PENDING("PENDING"),

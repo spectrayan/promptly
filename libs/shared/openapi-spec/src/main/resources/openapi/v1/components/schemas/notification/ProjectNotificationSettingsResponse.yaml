@@ -1,0 +1,14 @@
+type: object
+properties:
+  projectId:
+    type: string
+  enabledEvents:
+    type: array
+    items:
+      type: string
+    description: Event type keys enabled for this project
+  availableEvents:
+    type: array
+    items:
+      $ref: 'NotificationEventTypeInfo.yaml'
+    description: All available notification event types

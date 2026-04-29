@@ -1,0 +1,3108 @@
+openapi: 3.1.0
+info:
+  contact:
+    name: Promptly Team
+    url: https://promptly.dev
+  description: |
+    Enterprise AI Prompt Governance Platform — REST API
+
+    Promptly enables organizations to manage, version, secure, and deploy AI prompts
+    with full governance controls. This specification covers all seven bounded contexts:
+    Prompt Registry, Workflow Engine, Vulnerability Scanner, Quality Improver,
+    Runtime Delivery, Audit & Compliance, and Semantic Search.
+  license:
+    name: Proprietary
+    url: https://promptly.dev/license
+  title: Promptly API
+  version: 1.0.0
+servers:
+- description: Local development server
+  url: http://localhost:8080
+- description: Production server
+  url: https://api.promptly.dev
+tags:
+- description: "Authentication — registration, login, token management (LOCAL mode)"
+  name: Auth
+- description: "Projects — RBAC boundaries, team management"
+  name: Projects
+- description: "Prompt Registry — CRUD, versioning, and rollback"
+  name: Prompts
+- description: Workflow Engine — multi-step approval and environment promotion
+  name: Workflows
+- description: Vulnerability Scanner — LLM-powered prompt security analysis
+  name: Scanner
+- description: Quality Improver — AI-assisted prompt refinement
+  name: Improver
+- description: Runtime Delivery — low-latency prompt serving for AI agents
+  name: Delivery
+- description: Audit & Compliance — immutable audit trail
+  name: Audit
+- description: Semantic Search — embedding-based prompt discovery
+  name: Search
+- description: "Notifications — real-time SSE alerts, preferences, and project settings"
+  name: Notifications
+- description: "External read-only API — query projects, prompts, delivery, and search\
+    \ for external consumers"
+  name: PromptlyQuery
+paths:
+  /api/v1/auth/register:
+    post:
+      description: |
+        Creates a new user account with the LOCAL auth provider.
+        The first registered user automatically becomes ORG_ADMIN.
+        Disabled when auth provider is set to OIDC.
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+          description: User registered successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      summary: Register a new user
+      tags:
+      - Auth
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/auth/login:
+    post:
+      description: |
+        Authenticates a user with email/password and returns JWT tokens.
+        Disabled when auth provider is set to OIDC.
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+          description: Login successful
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Login with email and password
+      tags:
+      - Auth
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/auth/refresh:
+    post:
+      description: Exchanges a valid refresh token for a new access token pair.
+      operationId: refreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+          description: Token refreshed successfully
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Refresh access token
+      tags:
+      - Auth
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/auth/me:
+    get:
+      description: Returns the profile of the currently authenticated user from the
+        JWT token.
+      operationId: getCurrentUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+          description: Current user profile
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+      - BearerAuth: []
+      summary: Get current authenticated user
+      tags:
+      - Auth
+      x-accepts:
+      - application/json
+      - application/problem+json
+    patch:
+      description: Updates the display name and/or avatar of the authenticated user.
+      operationId: updateCurrentUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+          description: Updated user profile
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+      - BearerAuth: []
+      summary: Update current user profile
+      tags:
+      - Auth
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/auth/me/preferences:
+    get:
+      description: Returns the notification and platform preferences for the authenticated
+        user.
+      operationId: getUserPreferences
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPreferences"
+          description: Current user preferences
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+      - BearerAuth: []
+      summary: Get user preferences
+      tags:
+      - Auth
+      x-accepts:
+      - application/json
+      - application/problem+json
+    patch:
+      description: Updates notification settings and other preferences.
+      operationId: updateUserPreferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPreferences"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPreferences"
+          description: Updated user preferences
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+      - BearerAuth: []
+      summary: Update user preferences
+      tags:
+      - Auth
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/users:
+    get:
+      description: |
+        Returns a list of users matching the search query.
+        Used for project member picker (autocomplete).
+        Requires authentication.
+      operationId: listUsers
+      parameters:
+      - description: Search query (matches email or display name)
+        explode: true
+        in: query
+        name: q
+        required: false
+        schema:
+          example: alice
+          type: string
+        style: form
+      - description: Maximum number of results
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/UserResponse"
+                type: array
+          description: List of matching users
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+      - BearerAuth: []
+      summary: Search users
+      tags:
+      - Auth
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/projects:
+    get:
+      description: Returns a paginated list of projects the current user has access
+        to.
+      operationId: listProjects
+      parameters:
+      - description: Page number (0-indexed)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          type: integer
+        style: form
+      - description: Number of items per page
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Sort criteria (e.g. createdAt,desc)"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ProjectResponse"
+                type: array
+          description: List of projects
+      security:
+      - BearerAuth: []
+      summary: List projects (paginated)
+      tags:
+      - Projects
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+    post:
+      description: Creates a new project. The creator automatically becomes ADMIN.
+      operationId: createProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectResponse"
+          description: Project created
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      security:
+      - BearerAuth: []
+      summary: Create a new project
+      tags:
+      - Projects
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/projects/{id}:
+    get:
+      operationId: getProject
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectResponse"
+          description: Project details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      security:
+      - BearerAuth: []
+      summary: Get project by ID
+      tags:
+      - Projects
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/projects/{projectId}/members:
+    get:
+      operationId: listProjectMembers
+      parameters:
+      - explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ProjectMemberResponse"
+                type: array
+          description: List of project members
+      security:
+      - BearerAuth: []
+      summary: List project members
+      tags:
+      - Projects
+      x-accepts:
+      - application/json
+    post:
+      operationId: addProjectMember
+      parameters:
+      - explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMemberRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectMemberResponse"
+          description: Member added
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+      security:
+      - BearerAuth: []
+      summary: Add a member to a project
+      tags:
+      - Projects
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/projects/{projectId}/members/{userId}:
+    delete:
+      operationId: removeProjectMember
+      parameters:
+      - explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Member removed
+        "404":
+          $ref: "#/components/responses/NotFound"
+      security:
+      - BearerAuth: []
+      summary: Remove a member from a project
+      tags:
+      - Projects
+      x-accepts:
+      - application/problem+json
+    put:
+      operationId: updateProjectMember
+      parameters:
+      - explode: false
+        in: path
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMemberRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectMemberResponse"
+          description: Member updated
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      security:
+      - BearerAuth: []
+      summary: Update a project member's role
+      tags:
+      - Projects
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts:
+    get:
+      description: "Returns a paginated, streaming list of prompt summaries. Optionally\
+        \ filter by project ID."
+      operationId: listPrompts
+      parameters:
+      - description: Filter prompts by project ID
+        explode: true
+        in: query
+        name: projectId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Page number (0-indexed)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          type: integer
+        style: form
+      - description: Number of items per page
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Sort criteria (e.g. createdAt,desc)"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/PromptSummaryResponse"
+                type: array
+          description: List of prompt summaries
+      summary: List prompts (paginated)
+      tags:
+      - Prompts
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+    post:
+      description: Creates a new prompt with version 1. Emits `PromptCreated` event
+        which triggers auto-scan and embedding generation.
+      operationId: createPrompt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePromptRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromptResponse"
+          description: Prompt created successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      summary: Create a new prompt
+      tags:
+      - Prompts
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{id}:
+    delete:
+      description: Permanently deletes a prompt and all its versions.
+      operationId: deletePrompt
+      parameters:
+      - $ref: "#/components/parameters/PromptId"
+      responses:
+        "204":
+          description: Prompt deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Delete a prompt
+      tags:
+      - Prompts
+      x-accepts:
+      - application/problem+json
+    get:
+      description: "Returns full prompt details including latest content, tags, and\
+        \ timestamps."
+      operationId: getPrompt
+      parameters:
+      - $ref: "#/components/parameters/PromptId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromptResponse"
+          description: Prompt details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Get prompt details
+      tags:
+      - Prompts
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+      - application/problem+json
+    put:
+      description: Creates a new version of the prompt with updated content. Emits
+        `PromptUpdated` event which triggers auto-scan and embedding refresh.
+      operationId: updatePrompt
+      parameters:
+      - $ref: "#/components/parameters/PromptId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePromptRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromptResponse"
+          description: Prompt updated with new version
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Update prompt content
+      tags:
+      - Prompts
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{id}/versions:
+    get:
+      description: "Returns all versions of a prompt, ordered by version number."
+      operationId: getVersionHistory
+      parameters:
+      - $ref: "#/components/parameters/PromptId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/VersionResponse"
+                type: array
+          description: Version history
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Get version history
+      tags:
+      - Prompts
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{id}/versions/{versionNumber}:
+    get:
+      description: Returns the content and metadata of a specific prompt version.
+      operationId: getSpecificVersion
+      parameters:
+      - $ref: "#/components/parameters/PromptId"
+      - explode: false
+        in: path
+        name: versionNumber
+        required: true
+        schema:
+          minimum: 1
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionResponse"
+          description: Version details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Get a specific version
+      tags:
+      - Prompts
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{id}/rollback/{targetVersion}:
+    post:
+      description: Restores prompt content from a previous version and creates a new
+        version with that content. Emits `PromptRolledBack` event.
+      operationId: rollbackPrompt
+      parameters:
+      - $ref: "#/components/parameters/PromptId"
+      - explode: false
+        in: path
+        name: targetVersion
+        required: true
+        schema:
+          minimum: 1
+          type: integer
+        style: simple
+      - explode: true
+        in: query
+        name: author
+        required: false
+        schema:
+          default: system
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromptResponse"
+          description: Prompt rolled back
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Rollback to a previous version
+      tags:
+      - Prompts
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/generate:
+    post:
+      description: |
+        Uses a dedicated LLM system prompt to transform a short idea description into a
+        fully-structured AI prompt. Unlike the improve endpoint, this does not require an
+        existing prompt — it creates content from scratch.
+      operationId: generateFromIdea
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateFromIdeaRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateFromIdeaResponse"
+          description: Generated prompt content
+        "400":
+          $ref: "#/components/responses/BadRequest"
+      summary: Generate a prompt from a natural-language idea
+      tags:
+      - Prompts
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/workflows:
+    get:
+      description: "Returns workflows, optionally filtered by prompt ID, project ID,\
+        \ or pending status."
+      operationId: listWorkflows
+      parameters:
+      - description: Filter workflows by project ID
+        explode: true
+        in: query
+        name: projectId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by prompt ID
+        explode: true
+        in: query
+        name: promptId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Only return pending workflows
+        explode: true
+        in: query
+        name: pendingOnly
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: Page number (0-indexed)
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 0
+          minimum: 0
+          type: integer
+        style: form
+      - description: Number of items per page
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Sort criteria (e.g. createdAt,desc)"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/WorkflowResponse"
+                type: array
+          description: List of workflows
+      summary: List workflows (paginated)
+      tags:
+      - Workflows
+      x-accepts:
+      - application/json
+  /api/v1/workflows/submit-review:
+    post:
+      description: Creates a new multi-step approval workflow. Emits `ReviewSubmitted`
+        event.
+      operationId: submitForReview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitReviewRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowResponse"
+          description: Workflow created
+        "400":
+          $ref: "#/components/responses/BadRequest"
+      summary: Submit a prompt for review
+      tags:
+      - Workflows
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/workflows/{id}:
+    get:
+      description: Returns full workflow details including approval steps.
+      operationId: getWorkflow
+      parameters:
+      - $ref: "#/components/parameters/WorkflowId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowResponse"
+          description: Workflow details
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Get workflow details
+      tags:
+      - Workflows
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/workflows/{id}/approve:
+    post:
+      description: "Approves the current step. If all steps are approved, workflow\
+        \ moves to `APPROVED` and emits `WorkflowApproved` event."
+      operationId: approveWorkflow
+      parameters:
+      - $ref: "#/components/parameters/WorkflowId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApproveRejectRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowResponse"
+          description: Workflow step approved
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Approve current workflow step
+      tags:
+      - Workflows
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/workflows/{id}/reject:
+    post:
+      description: Rejects the workflow with a reason. Emits `WorkflowRejected` event.
+      operationId: rejectWorkflow
+      parameters:
+      - $ref: "#/components/parameters/WorkflowId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApproveRejectRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowResponse"
+          description: Workflow rejected
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Reject workflow
+      tags:
+      - Workflows
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{promptId}/scan:
+    post:
+      description: Runs an LLM-powered vulnerability analysis on the prompt's latest
+        version.
+      operationId: triggerScan
+      parameters:
+      - $ref: "#/components/parameters/PromptIdPath"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanResponse"
+          description: Scan results
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Trigger a vulnerability scan
+      tags:
+      - Scanner
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{promptId}/scan-results:
+    get:
+      description: Returns the most recent scan result for a prompt.
+      operationId: getLatestScanResult
+      parameters:
+      - $ref: "#/components/parameters/PromptIdPath"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanResponse"
+          description: Latest scan result
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Get latest scan result
+      tags:
+      - Scanner
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/scans:
+    get:
+      description: Returns all scan results across all prompts. Optionally filter
+        by project ID.
+      operationId: getAllScans
+      parameters:
+      - description: Filter scan results by project ID
+        explode: true
+        in: query
+        name: projectId
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ScanResponse"
+                type: array
+          description: List of scan results
+      summary: List all scan results
+      tags:
+      - Scanner
+      x-accepts:
+      - application/json
+  /api/v1/prompts/{promptId}/improve:
+    post:
+      description: Uses LLM to analyze the prompt and generate an improved version
+        with explanation.
+      operationId: improvePrompt
+      parameters:
+      - $ref: "#/components/parameters/PromptIdPath"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImprovementResponse"
+          description: Improvement suggestion
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Generate AI improvement suggestions
+      tags:
+      - Improver
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/prompts/{promptId}/apply-improvement:
+    post:
+      description: Accepts the improved content and creates a new prompt version.
+      operationId: applyImprovement
+      parameters:
+      - $ref: "#/components/parameters/PromptIdPath"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplyImprovementRequest"
+        required: true
+      responses:
+        "200":
+          description: Improvement applied
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Apply an improvement
+      tags:
+      - Improver
+      x-content-type: application/json
+      x-accepts:
+      - application/problem+json
+  /api/v1/deliver:
+    get:
+      description: |
+        Low-latency endpoint for AI agents to fetch the latest active prompt
+        by application ID and optional use case / agent identifiers.
+      operationId: deliverPrompt
+      parameters:
+      - description: Application/project identifier
+        explode: true
+        in: query
+        name: appId
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Use case filter
+        explode: true
+        in: query
+        name: usecase
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Agent identifier filter
+        explode: true
+        in: query
+        name: agent
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryResponse"
+          description: Prompt content delivered
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Deliver prompt to AI agent
+      tags:
+      - Delivery
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/audit-logs:
+    get:
+      description: |
+        Returns immutable audit trail entries. Filter by project ID, resource ID, user ID, or action type.
+        If no filter is provided, returns all entries.
+      operationId: getAuditLogs
+      parameters:
+      - description: Filter audit logs by project ID
+        explode: true
+        in: query
+        name: projectId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Filter by resource ID (prompt, workflow, scan)"
+        explode: true
+        in: query
+        name: resourceId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by actor user ID
+        explode: true
+        in: query
+        name: userId
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Filter by action type (e.g., prompt.created, workflow.approved)"
+        explode: true
+        in: query
+        name: action
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/AuditResponse"
+                type: array
+          description: List of audit log entries
+      summary: Query audit logs
+      tags:
+      - Audit
+      x-accepts:
+      - application/json
+  /api/v1/audit-logs/export:
+    post:
+      description: Exports audit trail for SOC2/HIPAA compliance.
+      operationId: exportAuditLogs
+      parameters:
+      - description: Filter by resource ID
+        explode: true
+        in: query
+        name: resourceId
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/AuditResponse"
+                type: array
+          description: Exported audit log entries
+      summary: Export audit logs
+      tags:
+      - Audit
+      x-accepts:
+      - application/json
+  /api/v1/search:
+    get:
+      description: Uses embedding-based vector search to find prompts similar to the
+        query text.
+      operationId: searchPrompts
+      parameters:
+      - description: Search query text
+        explode: true
+        in: query
+        name: q
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/SearchResponse"
+                type: array
+          description: Search results with relevance scores
+      summary: Semantic search for prompts
+      tags:
+      - Search
+      - PromptlyQuery
+      x-accepts:
+      - application/json
+  /api/v1/prompts/{promptId}/similar:
+    get:
+      description: Finds prompts with similar content using vector similarity.
+      operationId: findSimilarPrompts
+      parameters:
+      - $ref: "#/components/parameters/PromptIdPath"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/SearchResponse"
+                type: array
+          description: Similar prompts
+      summary: Find similar prompts
+      tags:
+      - Search
+      x-accepts:
+      - application/json
+  /api/v1/prompts/{promptId}/check-duplicates:
+    post:
+      description: Identifies potential duplicates based on content similarity (threshold
+        ≥ 0.9).
+      operationId: checkDuplicates
+      parameters:
+      - $ref: "#/components/parameters/PromptIdPath"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DuplicateCheckResponse"
+          description: Duplicate check result
+      summary: Check for duplicate prompts
+      tags:
+      - Search
+      x-accepts:
+      - application/json
+  /api/v1/notifications:
+    delete:
+      description: |
+        Deletes all notifications for the authenticated user in the specified project.
+      operationId: clearAllNotifications
+      parameters:
+      - description: Project scope
+        explode: true
+        in: query
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "204":
+          description: All notifications cleared
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Clear all notifications
+      tags:
+      - Notifications
+      x-accepts:
+      - application/problem+json
+    get:
+      description: |
+        Cursor-based notification list for the authenticated user.
+        Returns notifications for the specified project, ordered by creation time descending.
+      operationId: listNotifications
+      parameters:
+      - description: Project scope for notifications
+        explode: true
+        in: query
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: "If true, only return unread notifications"
+        explode: true
+        in: query
+        name: unreadOnly
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - description: ISO 8601 cursor — only return notifications created before this
+          timestamp
+        explode: true
+        in: query
+        name: before
+        required: false
+        schema:
+          format: date-time
+          type: string
+        style: form
+      - description: Maximum number of notifications to return (capped at 50)
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationListResponse"
+          description: Paginated notification list
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: List notifications
+      tags:
+      - Notifications
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/notifications/count:
+    get:
+      description: Returns the number of unread notifications for the bell badge.
+      operationId: getUnreadNotificationCount
+      parameters:
+      - description: Project scope
+        explode: true
+        in: query
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationCountResponse"
+          description: Unread count
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Get unread notification count
+      tags:
+      - Notifications
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/notifications/{id}/read:
+    delete:
+      description: Permanently deletes a single notification for the authenticated
+        user.
+      operationId: dismissNotification
+      parameters:
+      - description: Notification ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Notification dismissed
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Dismiss a notification
+      tags:
+      - Notifications
+      x-accepts:
+      - application/problem+json
+    patch:
+      description: Marks a single notification as read for the authenticated user.
+      operationId: markNotificationAsRead
+      parameters:
+      - description: Notification ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Notification marked as read
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Mark a notification as read
+      tags:
+      - Notifications
+      x-accepts:
+      - application/problem+json
+  /api/v1/notifications/mark-all-read:
+    post:
+      description: |
+        Marks all unread notifications as read for the authenticated user in the specified project.
+      operationId: markAllNotificationsRead
+      parameters:
+      - description: Project scope
+        explode: true
+        in: query
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "204":
+          description: All notifications marked as read
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Mark all notifications as read
+      tags:
+      - Notifications
+      x-accepts:
+      - application/problem+json
+  /api/v1/notifications/preferences:
+    get:
+      description: Returns the current user's notification preferences for a project.
+      operationId: getNotificationPreferences
+      parameters:
+      - description: Project scope
+        explode: true
+        in: query
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationPreferenceResponse"
+          description: User notification preferences
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Get notification preferences
+      tags:
+      - Notifications
+      x-accepts:
+      - application/json
+      - application/problem+json
+    put:
+      description: Updates the current user's notification preferences for a project.
+      operationId: updateNotificationPreferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNotificationPreferenceRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationPreferenceResponse"
+          description: Updated preferences
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Update notification preferences
+      tags:
+      - Notifications
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+  /api/v1/notifications/project-settings:
+    get:
+      description: Returns project-level notification settings (which event types
+        are enabled).
+      operationId: getProjectNotificationSettings
+      parameters:
+      - description: Project ID
+        explode: true
+        in: query
+        name: projectId
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectNotificationSettingsResponse"
+          description: Project notification settings
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Get project notification settings
+      tags:
+      - Notifications
+      x-accepts:
+      - application/json
+      - application/problem+json
+    put:
+      description: Updates project-level notification settings (admin-level).
+      operationId: updateProjectNotificationSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectNotificationSettingsRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectNotificationSettingsResponse"
+          description: Updated project settings
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+      summary: Update project notification settings
+      tags:
+      - Notifications
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+      - application/problem+json
+components:
+  parameters:
+    PromptId:
+      description: Unique prompt identifier
+      explode: false
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      style: simple
+    PromptIdPath:
+      description: Prompt identifier
+      explode: false
+      in: path
+      name: promptId
+      required: true
+      schema:
+        type: string
+      style: simple
+    WorkflowId:
+      description: Unique workflow identifier
+      explode: false
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+      style: simple
+  responses:
+    BadRequest:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/validation-error
+            title: Validation Error
+            status: 400
+            detail: One or more validation errors occurred
+            instance: /api/v1/prompts
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            errors:
+            - field: name
+              message: must not be blank
+              rejectedValue: ""
+              code: REQUIRED_FIELD
+            - field: content
+              message: must not be blank
+              code: REQUIRED_FIELD
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: "The request was invalid or malformed (validation errors, missing\
+        \ required fields, etc.)"
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    Unauthorized:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/unauthorized
+            title: Unauthorized
+            status: 401
+            detail: Authentication credentials are missing or invalid
+            instance: /api/v1/prompts
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: Authentication is required and has failed or has not been provided
+      headers:
+        WWW-Authenticate:
+          description: Authentication scheme and realm
+          explode: false
+          schema:
+            example: Bearer realm="Promptly API"
+            type: string
+          style: simple
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    Forbidden:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/forbidden
+            title: Forbidden
+            status: 403
+            detail: You do not have permission to approve this workflow
+            instance: /api/v1/workflows/69e9810348a38508fe0a132b/approve
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: The authenticated user does not have permission to access this
+        resource
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    NotFound:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/not-found
+            title: Not Found
+            status: 404
+            detail: Prompt with ID '69e980f848a38508fe0a1324' was not found
+            instance: /api/v1/prompts/69e980f848a38508fe0a1324
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: The requested resource was not found
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    MethodNotAllowed:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/method-not-allowed
+            title: Method Not Allowed
+            status: 405
+            detail: PATCH is not supported for this resource. Use PUT to update prompt
+              content.
+            instance: /api/v1/prompts/69e980f848a38508fe0a1324
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: The HTTP method is not allowed for this resource
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+        Allow:
+          description: List of allowed HTTP methods for this resource
+          explode: false
+          schema:
+            example: "GET, POST"
+            type: string
+          style: simple
+    Conflict:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/conflict
+            title: Conflict
+            status: 409
+            detail: Workflow has already been approved and cannot be modified
+            instance: /api/v1/workflows/69e9810348a38508fe0a132b/approve
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: The request conflicts with the current state of the resource
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    PayloadTooLarge:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/payload-too-large
+            title: Payload Too Large
+            status: 413
+            detail: Prompt content exceeds maximum allowed size of 50KB
+            instance: /api/v1/prompts
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: The request payload is too large (prompt content exceeds maximum
+        allowed size)
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    UnprocessableEntity:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/unprocessable-entity
+            title: Unprocessable Entity
+            status: 422
+            detail: Cannot rollback to version 5 because the prompt only has 3 versions
+            instance: /api/v1/prompts/69e980f848a38508fe0a1324/rollback/5
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: The request was well-formed but contained semantic errors that
+        prevented processing
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    TooManyRequests:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/rate-limit-exceeded
+            title: Too Many Requests
+            status: 429
+            detail: Rate limit of 100 requests per minute exceeded. Retry after 60
+              seconds.
+            instance: /api/v1/deliver
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: Rate limit exceeded
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+        Retry-After:
+          description: Number of seconds until the rate limit resets
+          explode: false
+          schema:
+            example: 60
+            type: integer
+          style: simple
+        X-RateLimit-Limit:
+          description: Maximum number of requests per window
+          explode: false
+          schema:
+            example: 100
+            type: integer
+          style: simple
+        X-RateLimit-Remaining:
+          description: Remaining requests in current window
+          explode: false
+          schema:
+            example: 0
+            type: integer
+          style: simple
+    InternalServerError:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/internal-error
+            title: Internal Server Error
+            status: 500
+            detail: An unexpected error occurred. Please try again or contact support.
+            instance: /api/v1/prompts
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: An unexpected error occurred on the server
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+    ServiceUnavailable:
+      content:
+        application/problem+json:
+          example:
+            type: https://api.promptly.dev/problems/service-unavailable
+            title: Service Unavailable
+            status: 503
+            detail: The LLM provider (OpenAI) is temporarily unavailable. Scan will
+              be retried automatically.
+            instance: /api/v1/prompts/69e980f848a38508fe0a1324/scan
+            timestamp: 2026-04-23T12:00:00.000Z
+            traceId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+      description: "A downstream service (LLM provider, database) is temporarily unavailable"
+      headers:
+        X-Request-Id:
+          description: Unique request identifier for tracing
+          explode: false
+          schema:
+            example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            type: string
+          style: simple
+        Retry-After:
+          description: Suggested number of seconds before retrying
+          explode: false
+          schema:
+            example: 30
+            type: integer
+          style: simple
+  schemas:
+    ContentFormat:
+      description: Format of the prompt content
+      enum:
+      - TEXT
+      - JSON
+      - YAML
+      - MARKDOWN
+      type: string
+    WorkflowStatus:
+      description: Current status of a workflow
+      enum:
+      - PENDING
+      - IN_REVIEW
+      - APPROVED
+      - REJECTED
+      - CANCELLED
+      type: string
+    StepAction:
+      description: Action taken on a workflow approval step
+      enum:
+      - PENDING
+      - APPROVED
+      - REJECTED
+      type: string
+    ScanStatus:
+      description: Overall scan verdict
+      enum:
+      - PASS
+      - WARN
+      - FAIL
+      type: string
+    FindingType:
+      description: Category of vulnerability finding
+      enum:
+      - PHI_EXPOSURE
+      - INJECTION_RISK
+      - MISSING_GUARDRAIL
+      - HALLUCINATION_PRONE
+      - WEAK_TOOL_CALLING
+      type: string
+    Severity:
+      description: Severity level of a finding
+      enum:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      type: string
+    OrgRole:
+      description: Organization-level role
+      enum:
+      - ORG_ADMIN
+      - ORG_USER
+      type: string
+    UserStatus:
+      description: User account status
+      enum:
+      - ACTIVE
+      - INACTIVE
+      type: string
+    ProjectRole:
+      description: Project-level RBAC role
+      enum:
+      - OWNER
+      - EDITOR
+      - VIEWER
+      type: string
+    ProblemDetails:
+      description: "RFC 9457 Problem Details for HTTP APIs — Standard error response\
+        \ format. Extension members (code, timestamp, traceId, errors) are permitted\
+        \ per §3.1."
+      properties:
+        type:
+          description: URI reference identifying the problem type (§3.1.1)
+          example: https://promptly.dev/errors/conflict
+          format: uri
+          type: string
+        title:
+          description: "Short, human-readable summary of the problem type (§3.1.2)"
+          example: Duplicate Resource
+          type: string
+        status:
+          description: HTTP status code generated by the origin server for this occurrence
+            (§3.1.3)
+          example: 409
+          maximum: 599
+          minimum: 100
+          type: integer
+        detail:
+          description: Human-readable explanation specific to this occurrence (§3.1.4)
+          example: A prompt named 'Welcome' already exists in this project
+          type: string
+        instance:
+          description: URI reference identifying the specific occurrence of the problem
+            (§3.1.5)
+          example: /api/v1/prompts
+          format: uri
+          type: string
+        code:
+          description: Machine-readable error code for frontend error message mapping
+          example: PROMPT_DUPLICATE_NAME
+          type: string
+        timestamp:
+          description: Timestamp when the error occurred (ISO 8601 format)
+          example: 2026-04-25T12:00:00.000Z
+          format: date-time
+          type: string
+        traceId:
+          description: Unique trace ID for debugging and log correlation
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+          type: string
+        errors:
+          description: Field-level validation errors (for 400 Bad Request responses)
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+      required:
+      - status
+      - title
+      - type
+    ValidationError:
+      description: Field-level validation error details
+      properties:
+        field:
+          description: Name of the field that failed validation
+          example: name
+          type: string
+        message:
+          description: Validation error message for this field
+          example: must not be blank
+          type: string
+        rejectedValue:
+          description: The value that was rejected (may be null)
+          example: ""
+          type: string
+          nullable: true
+        code:
+          description: Machine-readable error code for this field
+          example: REQUIRED_FIELD
+          type: string
+      required:
+      - field
+      - message
+    RegisterRequest:
+      example:
+        password: P@ssw0rd123
+        displayName: Alice Johnson
+        email: alice@promptly.ai
+      properties:
+        email:
+          description: User's email address (used as login identifier)
+          example: alice@promptly.ai
+          format: email
+          maxLength: 254
+          minLength: 5
+          type: string
+        password:
+          description: Password (min 8 characters)
+          example: P@ssw0rd123
+          format: password
+          maxLength: 128
+          minLength: 8
+          type: string
+        displayName:
+          description: User's display name
+          example: Alice Johnson
+          maxLength: 200
+          minLength: 1
+          type: string
+      required:
+      - displayName
+      - email
+      - password
+    LoginRequest:
+      example:
+        password: P@ssw0rd123
+        email: alice@promptly.ai
+      properties:
+        email:
+          description: User's email address
+          example: alice@promptly.ai
+          format: email
+          maxLength: 254
+          minLength: 5
+          type: string
+        password:
+          description: User's password
+          example: P@ssw0rd123
+          format: password
+          maxLength: 128
+          minLength: 8
+          type: string
+      required:
+      - email
+      - password
+    AuthResponse:
+      example:
+        expiresIn: 3600
+        accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          createdAt: 2025-11-01T08:00:00Z
+          orgRole: ORG_ADMIN
+          avatarUrl: avatarUrl
+          displayName: Alice Johnson
+          id: usr-001
+          email: alice@promptly.ai
+          status: ACTIVE
+        refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      properties:
+        accessToken:
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+        refreshToken:
+          description: JWT refresh token (longer-lived)
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+        expiresIn:
+          description: Access token expiration time in seconds
+          example: 3600
+          type: integer
+        user:
+          $ref: "#/components/schemas/UserResponse"
+      required:
+      - accessToken
+      - refreshToken
+      - user
+    UserResponse:
+      example:
+        createdAt: 2025-11-01T08:00:00Z
+        orgRole: ORG_ADMIN
+        avatarUrl: avatarUrl
+        displayName: Alice Johnson
+        id: usr-001
+        email: alice@promptly.ai
+        status: ACTIVE
+      properties:
+        id:
+          description: User's unique identifier
+          example: usr-001
+          type: string
+        email:
+          description: User's email address
+          example: alice@promptly.ai
+          format: email
+          type: string
+        displayName:
+          description: User's display name
+          example: Alice Johnson
+          type: string
+        avatarUrl:
+          description: URL to user's avatar image
+          type: string
+          nullable: true
+        orgRole:
+          $ref: "#/components/schemas/OrgRole"
+        status:
+          $ref: "#/components/schemas/UserStatus"
+        createdAt:
+          description: Account creation timestamp
+          example: 2025-11-01T08:00:00Z
+          format: date-time
+          type: string
+      required:
+      - displayName
+      - email
+      - id
+      - orgRole
+      - status
+    RefreshTokenRequest:
+      example:
+        refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      properties:
+        refreshToken:
+          description: The refresh token to exchange for a new access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          maxLength: 4096
+          minLength: 1
+          type: string
+      required:
+      - refreshToken
+    CreateProjectRequest:
+      example:
+        name: customer-ops
+        description: Customer operations AI prompts
+        tags:
+        - support
+        - nlp
+      properties:
+        name:
+          description: Project name (unique)
+          example: customer-ops
+          maxLength: 200
+          minLength: 1
+          type: string
+        description:
+          description: Brief description of the project
+          example: Customer operations AI prompts
+          maxLength: 1000
+          type: string
+        tags:
+          description: Tags for cross-project discovery
+          example:
+          - support
+          - nlp
+          items:
+            maxLength: 100
+            type: string
+          maxItems: 50
+          type: array
+      required:
+      - name
+    ProjectResponse:
+      example:
+        createdAt: 2025-06-01T08:00:00Z
+        promptCount: 2
+        createdBy: usr-001
+        memberCount: 3
+        name: customer-ops
+        description: Customer operations AI prompts
+        id: proj-001
+        tags:
+        - support
+        - nlp
+        updatedAt: 2026-04-01T10:00:00Z
+      properties:
+        id:
+          example: proj-001
+          type: string
+        name:
+          example: customer-ops
+          type: string
+        description:
+          example: Customer operations AI prompts
+          type: string
+        tags:
+          example:
+          - support
+          - nlp
+          items:
+            type: string
+          type: array
+        memberCount:
+          description: Number of members in this project
+          example: 3
+          type: integer
+        promptCount:
+          description: Number of prompts in this project
+          example: 2
+          type: integer
+        createdBy:
+          example: usr-001
+          type: string
+        createdAt:
+          example: 2025-06-01T08:00:00Z
+          format: date-time
+          type: string
+        updatedAt:
+          example: 2026-04-01T10:00:00Z
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - createdBy
+      - id
+      - name
+    AddMemberRequest:
+      example:
+        role: OWNER
+        userId: usr-002
+      properties:
+        userId:
+          description: User ID to add as member
+          example: usr-002
+          maxLength: 100
+          minLength: 1
+          type: string
+        role:
+          $ref: "#/components/schemas/ProjectRole"
+      required:
+      - role
+      - userId
+    UpdateMemberRequest:
+      example:
+        role: OWNER
+      properties:
+        role:
+          $ref: "#/components/schemas/ProjectRole"
+      required:
+      - role
+    ProjectMemberResponse:
+      example:
+        addedAt: 2025-07-15T10:00:00Z
+        role: OWNER
+        displayName: Bob Chen
+        addedBy: usr-001
+        userId: usr-002
+        email: bob@promptly.ai
+      properties:
+        userId:
+          example: usr-002
+          type: string
+        displayName:
+          example: Bob Chen
+          type: string
+        email:
+          example: bob@promptly.ai
+          type: string
+        role:
+          $ref: "#/components/schemas/ProjectRole"
+        addedBy:
+          example: usr-001
+          type: string
+        addedAt:
+          example: 2025-07-15T10:00:00Z
+          format: date-time
+          type: string
+      required:
+      - displayName
+      - email
+      - role
+      - userId
+    CreatePromptRequest:
+      example:
+        author: admin
+        contentFormat: TEXT
+        name: Care Plan Summary
+        description: Generates patient care plan summaries
+        projectId: healthcare
+        content: You are a clinical AI assistant...
+      properties:
+        name:
+          description: Human-readable prompt name
+          example: Care Plan Summary
+          maxLength: 200
+          minLength: 1
+          type: string
+        description:
+          description: Brief description of the prompt's purpose
+          example: Generates patient care plan summaries
+          maxLength: 1000
+          type: string
+        projectId:
+          description: Project/application this prompt belongs to
+          example: healthcare
+          maxLength: 100
+          minLength: 1
+          type: string
+        contentFormat:
+          $ref: "#/components/schemas/ContentFormat"
+        content:
+          description: The prompt content (5KB–50KB supported)
+          example: You are a clinical AI assistant...
+          maxLength: 51200
+          minLength: 1
+          type: string
+        author:
+          description: User who created the prompt
+          example: admin
+          maxLength: 100
+          minLength: 1
+          type: string
+      required:
+      - author
+      - content
+      - name
+      - projectId
+    UpdatePromptRequest:
+      example:
+        author: author
+        changeMessage: Added safety guardrails
+        content: content
+      properties:
+        content:
+          description: Updated prompt content
+          maxLength: 51200
+          minLength: 1
+          type: string
+        changeMessage:
+          description: Description of what changed
+          example: Added safety guardrails
+          maxLength: 500
+          type: string
+        author:
+          description: User making the update
+          maxLength: 100
+          minLength: 1
+          type: string
+      required:
+      - author
+      - content
+    PromptResponse:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        latestContent: latestContent
+        contentFormat: TEXT
+        name: name
+        description: description
+        id: id
+        projectId: projectId
+        currentVersion: 0
+        status: DRAFT
+        tags:
+        - tags
+        - tags
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          description: Unique prompt ID (MongoDB ObjectId)
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        projectId:
+          type: string
+        status:
+          $ref: "#/components/schemas/PromptStatus"
+        contentFormat:
+          $ref: "#/components/schemas/ContentFormat"
+        currentVersion:
+          description: Latest version number
+          type: integer
+        latestContent:
+          description: Content of the latest version
+          type: string
+        tags:
+          items:
+            type: string
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+    PromptSummaryResponse:
+      example:
+        name: name
+        description: description
+        id: id
+        projectId: projectId
+        currentVersion: 0
+        status: DRAFT
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        projectId:
+          type: string
+        status:
+          $ref: "#/components/schemas/PromptStatus"
+        currentVersion:
+          type: integer
+        updatedAt:
+          format: date-time
+          type: string
+    VersionResponse:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        createdBy: createdBy
+        changeMessage: changeMessage
+        versionNumber: 0
+        content: content
+      properties:
+        versionNumber:
+          type: integer
+        content:
+          type: string
+        changeMessage:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+    SubmitReviewRequest:
+      example:
+        requestedBy: requestedBy
+        promptId: promptId
+        promptVersion: 1
+        projectId: projectId
+      properties:
+        promptId:
+          description: ID of the prompt to submit for review
+          maxLength: 100
+          minLength: 1
+          type: string
+        projectId:
+          description: Project the prompt belongs to (for filtering)
+          maxLength: 100
+          type: string
+        promptVersion:
+          description: Version number of the prompt to review
+          minimum: 1
+          type: integer
+        requestedBy:
+          description: User requesting the review
+          maxLength: 100
+          minLength: 1
+          type: string
+      required:
+      - promptId
+      - promptVersion
+      - requestedBy
+    ApproveRejectRequest:
+      example:
+        actor: actor
+        comment: comment
+      properties:
+        actor:
+          description: User performing the action
+          maxLength: 100
+          minLength: 1
+          type: string
+        comment:
+          description: Optional comment
+          maxLength: 2000
+          type: string
+      required:
+      - actor
+    WorkflowResponse:
+      example:
+        currentStep: 6
+        requestedBy: requestedBy
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        promptId: promptId
+        promptVersion: 0
+        id: id
+        type: type
+        steps:
+        - role: role
+          action: PENDING
+          step: 1
+          comment: comment
+          actedAt: 2000-01-23T04:56:07.000+00:00
+          assignedTo: assignedTo
+        - role: role
+          action: PENDING
+          step: 1
+          comment: comment
+          actedAt: 2000-01-23T04:56:07.000+00:00
+          assignedTo: assignedTo
+        status: PENDING
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          type: string
+        promptId:
+          type: string
+        promptVersion:
+          type: integer
+        type:
+          description: "Workflow type (e.g., approval)"
+          type: string
+        status:
+          $ref: "#/components/schemas/WorkflowStatus"
+        currentStep:
+          type: integer
+        requestedBy:
+          type: string
+        steps:
+          items:
+            $ref: "#/components/schemas/WorkflowStepResponse"
+          type: array
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+    WorkflowStepResponse:
+      example:
+        role: role
+        action: PENDING
+        step: 1
+        comment: comment
+        actedAt: 2000-01-23T04:56:07.000+00:00
+        assignedTo: assignedTo
+      properties:
+        step:
+          type: integer
+        role:
+          description: "Required role (e.g., reviewer, approver)"
+          type: string
+        assignedTo:
+          type: string
+        action:
+          $ref: "#/components/schemas/StepAction"
+        comment:
+          type: string
+        actedAt:
+          format: date-time
+          type: string
+    ScanResponse:
+      example:
+        scannedAt: 2000-01-23T04:56:07.000+00:00
+        llmProvider: llmProvider
+        promptId: promptId
+        promptVersion: 0
+        overallScore: 6.027456183070403
+        findings:
+        - severity: CRITICAL
+          remediation: remediation
+          description: description
+          type: PHI_EXPOSURE
+          title: title
+        - severity: CRITICAL
+          remediation: remediation
+          description: description
+          type: PHI_EXPOSURE
+          title: title
+        id: id
+        llmModel: llmModel
+        status: PASS
+      properties:
+        id:
+          type: string
+        promptId:
+          type: string
+        promptVersion:
+          type: integer
+        overallScore:
+          description: "Severity score (0.0 = safe, 10.0 = critical)"
+          format: double
+          type: number
+        status:
+          $ref: "#/components/schemas/ScanStatus"
+        findings:
+          items:
+            $ref: "#/components/schemas/FindingResponse"
+          type: array
+        llmProvider:
+          type: string
+        llmModel:
+          type: string
+        scannedAt:
+          format: date-time
+          type: string
+    FindingResponse:
+      example:
+        severity: CRITICAL
+        remediation: remediation
+        description: description
+        type: PHI_EXPOSURE
+        title: title
+      properties:
+        type:
+          $ref: "#/components/schemas/FindingType"
+        severity:
+          $ref: "#/components/schemas/Severity"
+        title:
+          type: string
+        description:
+          type: string
+        remediation:
+          description: Suggested fix
+          type: string
+    ImprovementResponse:
+      example:
+        summary: summary
+        promptId: promptId
+        improvedContent: improvedContent
+        originalContent: originalContent
+      properties:
+        promptId:
+          type: string
+        originalContent:
+          type: string
+        improvedContent:
+          type: string
+        summary:
+          description: Explanation of what was improved
+          type: string
+    ApplyImprovementRequest:
+      example:
+        author: author
+        improvedContent: improvedContent
+      properties:
+        improvedContent:
+          description: The improved prompt content to apply
+          maxLength: 51200
+          minLength: 1
+          type: string
+        author:
+          description: User applying the improvement
+          maxLength: 100
+          minLength: 1
+          type: string
+      required:
+      - author
+      - improvedContent
+    GenerateFromIdeaRequest:
+      example:
+        idea: "classify customer support tickets into billing, technical, and account\
+          \ categories"
+        projectId: projectId
+      properties:
+        idea:
+          description: A short natural-language description of the prompt the user
+            wants to create
+          example: "classify customer support tickets into billing, technical, and\
+            \ account categories"
+          maxLength: 5000
+          minLength: 5
+          type: string
+        projectId:
+          description: Optional project context to ground the generation
+          maxLength: 100
+          type: string
+      required:
+      - idea
+    GenerateFromIdeaResponse:
+      example:
+        summary: summary
+        generatedContent: generatedContent
+        title: title
+      properties:
+        generatedContent:
+          description: The full prompt content generated by the LLM from the idea
+          type: string
+        title:
+          description: A suggested title for the prompt
+          type: string
+        summary:
+          description: Explanation of the generated prompt structure and approach
+          type: string
+    DeliveryResponse:
+      example:
+        promptId: promptId
+        contentFormat: contentFormat
+        name: name
+        version: 0
+        content: content
+      properties:
+        promptId:
+          type: string
+        name:
+          type: string
+        content:
+          description: The full prompt content for runtime use
+          type: string
+        version:
+          type: integer
+        contentFormat:
+          type: string
+    AuditResponse:
+      example:
+        resourceId: resourceId
+        actorUserId: actorUserId
+        resourceVersion: 0
+        action: action
+        details:
+          key: ""
+        id: id
+        resourceType: resourceType
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          type: string
+        action:
+          description: "Event type (e.g., prompt.created, workflow.approved, scan.completed)"
+          type: string
+        resourceType:
+          description: "Resource category (prompt, workflow, scan)"
+          type: string
+        resourceId:
+          type: string
+        resourceVersion:
+          type: integer
+        actorUserId:
+          type: string
+        details:
+          additionalProperties: true
+          description: Contextual event details
+          type: object
+        timestamp:
+          format: date-time
+          type: string
+    SearchResponse:
+      example:
+        score: 0.8008281904610115
+        promptId: promptId
+        name: name
+        description: description
+      properties:
+        promptId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        score:
+          description: Relevance/similarity score (0.0–1.0)
+          format: double
+          type: number
+    DuplicateCheckResponse:
+      example:
+        duplicates:
+        - score: 0.8008281904610115
+          promptId: promptId
+          name: name
+          description: description
+        - score: 0.8008281904610115
+          promptId: promptId
+          name: name
+          description: description
+        hasDuplicates: true
+        promptId: promptId
+      properties:
+        promptId:
+          type: string
+        hasDuplicates:
+          type: boolean
+        duplicates:
+          items:
+            $ref: "#/components/schemas/SearchResponse"
+          type: array
+    NotificationResponse:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        read: true
+        payload:
+          key: ""
+        icon: icon
+        id: id
+        type: type
+        title: title
+        message: message
+        userId: userId
+        projectId: projectId
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        projectId:
+          type: string
+        type:
+          description: "Event type key (e.g., prompt.created, workflow.approved, scan.completed)"
+          type: string
+        title:
+          description: Human-readable notification title
+          type: string
+        message:
+          description: Human-readable notification message
+          type: string
+        icon:
+          description: Material icon name for UI rendering
+          type: string
+        payload:
+          additionalProperties: true
+          description: Raw event payload for deep-linking or contextual display
+          type: object
+        read:
+          description: Whether the notification has been read
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+    NotificationListResponse:
+      example:
+        oldestTimestamp: 2000-01-23T04:56:07.000+00:00
+        hasMore: true
+        items:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          read: true
+          payload:
+            key: ""
+          icon: icon
+          id: id
+          type: type
+          title: title
+          message: message
+          userId: userId
+          projectId: projectId
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          read: true
+          payload:
+            key: ""
+          icon: icon
+          id: id
+          type: type
+          title: title
+          message: message
+          userId: userId
+          projectId: projectId
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/NotificationResponse"
+          type: array
+        hasMore:
+          description: Whether older notifications exist beyond this page
+          type: boolean
+        oldestTimestamp:
+          description: Timestamp of the oldest notification in this page (cursor for
+            next page)
+          format: date-time
+          type: string
+    NotificationCountResponse:
+      example:
+        unread: 0
+      properties:
+        unread:
+          description: Number of unread notifications for the user in the project
+          format: int64
+          type: integer
+    NotificationPreferenceResponse:
+      example:
+        mutedEvents:
+        - mutedEvents
+        - mutedEvents
+        availableEvents:
+        - icon: icon
+          title: title
+          key: key
+          messageTemplate: messageTemplate
+        - icon: icon
+          title: title
+          key: key
+          messageTemplate: messageTemplate
+        inAppEnabled: true
+        emailEnabled: true
+        userId: userId
+        projectId: projectId
+      properties:
+        userId:
+          type: string
+        projectId:
+          type: string
+        mutedEvents:
+          description: Event type keys that the user has muted
+          items:
+            type: string
+          type: array
+        inAppEnabled:
+          description: Whether in-app notifications are enabled
+          type: boolean
+        emailEnabled:
+          description: Whether email notifications are enabled
+          type: boolean
+        availableEvents:
+          description: All available notification event types for the UI toggle grid
+          items:
+            $ref: "#/components/schemas/NotificationEventTypeInfo"
+          type: array
+    UpdateNotificationPreferenceRequest:
+      example:
+        mutedEvents:
+        - mutedEvents
+        - mutedEvents
+        inAppEnabled: true
+        emailEnabled: true
+        projectId: projectId
+      properties:
+        projectId:
+          type: string
+        mutedEvents:
+          description: Event type keys to mute
+          items:
+            type: string
+          type: array
+        inAppEnabled:
+          default: true
+          type: boolean
+        emailEnabled:
+          default: true
+          type: boolean
+      required:
+      - projectId
+    ProjectNotificationSettingsResponse:
+      example:
+        availableEvents:
+        - icon: icon
+          title: title
+          key: key
+          messageTemplate: messageTemplate
+        - icon: icon
+          title: title
+          key: key
+          messageTemplate: messageTemplate
+        enabledEvents:
+        - enabledEvents
+        - enabledEvents
+        projectId: projectId
+      properties:
+        projectId:
+          type: string
+        enabledEvents:
+          description: Event type keys enabled for this project
+          items:
+            type: string
+          type: array
+        availableEvents:
+          description: All available notification event types
+          items:
+            $ref: "#/components/schemas/NotificationEventTypeInfo"
+          type: array
+    UpdateProjectNotificationSettingsRequest:
+      example:
+        enabledEvents:
+        - enabledEvents
+        - enabledEvents
+        projectId: projectId
+      properties:
+        projectId:
+          type: string
+        enabledEvents:
+          description: Event type keys to enable for this project
+          items:
+            type: string
+          type: array
+      required:
+      - projectId
+    NotificationEventTypeInfo:
+      description: Metadata for a notification event type used in the UI toggle grid
+      example:
+        icon: icon
+        title: title
+        key: key
+        messageTemplate: messageTemplate
+      properties:
+        key:
+          description: "Event type key (e.g., prompt.created, workflow.approved)"
+          type: string
+        title:
+          description: Human-readable display title
+          type: string
+        icon:
+          description: Material icon name for UI rendering
+          type: string
+        messageTemplate:
+          description: "Message template with {placeholder} variables"
+          type: string
+    UpdateUserRequest:
+      example:
+        avatarUrl: https://example.com/avatar.png
+        displayName: Alice J.
+      properties:
+        displayName:
+          description: Updated display name
+          example: Alice J.
+          maxLength: 200
+          minLength: 1
+          type: string
+        avatarUrl:
+          description: Updated avatar URL
+          example: https://example.com/avatar.png
+          maxLength: 2048
+          type: string
+          nullable: true
+    UserPreferences:
+      example:
+        mutedEvents:
+        - prompt.created
+        - workflow.approved
+        inAppEnabled: true
+        emailEnabled: true
+      properties:
+        inAppEnabled:
+          default: true
+          description: Master switch for in-app (bell icon) notifications
+          type: boolean
+        emailEnabled:
+          default: true
+          description: Master switch for email notifications
+          type: boolean
+        mutedEvents:
+          description: List of event types the user has silenced
+          example:
+          - prompt.created
+          - workflow.approved
+          items:
+            type: string
+          type: array
+      required:
+      - emailEnabled
+      - inAppEnabled
+    PromptStatus:
+      description: Lifecycle status of a prompt
+      enum:
+      - DRAFT
+      - IN_REVIEW
+      - APPROVED
+      - REJECTED
+      - DEPRECATED
+      type: string
+  securitySchemes:
+    BearerAuth:
+      bearerFormat: JWT
+      description: OAuth2/OIDC JWT token
+      scheme: bearer
+      type: http
+

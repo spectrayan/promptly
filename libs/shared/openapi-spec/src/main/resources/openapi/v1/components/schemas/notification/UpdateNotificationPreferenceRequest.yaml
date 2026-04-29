@@ -1,0 +1,17 @@
+type: object
+required:
+  - projectId
+properties:
+  projectId:
+    type: string
+  mutedEvents:
+    type: array
+    items:
+      type: string
+    description: Event type keys to mute
+  inAppEnabled:
+    type: boolean
+    default: true
+  emailEnabled:
+    type: boolean
+    default: true

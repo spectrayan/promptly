@@ -1415,6 +1415,9 @@ class PromptlyQueryApi:
     @validate_call
     def list_projects(
         self,
+        page: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="Page number (0-indexed)")] = None,
+        size: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=1)]], Field(description="Number of items per page")] = None,
+        sort: Annotated[Optional[StrictStr], Field(description="Sort criteria (e.g. createdAt,desc)")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1428,10 +1431,16 @@ class PromptlyQueryApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> List[ProjectResponse]:
-        """List all projects
+        """List projects (paginated)
 
-        Returns all projects the current user has access to.
+        Returns a paginated list of projects the current user has access to.
 
+        :param page: Page number (0-indexed)
+        :type page: int
+        :param size: Number of items per page
+        :type size: int
+        :param sort: Sort criteria (e.g. createdAt,desc)
+        :type sort: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1455,6 +1464,9 @@ class PromptlyQueryApi:
         """ # noqa: E501
 
         _param = self._list_projects_serialize(
+            page=page,
+            size=size,
+            sort=sort,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1478,6 +1490,9 @@ class PromptlyQueryApi:
     @validate_call
     def list_projects_with_http_info(
         self,
+        page: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="Page number (0-indexed)")] = None,
+        size: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=1)]], Field(description="Number of items per page")] = None,
+        sort: Annotated[Optional[StrictStr], Field(description="Sort criteria (e.g. createdAt,desc)")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1491,10 +1506,16 @@ class PromptlyQueryApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[List[ProjectResponse]]:
-        """List all projects
+        """List projects (paginated)
 
-        Returns all projects the current user has access to.
+        Returns a paginated list of projects the current user has access to.
 
+        :param page: Page number (0-indexed)
+        :type page: int
+        :param size: Number of items per page
+        :type size: int
+        :param sort: Sort criteria (e.g. createdAt,desc)
+        :type sort: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1518,6 +1539,9 @@ class PromptlyQueryApi:
         """ # noqa: E501
 
         _param = self._list_projects_serialize(
+            page=page,
+            size=size,
+            sort=sort,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1541,6 +1565,9 @@ class PromptlyQueryApi:
     @validate_call
     def list_projects_without_preload_content(
         self,
+        page: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="Page number (0-indexed)")] = None,
+        size: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=1)]], Field(description="Number of items per page")] = None,
+        sort: Annotated[Optional[StrictStr], Field(description="Sort criteria (e.g. createdAt,desc)")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1554,10 +1581,16 @@ class PromptlyQueryApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """List all projects
+        """List projects (paginated)
 
-        Returns all projects the current user has access to.
+        Returns a paginated list of projects the current user has access to.
 
+        :param page: Page number (0-indexed)
+        :type page: int
+        :param size: Number of items per page
+        :type size: int
+        :param sort: Sort criteria (e.g. createdAt,desc)
+        :type sort: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1581,6 +1614,9 @@ class PromptlyQueryApi:
         """ # noqa: E501
 
         _param = self._list_projects_serialize(
+            page=page,
+            size=size,
+            sort=sort,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1599,6 +1635,9 @@ class PromptlyQueryApi:
 
     def _list_projects_serialize(
         self,
+        page,
+        size,
+        sort,
         _request_auth,
         _content_type,
         _headers,
@@ -1621,6 +1660,18 @@ class PromptlyQueryApi:
 
         # process the path parameters
         # process the query parameters
+        if page is not None:
+            
+            _query_params.append(('page', page))
+            
+        if size is not None:
+            
+            _query_params.append(('size', size))
+            
+        if sort is not None:
+            
+            _query_params.append(('sort', sort))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1662,6 +1713,9 @@ class PromptlyQueryApi:
     def list_prompts(
         self,
         project_id: Annotated[Optional[StrictStr], Field(description="Filter prompts by project ID")] = None,
+        page: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="Page number (0-indexed)")] = None,
+        size: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=1)]], Field(description="Number of items per page")] = None,
+        sort: Annotated[Optional[StrictStr], Field(description="Sort criteria (e.g. createdAt,desc)")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1675,12 +1729,18 @@ class PromptlyQueryApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> List[PromptSummaryResponse]:
-        """List all prompts
+        """List prompts (paginated)
 
-        Returns a list of prompt summaries. Optionally filter by project ID.
+        Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
 
         :param project_id: Filter prompts by project ID
         :type project_id: str
+        :param page: Page number (0-indexed)
+        :type page: int
+        :param size: Number of items per page
+        :type size: int
+        :param sort: Sort criteria (e.g. createdAt,desc)
+        :type sort: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1705,6 +1765,9 @@ class PromptlyQueryApi:
 
         _param = self._list_prompts_serialize(
             project_id=project_id,
+            page=page,
+            size=size,
+            sort=sort,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1729,6 +1792,9 @@ class PromptlyQueryApi:
     def list_prompts_with_http_info(
         self,
         project_id: Annotated[Optional[StrictStr], Field(description="Filter prompts by project ID")] = None,
+        page: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="Page number (0-indexed)")] = None,
+        size: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=1)]], Field(description="Number of items per page")] = None,
+        sort: Annotated[Optional[StrictStr], Field(description="Sort criteria (e.g. createdAt,desc)")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1742,12 +1808,18 @@ class PromptlyQueryApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[List[PromptSummaryResponse]]:
-        """List all prompts
+        """List prompts (paginated)
 
-        Returns a list of prompt summaries. Optionally filter by project ID.
+        Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
 
         :param project_id: Filter prompts by project ID
         :type project_id: str
+        :param page: Page number (0-indexed)
+        :type page: int
+        :param size: Number of items per page
+        :type size: int
+        :param sort: Sort criteria (e.g. createdAt,desc)
+        :type sort: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1772,6 +1844,9 @@ class PromptlyQueryApi:
 
         _param = self._list_prompts_serialize(
             project_id=project_id,
+            page=page,
+            size=size,
+            sort=sort,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1796,6 +1871,9 @@ class PromptlyQueryApi:
     def list_prompts_without_preload_content(
         self,
         project_id: Annotated[Optional[StrictStr], Field(description="Filter prompts by project ID")] = None,
+        page: Annotated[Optional[Annotated[int, Field(strict=True, ge=0)]], Field(description="Page number (0-indexed)")] = None,
+        size: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=1)]], Field(description="Number of items per page")] = None,
+        sort: Annotated[Optional[StrictStr], Field(description="Sort criteria (e.g. createdAt,desc)")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1809,12 +1887,18 @@ class PromptlyQueryApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """List all prompts
+        """List prompts (paginated)
 
-        Returns a list of prompt summaries. Optionally filter by project ID.
+        Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
 
         :param project_id: Filter prompts by project ID
         :type project_id: str
+        :param page: Page number (0-indexed)
+        :type page: int
+        :param size: Number of items per page
+        :type size: int
+        :param sort: Sort criteria (e.g. createdAt,desc)
+        :type sort: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1839,6 +1923,9 @@ class PromptlyQueryApi:
 
         _param = self._list_prompts_serialize(
             project_id=project_id,
+            page=page,
+            size=size,
+            sort=sort,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -1858,6 +1945,9 @@ class PromptlyQueryApi:
     def _list_prompts_serialize(
         self,
         project_id,
+        page,
+        size,
+        sort,
         _request_auth,
         _content_type,
         _headers,
@@ -1883,6 +1973,18 @@ class PromptlyQueryApi:
         if project_id is not None:
             
             _query_params.append(('projectId', project_id))
+            
+        if page is not None:
+            
+            _query_params.append(('page', page))
+            
+        if size is not None:
+            
+            _query_params.append(('size', size))
+            
+        if sort is not None:
+            
+            _query_params.append(('sort', sort))
             
         # process the header parameters
         # process the form parameters

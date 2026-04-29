@@ -4,6 +4,7 @@ src/main/java/com/promptly/infrastructure/in/web/api/AuditApi.java
 src/main/java/com/promptly/infrastructure/in/web/api/AuthApi.java
 src/main/java/com/promptly/infrastructure/in/web/api/DeliveryApi.java
 src/main/java/com/promptly/infrastructure/in/web/api/ImproverApi.java
+src/main/java/com/promptly/infrastructure/in/web/api/NotificationsApi.java
 src/main/java/com/promptly/infrastructure/in/web/api/ProjectsApi.java
 src/main/java/com/promptly/infrastructure/in/web/api/PromptsApi.java
 src/main/java/com/promptly/infrastructure/in/web/api/ScannerApi.java
@@ -25,9 +26,15 @@ src/main/java/com/promptly/infrastructure/in/web/dto/GenerateFromIdeaRequest.jav
 src/main/java/com/promptly/infrastructure/in/web/dto/GenerateFromIdeaResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ImprovementResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/LoginRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/NotificationCountResponse.java
+src/main/java/com/promptly/infrastructure/in/web/dto/NotificationEventTypeInfo.java
+src/main/java/com/promptly/infrastructure/in/web/dto/NotificationListResponse.java
+src/main/java/com/promptly/infrastructure/in/web/dto/NotificationPreferenceResponse.java
+src/main/java/com/promptly/infrastructure/in/web/dto/NotificationResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/OrgRole.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ProblemDetails.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ProjectMemberResponse.java
+src/main/java/com/promptly/infrastructure/in/web/dto/ProjectNotificationSettingsResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ProjectResponse.java
 src/main/java/com/promptly/infrastructure/in/web/dto/ProjectRole.java
 src/main/java/com/promptly/infrastructure/in/web/dto/PromptResponse.java
@@ -42,6 +49,8 @@ src/main/java/com/promptly/infrastructure/in/web/dto/Severity.java
 src/main/java/com/promptly/infrastructure/in/web/dto/StepAction.java
 src/main/java/com/promptly/infrastructure/in/web/dto/SubmitReviewRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UpdateMemberRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/UpdateNotificationPreferenceRequest.java
+src/main/java/com/promptly/infrastructure/in/web/dto/UpdateProjectNotificationSettingsRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UpdatePromptRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UpdateUserRequest.java
 src/main/java/com/promptly/infrastructure/in/web/dto/UserPreferences.java

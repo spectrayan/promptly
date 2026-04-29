@@ -1,0 +1,11 @@
+type: object
+required:
+  - projectId
+properties:
+  projectId:
+    type: string
+  enabledEvents:
+    type: array
+    items:
+      type: string
+    description: Event type keys to enable for this project

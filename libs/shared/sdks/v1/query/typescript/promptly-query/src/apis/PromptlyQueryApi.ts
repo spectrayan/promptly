@@ -63,8 +63,17 @@ export interface GetVersionHistoryRequest {
     id: string;
 }
 
+export interface ListProjectsRequest {
+    page?: number;
+    size?: number;
+    sort?: string;
+}
+
 export interface ListPromptsRequest {
     projectId?: string;
+    page?: number;
+    size?: number;
+    sort?: string;
 }
 
 export interface SearchPromptsRequest {
@@ -339,8 +348,20 @@ export class PromptlyQueryApi extends runtime.BaseAPI {
     /**
      * Creates request options for listProjects without sending the request
      */
-    async listProjectsRequestOpts(): Promise<runtime.RequestOpts> {
+    async listProjectsRequestOpts(requestParameters: ListProjectsRequest): Promise<runtime.RequestOpts> {
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -364,22 +385,22 @@ export class PromptlyQueryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns all projects the current user has access to.
-     * List all projects
+     * Returns a paginated list of projects the current user has access to.
+     * List projects (paginated)
      */
-    async listProjectsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ProjectResponse>>> {
-        const requestOptions = await this.listProjectsRequestOpts();
+    async listProjectsRaw(requestParameters: ListProjectsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ProjectResponse>>> {
+        const requestOptions = await this.listProjectsRequestOpts(requestParameters);
         const response = await this.request(requestOptions, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ProjectResponseFromJSON));
     }
 
     /**
-     * Returns all projects the current user has access to.
-     * List all projects
+     * Returns a paginated list of projects the current user has access to.
+     * List projects (paginated)
      */
-    async listProjects(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ProjectResponse>> {
-        const response = await this.listProjectsRaw(initOverrides);
+    async listProjects(requestParameters: ListProjectsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<ProjectResponse>> {
+        const response = await this.listProjectsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -391,6 +412,18 @@ export class PromptlyQueryApi extends runtime.BaseAPI {
 
         if (requestParameters['projectId'] != null) {
             queryParameters['projectId'] = requestParameters['projectId'];
+        }
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['size'] != null) {
+            queryParameters['size'] = requestParameters['size'];
+        }
+
+        if (requestParameters['sort'] != null) {
+            queryParameters['sort'] = requestParameters['sort'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -407,8 +440,8 @@ export class PromptlyQueryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns a list of prompt summaries. Optionally filter by project ID.
-     * List all prompts
+     * Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
+     * List prompts (paginated)
      */
     async listPromptsRaw(requestParameters: ListPromptsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<PromptSummaryResponse>>> {
         const requestOptions = await this.listPromptsRequestOpts(requestParameters);
@@ -418,8 +451,8 @@ export class PromptlyQueryApi extends runtime.BaseAPI {
     }
 
     /**
-     * Returns a list of prompt summaries. Optionally filter by project ID.
-     * List all prompts
+     * Returns a paginated, streaming list of prompt summaries. Optionally filter by project ID.
+     * List prompts (paginated)
      */
     async listPrompts(requestParameters: ListPromptsRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<PromptSummaryResponse>> {
         const response = await this.listPromptsRaw(requestParameters, initOverrides);

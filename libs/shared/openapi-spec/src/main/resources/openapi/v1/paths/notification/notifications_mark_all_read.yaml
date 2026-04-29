@@ -1,0 +1,18 @@
+post:
+  operationId: markAllNotificationsRead
+  summary: Mark all notifications as read
+  description: |
+    Marks all unread notifications as read for the authenticated user in the specified project.
+  tags: [Notifications]
+  parameters:
+    - name: projectId
+      in: query
+      required: true
+      description: Project scope
+      schema:
+        type: string
+  responses:
+    '204':
+      description: All notifications marked as read
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

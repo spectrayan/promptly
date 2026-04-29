@@ -10,6 +10,8 @@ api/delivery.service.ts
 api/delivery.serviceInterface.ts
 api/improver.service.ts
 api/improver.serviceInterface.ts
+api/notifications.service.ts
+api/notifications.serviceInterface.ts
 api/projects.service.ts
 api/projects.serviceInterface.ts
 api/prompts.service.ts
@@ -41,9 +43,15 @@ model/generate-from-idea-response.model.ts
 model/improvement-response.model.ts
 model/login-request.model.ts
 model/models.ts
+model/notification-count-response.model.ts
+model/notification-event-type-info.model.ts
+model/notification-list-response.model.ts
+model/notification-preference-response.model.ts
+model/notification-response.model.ts
 model/org-role.model.ts
 model/problem-details.model.ts
 model/project-member-response.model.ts
+model/project-notification-settings-response.model.ts
 model/project-response.model.ts
 model/project-role.model.ts
 model/prompt-response.model.ts
@@ -58,6 +66,8 @@ model/severity.model.ts
 model/step-action.model.ts
 model/submit-review-request.model.ts
 model/update-member-request.model.ts
+model/update-notification-preference-request.model.ts
+model/update-project-notification-settings-request.model.ts
 model/update-prompt-request.model.ts
 model/update-user-request.model.ts
 model/user-preferences.model.ts

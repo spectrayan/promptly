@@ -243,6 +243,48 @@
                                 </configuration>
                             </execution>
 
+                            <!-- ─── Java Spring (WebClient-based, reactive) SDK ─── -->
+                            <execution>
+                                <id>query-sdk-java-spring</id>
+                                <phase>generate-sources</phase>
+                                <goals><goal>generate</goal></goals>
+                                <configuration>
+                                    <inputSpec>${openapi.bundled.spec}</inputSpec>
+                                    <generatorName>java</generatorName>
+                                    <output>${query.sdk.output}/java-spring/promptly-query</output>
+
+                                    <apiPackage>com.promptly.query.api</apiPackage>
+                                    <modelPackage>com.promptly.query.model</modelPackage>
+                                    <invokerPackage>com.promptly.query</invokerPackage>
+
+                                    <generateApiTests>false</generateApiTests>
+                                    <generateModelTests>false</generateModelTests>
+
+                                    <openapiNormalizer>
+                                        <REF_AS_PARENT_IN_ALLOF>true</REF_AS_PARENT_IN_ALLOF>
+                                    </openapiNormalizer>
+
+                                    <globalProperties>
+                                        <apis>PromptlyQuery</apis>
+                                        <models>ProjectResponse,PromptResponse,PromptSummaryResponse,PromptStatus,ContentFormat,VersionResponse,DeliveryResponse,SearchResponse,ProblemDetails,ValidationError</models>
+                                        <supportingFiles/>
+                                    </globalProperties>
+
+                                    <configOptions>
+                                        <library>webclient</library>
+                                        <useJakartaEe>true</useJakartaEe>
+                                        <dateLibrary>java8</dateLibrary>
+                                        <openApiNullable>false</openApiNullable>
+                                        <groupId>com.promptly</groupId>
+                                        <artifactId>promptly-query</artifactId>
+                                        <artifactVersion>${query.sdk.version}</artifactVersion>
+                                        <artifactDescription>Promptly Query SDK for Java Spring (read-only operations)</artifactDescription>
+                                        <sourceFolder>src/main/java</sourceFolder>
+                                        <serializationLibrary>jackson</serializationLibrary>
+                                    </configOptions>
+                                </configuration>
+                            </execution>
+
                         </executions>
                     </plugin>
                 </plugins>

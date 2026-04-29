@@ -1,0 +1,30 @@
+type: object
+properties:
+  id:
+    type: string
+  userId:
+    type: string
+  projectId:
+    type: string
+  type:
+    type: string
+    description: "Event type key (e.g., prompt.created, workflow.approved, scan.completed)"
+  title:
+    type: string
+    description: Human-readable notification title
+  message:
+    type: string
+    description: Human-readable notification message
+  icon:
+    type: string
+    description: Material icon name for UI rendering
+  payload:
+    type: object
+    additionalProperties: true
+    description: Raw event payload for deep-linking or contextual display
+  read:
+    type: boolean
+    description: Whether the notification has been read
+  createdAt:
+    type: string
+    format: date-time

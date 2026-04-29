@@ -1,0 +1,39 @@
+patch:
+  operationId: markNotificationAsRead
+  summary: Mark a notification as read
+  description: Marks a single notification as read for the authenticated user.
+  tags: [Notifications]
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: Notification ID
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Notification marked as read
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'
+
+delete:
+  operationId: dismissNotification
+  summary: Dismiss a notification
+  description: Permanently deletes a single notification for the authenticated user.
+  tags: [Notifications]
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: Notification ID
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Notification dismissed
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

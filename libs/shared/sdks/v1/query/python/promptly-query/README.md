@@ -99,8 +99,8 @@ Class | Method | HTTP request | Description
 *PromptlyQueryApi* | [**get_prompt**](docs/PromptlyQueryApi.md#get_prompt) | **GET** /api/v1/prompts/{id} | Get prompt details
 *PromptlyQueryApi* | [**get_specific_version**](docs/PromptlyQueryApi.md#get_specific_version) | **GET** /api/v1/prompts/{id}/versions/{versionNumber} | Get a specific version
 *PromptlyQueryApi* | [**get_version_history**](docs/PromptlyQueryApi.md#get_version_history) | **GET** /api/v1/prompts/{id}/versions | Get version history
-*PromptlyQueryApi* | [**list_projects**](docs/PromptlyQueryApi.md#list_projects) | **GET** /api/v1/projects | List all projects
-*PromptlyQueryApi* | [**list_prompts**](docs/PromptlyQueryApi.md#list_prompts) | **GET** /api/v1/prompts | List all prompts
+*PromptlyQueryApi* | [**list_projects**](docs/PromptlyQueryApi.md#list_projects) | **GET** /api/v1/projects | List projects (paginated)
+*PromptlyQueryApi* | [**list_prompts**](docs/PromptlyQueryApi.md#list_prompts) | **GET** /api/v1/prompts | List prompts (paginated)
 *PromptlyQueryApi* | [**search_prompts**](docs/PromptlyQueryApi.md#search_prompts) | **GET** /api/v1/search | Semantic search for prompts
 
 

@@ -59,8 +59,8 @@ All URIs are relative to *http://localhost:8080*
 *PromptlyQueryApi* | [**getPrompt**](docs/PromptlyQueryApi.md#getprompt) | **GET** /api/v1/prompts/{id} | Get prompt details
 *PromptlyQueryApi* | [**getSpecificVersion**](docs/PromptlyQueryApi.md#getspecificversion) | **GET** /api/v1/prompts/{id}/versions/{versionNumber} | Get a specific version
 *PromptlyQueryApi* | [**getVersionHistory**](docs/PromptlyQueryApi.md#getversionhistory) | **GET** /api/v1/prompts/{id}/versions | Get version history
-*PromptlyQueryApi* | [**listProjects**](docs/PromptlyQueryApi.md#listprojects) | **GET** /api/v1/projects | List all projects
-*PromptlyQueryApi* | [**listPrompts**](docs/PromptlyQueryApi.md#listprompts) | **GET** /api/v1/prompts | List all prompts
+*PromptlyQueryApi* | [**listProjects**](docs/PromptlyQueryApi.md#listprojects) | **GET** /api/v1/projects | List projects (paginated)
+*PromptlyQueryApi* | [**listPrompts**](docs/PromptlyQueryApi.md#listprompts) | **GET** /api/v1/prompts | List prompts (paginated)
 *PromptlyQueryApi* | [**searchPrompts**](docs/PromptlyQueryApi.md#searchprompts) | **GET** /api/v1/search | Semantic search for prompts
 
 

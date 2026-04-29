@@ -1,0 +1,42 @@
+get:
+  operationId: getProjectNotificationSettings
+  summary: Get project notification settings
+  description: Returns project-level notification settings (which event types are enabled).
+  tags: [Notifications]
+  parameters:
+    - name: projectId
+      in: query
+      required: true
+      description: Project ID
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Project notification settings
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/notification/ProjectNotificationSettingsResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
+
+put:
+  operationId: updateProjectNotificationSettings
+  summary: Update project notification settings
+  description: Updates project-level notification settings (admin-level).
+  tags: [Notifications]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/notification/UpdateProjectNotificationSettingsRequest.yaml'
+  responses:
+    '200':
+      description: Updated project settings
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/notification/ProjectNotificationSettingsResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

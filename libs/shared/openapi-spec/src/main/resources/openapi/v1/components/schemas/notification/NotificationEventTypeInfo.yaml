@@ -1,0 +1,15 @@
+type: object
+description: Metadata for a notification event type used in the UI toggle grid
+properties:
+  key:
+    type: string
+    description: "Event type key (e.g., prompt.created, workflow.approved)"
+  title:
+    type: string
+    description: Human-readable display title
+  icon:
+    type: string
+    description: Material icon name for UI rendering
+  messageTemplate:
+    type: string
+    description: Message template with {placeholder} variables

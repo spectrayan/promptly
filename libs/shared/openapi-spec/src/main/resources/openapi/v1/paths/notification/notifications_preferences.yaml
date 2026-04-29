@@ -1,0 +1,42 @@
+get:
+  operationId: getNotificationPreferences
+  summary: Get notification preferences
+  description: Returns the current user's notification preferences for a project.
+  tags: [Notifications]
+  parameters:
+    - name: projectId
+      in: query
+      required: true
+      description: Project scope
+      schema:
+        type: string
+  responses:
+    '200':
+      description: User notification preferences
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/notification/NotificationPreferenceResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
+
+put:
+  operationId: updateNotificationPreferences
+  summary: Update notification preferences
+  description: Updates the current user's notification preferences for a project.
+  tags: [Notifications]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/notification/UpdateNotificationPreferenceRequest.yaml'
+  responses:
+    '200':
+      description: Updated preferences
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/notification/NotificationPreferenceResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

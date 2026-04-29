@@ -1,0 +1,13 @@
+type: object
+properties:
+  items:
+    type: array
+    items:
+      $ref: 'NotificationResponse.yaml'
+  hasMore:
+    type: boolean
+    description: Whether older notifications exist beyond this page
+  oldestTimestamp:
+    type: string
+    format: date-time
+    description: Timestamp of the oldest notification in this page (cursor for next page)

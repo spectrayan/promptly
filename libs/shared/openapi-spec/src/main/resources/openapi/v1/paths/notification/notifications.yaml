@@ -1,0 +1,63 @@
+get:
+  operationId: listNotifications
+  summary: List notifications
+  description: |
+    Cursor-based notification list for the authenticated user.
+    Returns notifications for the specified project, ordered by creation time descending.
+  tags: [Notifications]
+  parameters:
+    - name: projectId
+      in: query
+      required: true
+      description: Project scope for notifications
+      schema:
+        type: string
+    - name: unreadOnly
+      in: query
+      required: false
+      description: If true, only return unread notifications
+      schema:
+        type: boolean
+        default: false
+    - name: before
+      in: query
+      required: false
+      description: ISO 8601 cursor — only return notifications created before this timestamp
+      schema:
+        type: string
+        format: date-time
+    - name: limit
+      in: query
+      required: false
+      description: Maximum number of notifications to return (capped at 50)
+      schema:
+        type: integer
+        default: 20
+  responses:
+    '200':
+      description: Paginated notification list
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/notification/NotificationListResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
+
+delete:
+  operationId: clearAllNotifications
+  summary: Clear all notifications
+  description: |
+    Deletes all notifications for the authenticated user in the specified project.
+  tags: [Notifications]
+  parameters:
+    - name: projectId
+      in: query
+      required: true
+      description: Project scope
+      schema:
+        type: string
+  responses:
+    '204':
+      description: All notifications cleared
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'

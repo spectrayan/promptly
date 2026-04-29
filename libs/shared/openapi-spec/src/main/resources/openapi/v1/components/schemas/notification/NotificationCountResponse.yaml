@@ -1,0 +1,6 @@
+type: object
+properties:
+  unread:
+    type: integer
+    format: int64
+    description: Number of unread notifications for the user in the project

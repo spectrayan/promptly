@@ -136,6 +136,24 @@ components:
     DuplicateCheckResponse:
       $ref: 'v1/components/schemas/search/DuplicateCheckResponse.yaml'
 
+    # ── Notifications ──
+    NotificationResponse:
+      $ref: 'v1/components/schemas/notification/NotificationResponse.yaml'
+    NotificationListResponse:
+      $ref: 'v1/components/schemas/notification/NotificationListResponse.yaml'
+    NotificationCountResponse:
+      $ref: 'v1/components/schemas/notification/NotificationCountResponse.yaml'
+    NotificationPreferenceResponse:
+      $ref: 'v1/components/schemas/notification/NotificationPreferenceResponse.yaml'
+    UpdateNotificationPreferenceRequest:
+      $ref: 'v1/components/schemas/notification/UpdateNotificationPreferenceRequest.yaml'
+    ProjectNotificationSettingsResponse:
+      $ref: 'v1/components/schemas/notification/ProjectNotificationSettingsResponse.yaml'
+    UpdateProjectNotificationSettingsRequest:
+      $ref: 'v1/components/schemas/notification/UpdateProjectNotificationSettingsRequest.yaml'
+    NotificationEventTypeInfo:
+      $ref: 'v1/components/schemas/notification/NotificationEventTypeInfo.yaml'
+
   responses:
     BadRequest:
       $ref: 'v1/components/responses/BadRequest.yaml'
@@ -179,6 +197,8 @@ tags:
     description: Audit & Compliance — immutable audit trail
   - name: Search
     description: Semantic Search — embedding-based prompt discovery
+  - name: Notifications
+    description: Notifications — real-time SSE alerts, preferences, and project settings
 
   # ── External SDK ──
   - name: PromptlyQuery
@@ -266,3 +286,17 @@ paths:
     $ref: 'v1/paths/search/prompt_similar.yaml'
   /api/v1/prompts/{promptId}/check-duplicates:
     $ref: 'v1/paths/search/prompt_check_duplicates.yaml'
+
+  # ── Notifications ──
+  /api/v1/notifications:
+    $ref: 'v1/paths/notification/notifications.yaml'
+  /api/v1/notifications/count:
+    $ref: 'v1/paths/notification/notifications_count.yaml'
+  /api/v1/notifications/{id}/read:
+    $ref: 'v1/paths/notification/notifications_by_id.yaml'
+  /api/v1/notifications/mark-all-read:
+    $ref: 'v1/paths/notification/notifications_mark_all_read.yaml'
+  /api/v1/notifications/preferences:
+    $ref: 'v1/paths/notification/notifications_preferences.yaml'
+  /api/v1/notifications/project-settings:
+    $ref: 'v1/paths/notification/notifications_project_settings.yaml'

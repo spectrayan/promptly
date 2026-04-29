@@ -1,0 +1,21 @@
+get:
+  operationId: getUnreadNotificationCount
+  summary: Get unread notification count
+  description: Returns the number of unread notifications for the bell badge.
+  tags: [Notifications]
+  parameters:
+    - name: projectId
+      in: query
+      required: true
+      description: Project scope
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Unread count
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/notification/NotificationCountResponse.yaml'
+    '401':
+      $ref: '../../components/responses/Unauthorized.yaml'
