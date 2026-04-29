@@ -5,7 +5,6 @@ import io.github.resilience4j.ratelimiter.RateLimiterConfig;
 import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,14 +37,11 @@ public class RateLimitConfig {
 
     private static final Logger log = LoggerFactory.getLogger(RateLimitConfig.class);
 
-    @Value("${promptly.rate-limit.requests-per-second:100}")
-    private int requestsPerSecond;
+    private final PromptlyProperties.RateLimit rateLimitProps;
 
-    @Value("${promptly.rate-limit.login-requests-per-minute:5}")
-    private int loginRequestsPerMinute;
-
-    @Value("${promptly.rate-limit.timeout:0}")
-    private int timeoutMs;
+    public RateLimitConfig(PromptlyProperties properties) {
+        this.rateLimitProps = properties.getRateLimit();
+    }
 
     @Bean
     public RateLimiterRegistry rateLimiterRegistry() {
@@ -55,18 +51,18 @@ public class RateLimitConfig {
     @Bean
     public RateLimiterConfig globalRateLimiterConfig() {
         return RateLimiterConfig.custom()
-                .limitForPeriod(requestsPerSecond)
+                .limitForPeriod(rateLimitProps.getRequestsPerSecond())
                 .limitRefreshPeriod(Duration.ofSeconds(1))
-                .timeoutDuration(Duration.ofMillis(timeoutMs))
+                .timeoutDuration(Duration.ofMillis(rateLimitProps.getTimeout()))
                 .build();
     }
 
     @Bean
     public RateLimiterConfig loginRateLimiterConfig() {
         return RateLimiterConfig.custom()
-                .limitForPeriod(loginRequestsPerMinute)
+                .limitForPeriod(rateLimitProps.getLoginRequestsPerMinute())
                 .limitRefreshPeriod(Duration.ofMinutes(1))
-                .timeoutDuration(Duration.ofMillis(timeoutMs))
+                .timeoutDuration(Duration.ofMillis(rateLimitProps.getTimeout()))
                 .build();
     }
 
@@ -75,7 +71,7 @@ public class RateLimitConfig {
                                      RateLimiterConfig globalRateLimiterConfig,
                                      RateLimiterConfig loginRateLimiterConfig) {
         log.info("Rate limiting enabled (Resilience4j): {} req/s global, {} req/min login",
-                requestsPerSecond, loginRequestsPerMinute);
+                rateLimitProps.getRequestsPerSecond(), rateLimitProps.getLoginRequestsPerMinute());
 
         var perIpLimiters = new ConcurrentHashMap<String, RateLimiter>();
         var perIpLoginLimiters = new ConcurrentHashMap<String, RateLimiter>();

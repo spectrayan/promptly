@@ -30,8 +30,8 @@ public class CredentialEncryptionService {
     private final SecretKeySpec secretKey;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    public CredentialEncryptionService(LlmProperties llmProperties) {
-        String keyBase64 = llmProperties.getCredentialEncryptionKey();
+    public CredentialEncryptionService(PromptlyProperties properties) {
+        String keyBase64 = properties.getLlm().getCredentialEncryptionKey();
         if (keyBase64 != null && !keyBase64.isBlank()) {
             byte[] keyBytes = Base64.getDecoder().decode(keyBase64);
             if (keyBytes.length != 32) {

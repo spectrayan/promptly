@@ -1,10 +1,10 @@
 package com.promptly.auth.infrastructure.security;
 
 import com.promptly.auth.domain.model.User;
+import com.promptly.shared.config.PromptlyProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -22,14 +22,11 @@ public class JwtService {
     private final long accessTokenExpirationMs;
     private final long refreshTokenExpirationMs;
 
-    public JwtService(
-            @Value("${promptly.auth.jwt.secret:promptly-dev-secret-key-change-in-production-min-32-chars}") String secret,
-            @Value("${promptly.auth.jwt.expiration-ms:3600000}") long accessTokenExpirationMs,
-            @Value("${promptly.auth.jwt.refresh-expiration-ms:604800000}") long refreshTokenExpirationMs
-    ) {
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        this.accessTokenExpirationMs = accessTokenExpirationMs;
-        this.refreshTokenExpirationMs = refreshTokenExpirationMs;
+    public JwtService(PromptlyProperties properties) {
+        var jwt = properties.getAuth().getJwt();
+        this.signingKey = Keys.hmacShaKeyFor(jwt.getSecret().getBytes(StandardCharsets.UTF_8));
+        this.accessTokenExpirationMs = jwt.getExpirationMs();
+        this.refreshTokenExpirationMs = jwt.getRefreshExpirationMs();
     }
 
     public String generateAccessToken(User user) {

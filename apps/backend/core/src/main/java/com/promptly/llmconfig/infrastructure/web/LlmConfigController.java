@@ -4,8 +4,7 @@ import com.promptly.llmconfig.application.port.in.ManageLlmConfigUseCase;
 import com.promptly.llmconfig.application.port.in.ResolveLlmConfigUseCase;
 import com.promptly.llmconfig.domain.model.ResolvedLlmConfig;
 import com.promptly.shared.config.CredentialEncryptionService;
-import com.promptly.shared.config.DeploymentProperties;
-import lombok.RequiredArgsConstructor;
+import com.promptly.shared.config.PromptlyProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -20,13 +19,22 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/v1/settings/llm-configs")
-@RequiredArgsConstructor
 public class LlmConfigController {
 
     private final ResolveLlmConfigUseCase resolveConfigUseCase;
     private final ManageLlmConfigUseCase manageConfigUseCase;
     private final CredentialEncryptionService encryptionService;
-    private final DeploymentProperties deploymentProps;
+    private final PromptlyProperties.Deployment deploymentProps;
+
+    public LlmConfigController(ResolveLlmConfigUseCase resolveConfigUseCase,
+                                ManageLlmConfigUseCase manageConfigUseCase,
+                                CredentialEncryptionService encryptionService,
+                                PromptlyProperties properties) {
+        this.resolveConfigUseCase = resolveConfigUseCase;
+        this.manageConfigUseCase = manageConfigUseCase;
+        this.encryptionService = encryptionService;
+        this.deploymentProps = properties.getDeployment();
+    }
 
     /**
      * Get the resolved LLM configuration for a project + feature.

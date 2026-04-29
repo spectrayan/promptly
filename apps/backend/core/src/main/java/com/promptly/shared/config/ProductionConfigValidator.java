@@ -17,15 +17,20 @@ public class ProductionConfigValidator {
 
     private static final Logger log = LoggerFactory.getLogger(ProductionConfigValidator.class);
 
-    @Value("${promptly.auth.jwt.secret:}")
-    private String jwtSecret;
+    private final PromptlyProperties properties;
 
     @Value("${spring.mongodb.uri:}")
     private String mongoUri;
 
+    public ProductionConfigValidator(PromptlyProperties properties) {
+        this.properties = properties;
+    }
+
     @PostConstruct
     public void validate() {
         var errors = new java.util.ArrayList<String>();
+
+        String jwtSecret = properties.getAuth().getJwt().getSecret();
 
         // JWT secret must be set and not a known dev default
         if (jwtSecret == null || jwtSecret.isBlank()) {

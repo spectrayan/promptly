@@ -7,9 +7,7 @@ import com.promptly.llmconfig.domain.model.LlmConfig;
 import com.promptly.llmconfig.domain.model.ResolvedLlmConfig;
 import com.promptly.llmconfig.domain.model.ResolvedLlmConfig.ConfigSource;
 import com.promptly.shared.config.CredentialEncryptionService;
-import com.promptly.shared.config.DeploymentProperties;
-import com.promptly.shared.config.LlmProperties;
-import lombok.RequiredArgsConstructor;
+import com.promptly.shared.config.PromptlyProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -31,14 +29,24 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class LlmConfigApplicationService implements ResolveLlmConfigUseCase, ManageLlmConfigUseCase {
 
-    private final LlmProperties yamlProps;
-    private final DeploymentProperties deploymentProps;
+    private final PromptlyProperties.Llm yamlProps;
+    private final PromptlyProperties.Deployment deploymentProps;
     private final LlmConfigPersistencePort configRepo;
     private final CredentialEncryptionService encryptionService;
     private final Environment springEnv;
+
+    public LlmConfigApplicationService(PromptlyProperties properties,
+                                        LlmConfigPersistencePort configRepo,
+                                        CredentialEncryptionService encryptionService,
+                                        Environment springEnv) {
+        this.yamlProps = properties.getLlm();
+        this.deploymentProps = properties.getDeployment();
+        this.configRepo = configRepo;
+        this.encryptionService = encryptionService;
+        this.springEnv = springEnv;
+    }
 
     // ─── Resolution ───────────────────────────────────────────────
 
@@ -292,7 +300,7 @@ public class LlmConfigApplicationService implements ResolveLlmConfigUseCase, Man
     }
 
     private FeatureDefaults getFeatureDefaults(String feature) {
-        LlmProperties.FeatureConfig featureConfig = switch (feature.toLowerCase()) {
+        PromptlyProperties.Llm.FeatureConfig featureConfig = switch (feature.toLowerCase()) {
             case "scanner" -> yamlProps.getScanner();
             case "improver" -> yamlProps.getImprover();
             case "embedding" -> yamlProps.getEmbedding();
