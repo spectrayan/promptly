@@ -213,7 +213,7 @@ promptly/                              # Nx monorepo root
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-org/promptly.git
+git clone https://github.com/spectrayan/promptly.git
 cd promptly
 pnpm install
 ```
@@ -361,4 +361,4 @@ Configure via environment variables:
 
 ## License
 
-Private — All rights reserved.
+This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
