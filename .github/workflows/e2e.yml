@@ -50,6 +50,9 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: maven
+          server-id: spectrayan-github-server-sent-events
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_TOKEN
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -105,6 +108,9 @@ jobs:
             -Dspring-boot.run.profiles=dev \
             -Dspring-boot.run.jvmArguments="-Xmx512m" &
           echo "Backend starting in background..."
+        env:
+          MAVEN_USERNAME: ${{ github.actor }}
+          MAVEN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ── Start Frontend ─────────────────────────────────────
       - name: Start frontend dev server
