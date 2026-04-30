@@ -7,16 +7,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.modulith.test.ApplicationModuleTest;
+import org.springframework.modulith.test.ApplicationModuleTest.BootstrapMode;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the Prompt Registry module.
- * Uses {@code @ApplicationModuleTest} to bootstrap only this module + its dependencies.
+ * Uses {@code @ApplicationModuleTest} with {@code ALL_DEPENDENCIES} to bootstrap
+ * this module and its transitive dependencies (project, shared, infrastructure).
  * Verifies the full create→read→update→delete lifecycle against real MongoDB.
  */
-@ApplicationModuleTest
+@ApplicationModuleTest(mode = BootstrapMode.ALL_DEPENDENCIES)
 class PromptModuleIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired

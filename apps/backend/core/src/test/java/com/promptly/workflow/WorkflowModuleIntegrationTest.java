@@ -6,15 +6,18 @@ import com.promptly.workflow.domain.model.WorkflowStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.modulith.test.ApplicationModuleTest;
+import org.springframework.modulith.test.ApplicationModuleTest.BootstrapMode;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the Workflow Engine module.
+ * Uses {@code ALL_DEPENDENCIES} to load the prompt and project modules
+ * required by WorkflowController's cross-module queries.
  * Verifies submit→approve→complete and submit→reject lifecycles.
  */
-@ApplicationModuleTest
+@ApplicationModuleTest(mode = BootstrapMode.ALL_DEPENDENCIES)
 class WorkflowModuleIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
