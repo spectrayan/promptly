@@ -1,7 +1,7 @@
 package com.promptly.scanner.application.listener;
 
-import com.promptly.prompt.PromptCreated;
-import com.promptly.prompt.PromptUpdated;
+import com.promptly.shared.domain.event.PromptCreated;
+import com.promptly.shared.domain.event.PromptUpdated;
 import com.promptly.scanner.application.port.in.ScanPromptUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

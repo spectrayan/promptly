@@ -1,4 +1,4 @@
-package com.promptly.prompt;
+package com.promptly.shared.domain.event;
 
 import com.promptly.shared.domain.DomainEvent;
 

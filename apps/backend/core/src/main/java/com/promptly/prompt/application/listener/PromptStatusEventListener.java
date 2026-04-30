@@ -1,9 +1,9 @@
 package com.promptly.prompt.application.listener;
 
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
-import com.promptly.workflow.ReviewSubmitted;
-import com.promptly.workflow.WorkflowApproved;
-import com.promptly.workflow.WorkflowRejected;
+import com.promptly.shared.domain.event.ReviewSubmitted;
+import com.promptly.shared.domain.event.WorkflowApproved;
+import com.promptly.shared.domain.event.WorkflowRejected;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

@@ -1,6 +1,6 @@
 package com.promptly.prompt.application.service;
 
-import com.promptly.prompt.PromptRolledBack;
+import com.promptly.shared.domain.event.PromptRolledBack;
 import com.promptly.prompt.application.port.in.RollbackPromptUseCase;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;

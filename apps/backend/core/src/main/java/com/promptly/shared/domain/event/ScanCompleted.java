@@ -1,4 +1,4 @@
-package com.promptly.scanner;
+package com.promptly.shared.domain.event;
 
 import com.promptly.shared.domain.DomainEvent;
 import java.time.Instant;

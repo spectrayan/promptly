@@ -1,7 +1,7 @@
 package com.promptly.scanner.application.service;
 
 import com.promptly.prompt.PromptModuleApi;
-import com.promptly.scanner.ScanCompleted;
+import com.promptly.shared.domain.event.ScanCompleted;
 import com.promptly.scanner.application.port.in.ScanPromptUseCase;
 import com.promptly.scanner.application.port.out.LlmScannerPort;
 import com.promptly.scanner.application.port.out.ScanResultPersistencePort;

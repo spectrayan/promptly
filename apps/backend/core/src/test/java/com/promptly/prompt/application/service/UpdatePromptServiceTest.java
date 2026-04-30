@@ -1,6 +1,6 @@
 package com.promptly.prompt.application.service;
 
-import com.promptly.prompt.PromptUpdated;
+import com.promptly.shared.domain.event.PromptUpdated;
 import com.promptly.prompt.application.port.in.UpdatePromptUseCase.UpdatePromptCommand;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.ContentFormat;

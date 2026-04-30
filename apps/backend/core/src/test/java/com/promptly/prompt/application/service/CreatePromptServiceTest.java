@@ -1,6 +1,6 @@
 package com.promptly.prompt.application.service;
 
-import com.promptly.prompt.PromptCreated;
+import com.promptly.shared.domain.event.PromptCreated;
 import com.promptly.prompt.application.port.in.CreatePromptUseCase.CreatePromptCommand;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;

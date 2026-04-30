@@ -1,7 +1,7 @@
 package com.promptly.search.application.listener;
 
-import com.promptly.prompt.PromptCreated;
-import com.promptly.prompt.PromptUpdated;
+import com.promptly.shared.domain.event.PromptCreated;
+import com.promptly.shared.domain.event.PromptUpdated;
 import com.promptly.search.application.service.SearchApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
