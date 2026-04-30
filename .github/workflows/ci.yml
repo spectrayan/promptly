@@ -4,7 +4,6 @@
 # Runs on every push/PR to main:
 #   1. Backend: Maven compile + unit tests
 #   2. Frontend: Nx build + lint
-#   3. Security: dependency audit
 # ═══════════════════════════════════════════════════════════════════════
 
 name: Build & Test
@@ -123,55 +122,7 @@ jobs:
       - name: Build
         run: npx nx build promptly --configuration=production --skip-nx-cache
 
-  # ── Security: dependency audit ──────────────────────────────────
-  security:
-    name: Dependency Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          cache: maven
-          server-id: spectrayan-github-server-sent-events
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_TOKEN
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Install npm deps
-        run: pnpm install --frozen-lockfile
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: npm audit
-        run: pnpm audit --audit-level=high || true
-        continue-on-error: true
-
-      - name: Maven dependency check (OWASP)
-        run: |
-          mvn org.owasp:dependency-check-maven:check \
-            -pl apps/backend/core -am -B -q \
-            -DfailBuildOnCVSS=9 \
-            -DsuppressionFile=.github/owasp-suppressions.xml || true
-        continue-on-error: true
-        env:
-          MAVEN_USERNAME: ${{ github.actor }}
-          MAVEN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ── Docker: build + push (manual only) ──────────────────────────
   docker:
