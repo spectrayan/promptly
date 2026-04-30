@@ -7,7 +7,6 @@ import com.promptly.infrastructure.in.web.dto.StepAction;
 import com.promptly.infrastructure.in.web.dto.WorkflowResponse;
 import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
 import com.promptly.infrastructure.in.web.dto.WorkflowStepResponse;
-import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.workflow.application.port.in.*;
 import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
@@ -23,8 +22,6 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * REST controller for the Workflow Engine module.
@@ -39,7 +36,6 @@ public class WorkflowController implements WorkflowsApi {
     private final RejectWorkflowUseCase rejectWorkflowUseCase;
     private final GetWorkflowUseCase getWorkflowUseCase;
     private final WorkflowPersistencePort workflowRepository;
-    private final PromptPersistencePort promptRepository;
 
     @Override
     public Mono<ResponseEntity<WorkflowResponse>> submitForReview(
@@ -67,17 +63,7 @@ public class WorkflowController implements WorkflowsApi {
         Flux<WorkflowResponse> responseFlux;
 
         if (projectId != null && !projectId.isBlank()) {
-            // Find all promptIds in this project, then return workflows
-            // that have this projectId OR whose promptId belongs to this project.
-            responseFlux = promptRepository.findByProjectId(projectId)
-                    .map(pr -> pr.getId())
-                    .collect(Collectors.toSet())
-                    .flatMapMany(promptIds ->
-                            workflowRepository.findAll()
-                                    .filter(wf -> projectId.equals(wf.getProjectId())
-                                            || promptIds.contains(wf.getPromptId()))
-                    )
-                    .map(this::toResponse);
+            responseFlux = workflowRepository.findByProjectId(projectId).map(this::toResponse);
         } else if (promptId != null) {
             responseFlux = getWorkflowUseCase.getWorkflowsByPromptId(promptId).map(this::toResponse);
         } else if (Boolean.TRUE.equals(pendingOnly)) {
