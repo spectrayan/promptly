@@ -1,12 +1,12 @@
-package com.promptly.shared.notification;
+package com.promptly.notification.infrastructure.delivery;
 
 import com.promptly.notification.application.port.in.CreateNotificationUseCase;
 import com.promptly.notification.domain.model.NotificationEventType;
-import com.promptly.prompt.PromptCreated;
-import com.promptly.prompt.PromptUpdated;
-import com.promptly.scanner.ScanCompleted;
-import com.promptly.workflow.WorkflowApproved;
-import com.promptly.workflow.WorkflowRejected;
+import com.promptly.shared.domain.event.PromptCreated;
+import com.promptly.shared.domain.event.PromptUpdated;
+import com.promptly.shared.domain.event.ScanCompleted;
+import com.promptly.shared.domain.event.WorkflowApproved;
+import com.promptly.shared.domain.event.WorkflowRejected;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

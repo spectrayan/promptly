@@ -1,4 +1,4 @@
 @org.springframework.modulith.ApplicationModule(
-        allowedDependencies = {"shared", "infrastructure"}
+        allowedDependencies = {"shared", "shared::config", "infrastructure"}
 )
 package com.promptly.auth;

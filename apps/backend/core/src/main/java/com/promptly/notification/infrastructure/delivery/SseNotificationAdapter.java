@@ -1,4 +1,4 @@
-package com.promptly.shared.notification;
+package com.promptly.notification.infrastructure.delivery;
 
 import com.spectrayan.sse.server.emitter.SseEmitter;
 import lombok.RequiredArgsConstructor;

@@ -9,7 +9,7 @@ import com.promptly.notification.domain.model.NotificationEventType;
 import com.promptly.notification.domain.model.NotificationPreference;
 import com.promptly.notification.domain.model.ProjectNotificationSettings;
 import com.promptly.project.application.port.out.ProjectMemberPersistencePort;
-import com.promptly.shared.notification.SseNotificationPort;
+import com.promptly.notification.infrastructure.delivery.SseNotificationPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

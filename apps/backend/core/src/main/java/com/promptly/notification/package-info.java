@@ -1,4 +1,4 @@
 @org.springframework.modulith.ApplicationModule(
-        allowedDependencies = {"shared", "project"}
+        allowedDependencies = {"shared", "project", "infrastructure"}
 )
 package com.promptly.notification;

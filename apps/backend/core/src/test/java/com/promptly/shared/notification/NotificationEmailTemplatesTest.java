@@ -1,4 +1,4 @@
-package com.promptly.shared.notification;
+package com.promptly.notification.infrastructure.delivery;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

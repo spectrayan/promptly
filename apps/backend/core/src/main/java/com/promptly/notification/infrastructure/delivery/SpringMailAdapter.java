@@ -1,4 +1,4 @@
-package com.promptly.shared.notification;
+package com.promptly.notification.infrastructure.delivery;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

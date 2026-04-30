@@ -1,4 +1,4 @@
-package com.promptly.shared.notification;
+package com.promptly.notification.infrastructure.delivery;
 
 /**
  * Outbound port for emitting Server-Sent Events (SSE) notifications to connected UI clients.
