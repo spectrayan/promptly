@@ -173,12 +173,12 @@ jobs:
           MAVEN_USERNAME: ${{ github.actor }}
           MAVEN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ── Docker: build + push (main only) ────────────────────────────
+  # ── Docker: build + push (manual only) ──────────────────────────
   docker:
     name: Docker Build
     runs-on: ubuntu-latest
     needs: [backend, frontend]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch'
     timeout-minutes: 15
 
     permissions:
