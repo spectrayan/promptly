@@ -81,18 +81,19 @@ jobs:
       # ── Seed Database ──────────────────────────────────────
       - name: Seed MongoDB
         run: |
-          for collection in users projects project_members prompts workflows scan_results audit_logs; do
-            file="seed-data/${collection}/${collection}.json"
-            if [ -f "$file" ]; then
-              mongoimport --uri="mongodb://localhost:27017/promptly" \
-                --collection="$collection" --jsonArray --file="$file" || true
-              echo "✅ Seeded: $collection"
+          docker run --rm -v ${{ github.workspace }}/seed-data:/seed-data --network host mongo:8.0 bash -c '
+            for collection in users projects project_members prompts workflows scan_results audit_logs; do
+              file="/seed-data/${collection}/${collection}.json"
+              if [ -f "$file" ]; then
+                mongoimport --uri="mongodb://localhost:27017/promptly" --collection="$collection" --jsonArray --file="$file" || true
+                echo "✅ Seeded: $collection"
+              fi
+            done
+            # Run index creation
+            if [ -f "/seed-data/init.js" ]; then
+              mongosh mongodb://localhost:27017/promptly < /seed-data/init.js
             fi
-          done
-          # Run index creation
-          if [ -f "seed-data/init.js" ]; then
-            mongosh mongodb://localhost:27017/promptly < seed-data/init.js
-          fi
+          '
 
       # ── Start Backend ──────────────────────────────────────
       - name: Start backend
