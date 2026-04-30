@@ -1,0 +1,6 @@
+{
+  "originalContent": "Classify the ticket into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.",
+  "improvedContent": "You are an expert customer support ticket classifier. Given the text of a support ticket, analyze the content and classify it into exactly one of the following categories:\n\n- **BILLING**: Payment processing, invoices, refunds, subscription changes, pricing\n- **TECHNICAL**: Software bugs, errors, API issues, performance problems, integrations\n- **ACCOUNT**: Login issues, password resets, profile management, permission changes\n- **GENERAL**: Feature requests, feedback, partnership inquiries, all other topics\n\nRespond with ONLY the category name in uppercase. Do not include explanations.",
+  "explanation": "Enhanced with structured category definitions, explicit output format instructions, and comprehensive examples for each category to reduce misclassification.",
+  "confidence": 0.92
+}

@@ -1,0 +1,10 @@
+[
+  {"id":"al-001","action":"prompt.created","resourceType":"PROMPT","resourceId":"p-001","actorUserId":"alice@promptly.ai","timestamp":"2025-11-15T09:30:00Z","details":"Created prompt: Customer Support Classifier"},
+  {"id":"al-002","action":"prompt.updated","resourceType":"PROMPT","resourceId":"p-001","actorUserId":"bob@promptly.ai","timestamp":"2026-02-10T09:15:00Z","details":"Updated prompt to v2"},
+  {"id":"al-003","action":"prompt.updated","resourceType":"PROMPT","resourceId":"p-001","actorUserId":"alice@promptly.ai","timestamp":"2026-03-20T14:22:00Z","details":"Updated prompt to v3"},
+  {"id":"al-004","action":"workflow.created","resourceType":"WORKFLOW","resourceId":"wf-001","actorUserId":"bob@promptly.ai","timestamp":"2026-04-20T10:00:00Z","details":"Submitted SQL Query Generator for review"},
+  {"id":"al-005","action":"workflow.approved","resourceType":"WORKFLOW","resourceId":"wf-002","actorUserId":"alice@promptly.ai","timestamp":"2026-04-19T16:30:00Z","details":"Approved Content Moderation Filter for production"},
+  {"id":"al-006","action":"scan.completed","resourceType":"SCAN","resourceId":"p-002","actorUserId":"system","timestamp":"2026-04-20T10:30:00Z","details":"Security scan passed for SQL Query Generator"},
+  {"id":"al-007","action":"prompt.created","resourceType":"PROMPT","resourceId":"p-004","actorUserId":"alice@promptly.ai","timestamp":"2026-04-01T10:00:00Z","details":"Created prompt: Meeting Summarizer"},
+  {"id":"al-008","action":"workflow.rejected","resourceType":"WORKFLOW","resourceId":"wf-004","actorUserId":"bob@promptly.ai","timestamp":"2026-04-16T10:00:00Z","details":"Rejected Code Review Assistant v2"}
+]

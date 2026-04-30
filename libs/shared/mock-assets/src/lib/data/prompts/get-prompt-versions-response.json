@@ -1,0 +1,23 @@
+[
+  {
+    "versionNumber": 3,
+    "content": "You are a customer support classifier (v3). Classify into: BILLING, TECHNICAL, ACCOUNT, GENERAL.",
+    "changeMessage": "Added edge case handling for subscription queries",
+    "createdBy": "alice@promptly.ai",
+    "createdAt": "2026-03-20T14:22:00Z"
+  },
+  {
+    "versionNumber": 2,
+    "content": "You are a customer support classifier (v2). Classify into: BILLING, TECHNICAL, ACCOUNT, GENERAL.",
+    "changeMessage": "Improved accuracy for technical tickets",
+    "createdBy": "bob@promptly.ai",
+    "createdAt": "2026-02-10T09:15:00Z"
+  },
+  {
+    "versionNumber": 1,
+    "content": "Classify the ticket into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.",
+    "changeMessage": "Initial version",
+    "createdBy": "alice@promptly.ai",
+    "createdAt": "2025-11-15T09:30:00Z"
+  }
+]

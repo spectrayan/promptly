@@ -1,0 +1,50 @@
+[
+  {
+    "id": "wf-001",
+    "promptId": "p-002",
+    "status": "PENDING",
+    "targetEnvironment": "PRODUCTION",
+    "requestedBy": "bob@promptly.ai",
+    "version": 5,
+    "comment": "SQL generator ready for production after successful staging validation",
+    "createdAt": "2026-04-20T10:00:00Z",
+    "updatedAt": "2026-04-20T10:00:00Z"
+  },
+  {
+    "id": "wf-002",
+    "promptId": "p-005",
+    "status": "APPROVED",
+    "targetEnvironment": "PRODUCTION",
+    "requestedBy": "dave@promptly.ai",
+    "version": 7,
+    "comment": "Content moderation filter v7 — added misinformation detection",
+    "approvedBy": "alice@promptly.ai",
+    "approvedAt": "2026-04-19T16:30:00Z",
+    "createdAt": "2026-04-18T14:00:00Z",
+    "updatedAt": "2026-04-19T16:30:00Z"
+  },
+  {
+    "id": "wf-003",
+    "promptId": "p-001",
+    "status": "IN_REVIEW",
+    "targetEnvironment": "STAGING",
+    "requestedBy": "alice@promptly.ai",
+    "version": 3,
+    "comment": "Classifier v3 — edge case handling for subscriptions",
+    "createdAt": "2026-04-22T09:00:00Z",
+    "updatedAt": "2026-04-22T11:30:00Z"
+  },
+  {
+    "id": "wf-004",
+    "promptId": "p-003",
+    "status": "REJECTED",
+    "targetEnvironment": "STAGING",
+    "requestedBy": "carol@promptly.ai",
+    "version": 2,
+    "comment": "Code review assistant v2",
+    "rejectedBy": "bob@promptly.ai",
+    "rejectionReason": "Missing test coverage for edge cases in security detection rules",
+    "createdAt": "2026-04-15T08:00:00Z",
+    "updatedAt": "2026-04-16T10:00:00Z"
+  }
+]

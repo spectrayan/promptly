@@ -1,0 +1,19 @@
+{
+  "promptId": "p-002",
+  "status": "pass",
+  "scannedAt": "2026-04-20T10:30:00Z",
+  "findings": [
+    {
+      "rule": "prompt-injection-check",
+      "severity": "low",
+      "message": "No injection vulnerabilities detected",
+      "passed": true
+    },
+    {
+      "rule": "pii-detection",
+      "severity": "info",
+      "message": "No PII patterns found in prompt content",
+      "passed": true
+    }
+  ]
+}

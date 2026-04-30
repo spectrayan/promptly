@@ -1,0 +1,14 @@
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3ItMDAxIiwiZW1haWwiOiJhbGljZUBwcm9tcHRseS5haSIsIm5hbWUiOiJBbGljZSBKb2huc29uIiwib3JnUm9sZSI6Ik9SR19BRE1JTiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3MTM4NzIwMDAsImV4cCI6MTcxMzk1ODQwMH0.mock-signature",
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3ItMDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3MTM4NzIwMDAsImV4cCI6MTcxNDQ3NjgwMH0.mock-refresh-signature",
+  "expiresIn": 3600,
+  "user": {
+    "id": "usr-001",
+    "email": "alice@promptly.ai",
+    "displayName": "Alice Johnson",
+    "avatarUrl": null,
+    "orgRole": "ORG_ADMIN",
+    "status": "ACTIVE",
+    "createdAt": "2025-06-01T08:00:00Z"
+  }
+}

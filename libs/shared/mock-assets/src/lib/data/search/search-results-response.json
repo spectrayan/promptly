@@ -1,0 +1,5 @@
+[
+  {"promptId":"p-001","name":"Customer Support Classifier","description":"Classifies customer support tickets","score":0.95},
+  {"promptId":"p-005","name":"Content Moderation Filter","description":"Evaluates user-generated content for policy compliance","score":0.82},
+  {"promptId":"p-003","name":"Code Review Assistant","description":"Reviews pull requests for security vulnerabilities","score":0.71}
+]

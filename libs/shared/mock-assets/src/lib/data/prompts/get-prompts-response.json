@@ -1,0 +1,67 @@
+[
+  {
+    "id": "p-001",
+    "name": "Customer Support Classifier",
+    "description": "Classifies customer support tickets into categories: billing, technical, account, general",
+    "projectId": "customer-ops",
+    "currentVersion": 3,
+    "activeEnvironment": "STAGING",
+    "contentFormat": "TEXT",
+    "latestContent": "You are a customer support classifier. Given a support ticket, classify it into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.\n\nRules:\n- BILLING: payment issues, invoices, refunds, subscriptions\n- TECHNICAL: bugs, errors, performance, integrations\n- ACCOUNT: login, password, profile, permissions\n- GENERAL: everything else\n\nRespond with ONLY the category name.",
+    "createdBy": "alice@promptly.ai",
+    "createdAt": "2025-11-15T09:30:00Z",
+    "updatedAt": "2026-03-20T14:22:00Z"
+  },
+  {
+    "id": "p-002",
+    "name": "SQL Query Generator",
+    "description": "Generates safe, read-only SQL queries from natural language descriptions",
+    "projectId": "data-platform",
+    "currentVersion": 5,
+    "activeEnvironment": "PRODUCTION",
+    "contentFormat": "MARKDOWN",
+    "latestContent": "# SQL Query Generator\n\nYou are a SQL query generator. Convert natural language to safe, read-only PostgreSQL queries.\n\n## Rules\n- ONLY generate SELECT statements\n- NEVER generate INSERT, UPDATE, DELETE, DROP, or ALTER\n- Always include LIMIT 1000 unless user specifies\n- Use table aliases for readability\n- Add comments explaining complex logic\n\n## Available Tables\n- `users` (id, name, email, created_at)\n- `orders` (id, user_id, total, status, created_at)\n- `products` (id, name, price, category)",
+    "createdBy": "bob@promptly.ai",
+    "createdAt": "2025-09-01T12:00:00Z",
+    "updatedAt": "2026-04-10T08:15:00Z"
+  },
+  {
+    "id": "p-003",
+    "name": "Code Review Assistant",
+    "description": "Reviews pull requests for security vulnerabilities, best practices, and code quality",
+    "projectId": "dev-tools",
+    "currentVersion": 2,
+    "activeEnvironment": "DEV",
+    "contentFormat": "JSON",
+    "latestContent": "{\n  \"system\": \"You are a senior code reviewer. Analyze the code diff and provide structured feedback.\",\n  \"output_format\": {\n    \"severity\": \"critical|major|minor|suggestion\",\n    \"category\": \"security|performance|maintainability|correctness\",\n    \"line\": \"number\",\n    \"message\": \"string\",\n    \"suggestion\": \"string\"\n  },\n  \"rules\": [\n    \"Flag SQL injection risks\",\n    \"Identify missing null checks\",\n    \"Suggest performance improvements\",\n    \"Check for hardcoded secrets\"\n  ]\n}",
+    "createdBy": "carol@promptly.ai",
+    "createdAt": "2026-01-10T16:45:00Z",
+    "updatedAt": "2026-04-05T11:30:00Z"
+  },
+  {
+    "id": "p-004",
+    "name": "Meeting Summarizer",
+    "description": "Generates concise meeting summaries with action items and decisions",
+    "projectId": "productivity",
+    "currentVersion": 1,
+    "activeEnvironment": "DEV",
+    "contentFormat": "TEXT",
+    "latestContent": "Summarize the following meeting transcript. Include:\n1. Key Discussion Points (bullet points)\n2. Decisions Made\n3. Action Items (with assignee and deadline if mentioned)\n4. Open Questions\n\nKeep the summary under 300 words. Use clear, professional language.",
+    "createdBy": "alice@promptly.ai",
+    "createdAt": "2026-04-01T10:00:00Z",
+    "updatedAt": "2026-04-01T10:00:00Z"
+  },
+  {
+    "id": "p-005",
+    "name": "Content Moderation Filter",
+    "description": "Evaluates user-generated content for policy compliance and toxicity",
+    "projectId": "trust-safety",
+    "currentVersion": 7,
+    "activeEnvironment": "PRODUCTION",
+    "contentFormat": "YAML",
+    "latestContent": "role: content_moderator\nversion: 7\nthresholds:\n  toxicity: 0.7\n  spam: 0.8\n  pii_detection: true\ncategories:\n  - hate_speech\n  - harassment\n  - violence\n  - sexual_content\n  - spam\n  - misinformation\noutput:\n  decision: allow|flag|block\n  confidence: float\n  categories_triggered: list\n  explanation: string",
+    "createdBy": "dave@promptly.ai",
+    "createdAt": "2025-06-20T08:00:00Z",
+    "updatedAt": "2026-04-18T16:40:00Z"
+  }
+]

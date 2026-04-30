@@ -1,0 +1,4 @@
+[
+  { "userId": "usr-001", "displayName": "Alice Johnson", "email": "alice@promptly.ai", "role": "ADMIN", "joinedAt": "2025-06-15T08:00:00Z" },
+  { "userId": "usr-002", "displayName": "Bob Chen", "email": "bob@promptly.ai", "role": "AUTHOR", "joinedAt": "2025-07-20T10:00:00Z" }
+]

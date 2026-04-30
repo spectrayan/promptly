@@ -1,0 +1,13 @@
+{
+  "id": "p-001",
+  "name": "Customer Support Classifier",
+  "description": "Classifies customer support tickets into categories: billing, technical, account, general",
+  "projectId": "customer-ops",
+  "currentVersion": 3,
+  "activeEnvironment": "STAGING",
+  "contentFormat": "TEXT",
+  "latestContent": "You are a customer support classifier. Given a support ticket, classify it into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.\n\nRules:\n- BILLING: payment issues, invoices, refunds, subscriptions\n- TECHNICAL: bugs, errors, performance, integrations\n- ACCOUNT: login, password, profile, permissions\n- GENERAL: everything else\n\nRespond with ONLY the category name.",
+  "createdBy": "alice@promptly.ai",
+  "createdAt": "2025-11-15T09:30:00Z",
+  "updatedAt": "2026-03-20T14:22:00Z"
+}

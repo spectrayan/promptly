@@ -1,0 +1,13 @@
+{
+  "id": "p-001",
+  "name": "Customer Support Classifier",
+  "description": "Classifies customer support tickets — updated",
+  "projectId": "customer-ops",
+  "currentVersion": 4,
+  "activeEnvironment": "STAGING",
+  "contentFormat": "TEXT",
+  "latestContent": "Updated content after improvement",
+  "createdBy": "alice@promptly.ai",
+  "createdAt": "2025-11-15T09:30:00Z",
+  "updatedAt": "2026-04-23T12:00:00Z"
+}

@@ -1,0 +1,234 @@
+{
+  "apiMappings": [
+    {
+      "id": "login",
+      "method": "POST",
+      "urlPattern": "/api/v1/auth/login",
+      "responseFile": "auth/login-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "register",
+      "method": "POST",
+      "urlPattern": "/api/v1/auth/register",
+      "responseFile": "auth/login-response.json",
+      "statusCode": 201
+    },
+    {
+      "id": "refresh-token",
+      "method": "POST",
+      "urlPattern": "/api/v1/auth/refresh",
+      "responseFile": "auth/login-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "get-current-user",
+      "method": "GET",
+      "urlPattern": "/api/v1/auth/me",
+      "responseFile": "auth/me-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "list-users",
+      "method": "GET",
+      "urlPattern": "/api/v1/users",
+      "responseFile": "auth/users-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "list-projects",
+      "method": "GET",
+      "urlPattern": "/api/v1/projects",
+      "responseFile": "projects/get-projects-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "create-project",
+      "method": "POST",
+      "urlPattern": "/api/v1/projects",
+      "responseFile": "projects/get-projects-response.json",
+      "statusCode": 201
+    },
+    {
+      "id": "get-project-by-id",
+      "method": "GET",
+      "urlPattern": "/api/v1/projects/:id",
+      "responseFile": "projects/get-projects-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "list-project-members",
+      "method": "GET",
+      "urlPattern": "/api/v1/projects/:projectId/members",
+      "responseFile": "projects/get-project-members-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "add-project-member",
+      "method": "POST",
+      "urlPattern": "/api/v1/projects/:projectId/members",
+      "responseFile": "projects/get-project-members-response.json",
+      "statusCode": 201
+    },
+    {
+      "id": "get-prompts",
+      "method": "GET",
+      "urlPattern": "/api/v1/prompts",
+      "responseFile": "prompts/get-prompts-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "create-prompt",
+      "method": "POST",
+      "urlPattern": "/api/v1/prompts",
+      "responseFile": "prompts/create-prompt-response.json",
+      "statusCode": 201
+    },
+    {
+      "id": "get-prompt-by-id",
+      "method": "GET",
+      "urlPattern": "/api/v1/prompts/:id",
+      "responseFile": "prompts/get-prompt-by-id-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "update-prompt",
+      "method": "PUT",
+      "urlPattern": "/api/v1/prompts/:id",
+      "responseFile": "prompts/update-prompt-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "delete-prompt",
+      "method": "DELETE",
+      "urlPattern": "/api/v1/prompts/:id",
+      "statusCode": 204
+    },
+    {
+      "id": "get-prompt-versions",
+      "method": "GET",
+      "urlPattern": "/api/v1/prompts/:id/versions",
+      "responseFile": "prompts/get-prompt-versions-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "rollback-prompt",
+      "method": "POST",
+      "urlPattern": "/api/v1/prompts/:id/rollback/:version",
+      "responseFile": "prompts/get-prompt-by-id-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "improve-prompt",
+      "method": "POST",
+      "urlPattern": "/api/v1/prompts/:promptId/improve",
+      "responseFile": "prompts/improve-prompt-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "apply-improvement",
+      "method": "POST",
+      "urlPattern": "/api/v1/prompts/:promptId/apply-improvement",
+      "responseFile": "prompts/update-prompt-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "get-workflows",
+      "method": "GET",
+      "urlPattern": "/api/v1/workflows",
+      "responseFile": "workflows/get-workflows-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "submit-review",
+      "method": "POST",
+      "urlPattern": "/api/v1/workflows/submit-review",
+      "responseFile": "workflows/submit-review-response.json",
+      "statusCode": 201
+    },
+    {
+      "id": "get-workflow-by-id",
+      "method": "GET",
+      "urlPattern": "/api/v1/workflows/:id",
+      "responseFile": "workflows/get-workflow-by-id-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "approve-workflow",
+      "method": "POST",
+      "urlPattern": "/api/v1/workflows/:id/approve",
+      "responseFile": "workflows/approve-workflow-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "reject-workflow",
+      "method": "POST",
+      "urlPattern": "/api/v1/workflows/:id/reject",
+      "responseFile": "workflows/reject-workflow-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "trigger-scan",
+      "method": "POST",
+      "urlPattern": "/api/v1/prompts/:promptId/scan",
+      "responseFile": "scanner/trigger-scan-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "get-scan-result",
+      "method": "GET",
+      "urlPattern": "/api/v1/prompts/:promptId/scan-results",
+      "responseFile": "scanner/get-scan-result-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "get-all-scans",
+      "method": "GET",
+      "urlPattern": "/api/v1/scans",
+      "responseFile": "scanner/get-all-scans-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "search-prompts",
+      "method": "GET",
+      "urlPattern": "/api/v1/search",
+      "responseFile": "search/search-results-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "check-duplicates",
+      "method": "GET",
+      "urlPattern": "/api/v1/prompts/:promptId/check-duplicates",
+      "responseFile": "search/search-results-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "find-similar",
+      "method": "GET",
+      "urlPattern": "/api/v1/prompts/:promptId/similar",
+      "responseFile": "search/search-results-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "get-audit-logs",
+      "method": "GET",
+      "urlPattern": "/api/v1/audit-logs",
+      "responseFile": "audit/get-audit-logs-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "export-audit-logs",
+      "method": "GET",
+      "urlPattern": "/api/v1/audit-logs/export",
+      "responseFile": "audit/get-audit-logs-response.json",
+      "statusCode": 200
+    },
+    {
+      "id": "deliver-prompt",
+      "method": "POST",
+      "urlPattern": "/api/v1/deliver",
+      "responseFile": "delivery/deliver-prompt-response.json",
+      "statusCode": 200
+    }
+  ]
+}

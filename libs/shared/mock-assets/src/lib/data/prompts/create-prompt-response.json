@@ -1,0 +1,13 @@
+{
+  "id": "p-new-001",
+  "name": "New Prompt",
+  "description": "A newly created prompt",
+  "projectId": "default",
+  "currentVersion": 1,
+  "activeEnvironment": "DEV",
+  "contentFormat": "TEXT",
+  "latestContent": "Initial content",
+  "createdBy": "admin",
+  "createdAt": "2026-04-23T12:00:00Z",
+  "updatedAt": "2026-04-23T12:00:00Z"
+}
