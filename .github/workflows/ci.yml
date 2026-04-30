@@ -151,7 +151,7 @@ jobs:
           server-password: MAVEN_TOKEN
 
       - name: Build JAR
-        run: mvn package -f apps/backend/core/pom.xml -DskipTests -B -q
+        run: mvn package -pl apps/backend/core -am -DskipTests -B -q
         env:
           MAVEN_USERNAME: ${{ github.actor }}
           MAVEN_TOKEN: ${{ secrets.GITHUB_TOKEN }}

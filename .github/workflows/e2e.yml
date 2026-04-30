@@ -50,6 +50,9 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: maven
+          server-id: spectrayan-github-server-sent-events
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_TOKEN
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -74,6 +77,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
@@ -81,26 +86,30 @@ jobs:
       # ── Seed Database ──────────────────────────────────────
       - name: Seed MongoDB
         run: |
-          for collection in users projects project_members prompts workflows scan_results audit_logs; do
-            file="seed-data/${collection}/${collection}.json"
-            if [ -f "$file" ]; then
-              mongoimport --uri="mongodb://localhost:27017/promptly" \
-                --collection="$collection" --jsonArray --file="$file" || true
-              echo "✅ Seeded: $collection"
+          docker run --rm -v ${{ github.workspace }}/seed-data:/seed-data --network host mongo:8.0 bash -c '
+            for collection in users projects project_members prompts workflows scan_results audit_logs; do
+              file="/seed-data/${collection}/${collection}.json"
+              if [ -f "$file" ]; then
+                mongoimport --uri="mongodb://localhost:27017/promptly" --collection="$collection" --jsonArray --file="$file" || true
+                echo "✅ Seeded: $collection"
+              fi
+            done
+            # Run index creation
+            if [ -f "/seed-data/init.js" ]; then
+              mongosh mongodb://localhost:27017/promptly < /seed-data/init.js
             fi
-          done
-          # Run index creation
-          if [ -f "seed-data/init.js" ]; then
-            mongosh mongodb://localhost:27017/promptly < seed-data/init.js
-          fi
+          '
 
       # ── Start Backend ──────────────────────────────────────
+      - name: Build backend
+        run: mvn clean package -pl apps/backend/core -am -DskipTests -B -q
+        env:
+          MAVEN_USERNAME: ${{ github.actor }}
+          MAVEN_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Start backend
         run: |
-          mvn spring-boot:run \
-            -f apps/backend/core/pom.xml \
-            -Dspring-boot.run.profiles=dev \
-            -Dspring-boot.run.jvmArguments="-Xmx512m" &
+          java -Xmx512m -Dspring.profiles.active=dev -jar apps/backend/core/target/promptly-core-*.jar > backend.log 2>&1 &
           echo "Backend starting in background..."
 
       # ── Start Frontend ─────────────────────────────────────
@@ -120,7 +129,8 @@ jobs:
             fi
             sleep 3
           done
-          echo "❌ Backend did not start in time"
+          echo "❌ Backend did not start in time. Here are the logs:"
+          cat backend.log
           exit 1
 
       - name: Wait for frontend
