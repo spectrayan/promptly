@@ -1,4 +1,4 @@
-package com.promptly.scanner.infrastructure.persistence.entity;
+package com.promptly.scanner.infrastructure.persistence.mongo.entity;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,10 +1,11 @@
-package com.promptly.scanner.infrastructure.persistence.repository;
+package com.promptly.scanner.infrastructure.persistence.mongo.repository;
 
 import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
 import com.promptly.scanner.domain.model.ScanResult;
-import com.promptly.scanner.infrastructure.persistence.mapper.ScanResultPersistenceMapper;
+import com.promptly.scanner.infrastructure.persistence.mongo.mapper.ScanResultPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
  * Adapter implementing the domain's ScanResultPersistencePort port.
  */
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ScanResultMongoAdapter implements ScanResultPersistencePort {
 

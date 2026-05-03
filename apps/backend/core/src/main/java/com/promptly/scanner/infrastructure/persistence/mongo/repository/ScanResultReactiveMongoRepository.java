@@ -1,6 +1,6 @@
-package com.promptly.scanner.infrastructure.persistence.repository;
+package com.promptly.scanner.infrastructure.persistence.mongo.repository;
 
-import com.promptly.scanner.infrastructure.persistence.entity.ScanResultDocument;
+import com.promptly.scanner.infrastructure.persistence.mongo.entity.ScanResultDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 

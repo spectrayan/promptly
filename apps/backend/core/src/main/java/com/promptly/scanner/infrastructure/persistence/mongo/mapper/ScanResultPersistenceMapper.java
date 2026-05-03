@@ -1,9 +1,9 @@
-package com.promptly.scanner.infrastructure.persistence.mapper;
+package com.promptly.scanner.infrastructure.persistence.mongo.mapper;
 
 import com.promptly.scanner.domain.model.Finding;
 import com.promptly.scanner.domain.model.ScanResult;
 import com.promptly.scanner.domain.model.Severity;
-import com.promptly.scanner.infrastructure.persistence.entity.ScanResultDocument;
+import com.promptly.scanner.infrastructure.persistence.mongo.entity.ScanResultDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
