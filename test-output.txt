@@ -1,0 +1,94 @@
+
+Running 4 tests using 1 worker
+
+  ✘  1 apps/e2e/promptly-e2e/src/specs/projects.spec.ts:11:7 › Projects › displays the dashboard page (302ms)
+  ✘  2 apps/e2e/promptly-e2e/src/specs/projects.spec.ts:18:7 › Projects › shows project stats on dashboard (289ms)
+  ✘  3 apps/e2e/promptly-e2e/src/specs/projects.spec.ts:27:7 › Projects › project dropdown is visible in navbar (332ms)
+  ✘  4 apps/e2e/promptly-e2e/src/specs/projects.spec.ts:36:7 › Projects › sidebar shows project navigation links (389ms)
+
+
+  1) apps/e2e/promptly-e2e/src/specs/projects.spec.ts:11:7 › Projects › displays the dashboard page 
+
+    Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+    Call log:
+    [2m  - navigating to "/login", waiting until "domcontentloaded"[22m
+
+
+       at apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79
+
+      77 |
+      78 |     // ── Strategy 2: UI login form fallback ─────────────────
+    > 79 |     await page.goto('/login', { waitUntil: 'domcontentloaded' });
+         |                ^
+      80 |
+      81 |     await page.locator('#login-email').fill(email);
+      82 |     await page.locator('#login-password').fill(password);
+        at Object.authenticatedPage (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79:16)
+
+    Error Context: test-results/apps-e2e-promptly-e2e-src--db71a-displays-the-dashboard-page/error-context.md
+
+  2) apps/e2e/promptly-e2e/src/specs/projects.spec.ts:18:7 › Projects › shows project stats on dashboard 
+
+    Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+    Call log:
+    [2m  - navigating to "/login", waiting until "domcontentloaded"[22m
+
+
+       at apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79
+
+      77 |
+      78 |     // ── Strategy 2: UI login form fallback ─────────────────
+    > 79 |     await page.goto('/login', { waitUntil: 'domcontentloaded' });
+         |                ^
+      80 |
+      81 |     await page.locator('#login-email').fill(email);
+      82 |     await page.locator('#login-password').fill(password);
+        at Object.authenticatedPage (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79:16)
+
+    Error Context: test-results/apps-e2e-promptly-e2e-src--d0f32--project-stats-on-dashboard/error-context.md
+
+  3) apps/e2e/promptly-e2e/src/specs/projects.spec.ts:27:7 › Projects › project dropdown is visible in navbar 
+
+    Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+    Call log:
+    [2m  - navigating to "/login", waiting until "domcontentloaded"[22m
+
+
+       at apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79
+
+      77 |
+      78 |     // ── Strategy 2: UI login form fallback ─────────────────
+    > 79 |     await page.goto('/login', { waitUntil: 'domcontentloaded' });
+         |                ^
+      80 |
+      81 |     await page.locator('#login-email').fill(email);
+      82 |     await page.locator('#login-password').fill(password);
+        at Object.authenticatedPage (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79:16)
+
+    Error Context: test-results/apps-e2e-promptly-e2e-src--0c8b5-opdown-is-visible-in-navbar/error-context.md
+
+  4) apps/e2e/promptly-e2e/src/specs/projects.spec.ts:36:7 › Projects › sidebar shows project navigation links 
+
+    Error: page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+    Call log:
+    [2m  - navigating to "/login", waiting until "domcontentloaded"[22m
+
+
+       at apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79
+
+      77 |
+      78 |     // ── Strategy 2: UI login form fallback ─────────────────
+    > 79 |     await page.goto('/login', { waitUntil: 'domcontentloaded' });
+         |                ^
+      80 |
+      81 |     await page.locator('#login-email').fill(email);
+      82 |     await page.locator('#login-password').fill(password);
+        at Object.authenticatedPage (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/auth.fixture.ts:79:16)
+
+    Error Context: test-results/apps-e2e-promptly-e2e-src--d78a3-ws-project-navigation-links/error-context.md
+
+  4 failed
+    apps/e2e/promptly-e2e/src/specs/projects.spec.ts:11:7 › Projects › displays the dashboard page ─
+    apps/e2e/promptly-e2e/src/specs/projects.spec.ts:18:7 › Projects › shows project stats on dashboard 
+    apps/e2e/promptly-e2e/src/specs/projects.spec.ts:27:7 › Projects › project dropdown is visible in navbar 
+    apps/e2e/promptly-e2e/src/specs/projects.spec.ts:36:7 › Projects › sidebar shows project navigation links 

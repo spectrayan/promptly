@@ -2,9 +2,11 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptCreated;
 import com.promptly.prompt.application.port.in.CreatePromptUseCase.CreatePromptCommand;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.prompt.domain.model.PromptStatus;
+import com.promptly.prompt.domain.model.PromptVersion;
 import com.promptly.shared.exception.DuplicateResourceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,13 +33,14 @@ import static org.mockito.Mockito.*;
 class CreatePromptServiceTest {
 
     @Mock private PromptPersistencePort persistencePort;
+    @Mock private PromptHistoryPersistencePort historyRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
 
     private CreatePromptService service;
 
     @BeforeEach
     void setUp() {
-        service = new CreatePromptService(persistencePort, eventPublisher);
+        service = new CreatePromptService(persistencePort, historyRepository, eventPublisher);
     }
 
     private CreatePromptCommand command() {
@@ -64,6 +67,8 @@ class CreatePromptServiceTest {
                         p.setId("p-generated");
                         return Mono.just(p);
                     });
+            when(historyRepository.save(anyString(), any(PromptVersion.class)))
+                    .thenReturn(Mono.empty());
         }
 
         @Test
@@ -91,7 +96,7 @@ class CreatePromptServiceTest {
 
             PromptCreated event = captor.getValue();
             assertThat(event.promptId()).isEqualTo("p-generated");
-            assertThat(event.name()).isEqualTo("Login Helper");
+            assertThat(event.promptName()).isEqualTo("Login Helper");
             assertThat(event.projectId()).isEqualTo("proj-1");
             assertThat(event.version()).isEqualTo(1);
         }

@@ -34,13 +34,17 @@ declare -A COLLECTIONS=(
   [projects]="projects/projects.json"
   [project_members]="project_members/project_members.json"
   [prompts]="prompts/prompts.json"
+  [prompt_history]="prompt_history/prompt_history.json"
   [workflows]="workflows/workflows.json"
+  [workflow_steps]="workflow_steps/workflow_steps.json"
   [scan_results]="scan_results/scan_results.json"
   [audit_logs]="audit_logs/audit_logs.json"
+  [notifications]="notifications/notifications.json"
+  [notification_project_settings]="notification_project_settings/notification_project_settings.json"
 )
 
 # ── Import each collection ──────────────────────
-for collection in users projects project_members prompts workflows scan_results audit_logs; do
+for collection in users projects project_members prompts prompt_history workflows workflow_steps scan_results audit_logs notifications notification_project_settings; do
   json_file="${COLLECTIONS[$collection]}"
   full_path="$SEED_DIR/$json_file"
 

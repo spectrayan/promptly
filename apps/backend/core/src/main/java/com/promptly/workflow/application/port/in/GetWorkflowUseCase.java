@@ -15,4 +15,8 @@ public interface GetWorkflowUseCase {
 
     Flux<Workflow> getWorkflowsByPromptId(String promptId);
 
+    Flux<Workflow> getWorkflowsByProjectId(String projectId);
+
+    Flux<Workflow> getAllWorkflows();
+
 }

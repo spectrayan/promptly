@@ -1,7 +1,9 @@
 package com.promptly.scanner.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -10,6 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Finding {
 
     private String type; // phi_exposure, injection_risk, missing_guardrail, hallucination_prone, weak_tool_calling

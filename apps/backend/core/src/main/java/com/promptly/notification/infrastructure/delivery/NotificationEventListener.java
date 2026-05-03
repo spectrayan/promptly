@@ -47,7 +47,7 @@ public class NotificationEventListener {
             log.warn("PromptCreated event missing projectId, skipping notification");
             return;
         }
-        var payload = payload("promptId", event.promptId(), "name", event.name());
+        var payload = payload("promptId", event.promptId(), "promptName", event.promptName());
         fireNotification(event.projectId(), NotificationEventType.PROMPT_CREATED, payload);
     }
 
@@ -57,7 +57,7 @@ public class NotificationEventListener {
             log.warn("PromptUpdated event missing projectId, skipping notification");
             return;
         }
-        var payload = payload("promptId", event.promptId(), "version", event.version());
+        var payload = payload("promptId", event.promptId(), "promptName", event.promptName(), "version", event.version());
         fireNotification(event.projectId(), NotificationEventType.PROMPT_UPDATED, payload);
     }
 
@@ -107,7 +107,7 @@ public class NotificationEventListener {
                 ? NotificationEventType.SCAN_CRITICAL
                 : NotificationEventType.SCAN_COMPLETED;
 
-        var payload = payload("promptId", event.promptId(),
+        var payload = payload("promptId", event.promptId(), "promptName", event.promptName(),
                 "status", event.status(), "score", event.overallScore());
         fireNotification(event.projectId(), type, payload);
     }

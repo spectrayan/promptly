@@ -52,8 +52,9 @@ graph TB
         SpringAI["Spring AI"]
     end
 
-    subgraph Data["Data Layer"]
+    subgraph Data["Data Layer (pluggable)"]
         Mongo[("MongoDB 8.2<br/>Atlas Vector Search")]
+        Postgres[("PostgreSQL 17<br/>pgvector")]
     end
 
     subgraph LLMs["LLM Providers"]
@@ -73,7 +74,9 @@ graph TB
     VS & QI --> SpringAI
     SpringAI --> LLMs
     Modules --> Mongo
+    Modules -.-> Postgres
     SS --> Mongo
+    SS -.-> Postgres
     EI <--> Pipeline
 ```
 
@@ -85,7 +88,8 @@ graph TB
 | **Hexagonal / Ports & Adapters** | Domain core is pure POJOs — no framework annotations |
 | **DDD Bounded Contexts** | Each module owns its aggregate root and domain events |
 | **Event-Driven Integration** | Modules communicate via `@ApplicationModuleListener` events only |
-| **Reactive End-to-End** | WebFlux + Reactive MongoDB driver for non-blocking I/O |
+| **Reactive End-to-End** | WebFlux + Reactive MongoDB / R2DBC for non-blocking I/O |
+| **Pluggable Persistence** | Database adapters activated via Maven profiles + Spring properties |
 
 ---
 
@@ -98,8 +102,8 @@ graph TB
 | **Backend** | Java 21 · Spring Boot 4.0 · Spring Framework 7 · WebFlux |
 | **AI/LLM** | Spring AI (multi-provider: OpenAI, Gemini, Anthropic, Ollama) |
 | **Modularity** | Spring Modulith (module boundaries, event-driven, ArchUnit verification) |
-| **Database** | MongoDB 8.2 (Atlas Local for dev, Atlas for prod) |
-| **Search** | MongoDB Atlas Vector Search (semantic search + duplicate detection) |
+| **Database** | MongoDB 8.2 (default) · PostgreSQL 17 + pgvector (pluggable) |
+| **Search** | MongoDB Atlas Vector Search / pgvector (semantic search + duplicate detection) |
 | **Auth** | JWT · Dual-mode (LOCAL / OIDC) · Spring Security Reactive |
 | **API Spec** | OpenAPI 3 · openapi-generator for Java + TypeScript codegen |
 | **Build** | Nx 22 monorepo · Maven (backend) · pnpm (frontend) |
@@ -197,6 +201,7 @@ promptly/                              # Nx monorepo root
 ├── pom.xml                            # Parent Maven POM
 ├── package.json                       # Node/pnpm workspace
 ├── docker-compose.yml                 # Dev (MongoDB Atlas Local)
+├── docker-compose.postgres.yml        # Dev (PostgreSQL + pgvector)
 └── docker-compose.prod.yml            # Production stack
 ```
 
@@ -219,27 +224,42 @@ cd promptly
 pnpm install
 ```
 
-### 2. Start Infrastructure
+### 2. Choose & Start Your Database
+
+Promptly supports **pluggable persistence** — choose the database that fits your infrastructure:
+
+#### Option A: MongoDB (default)
 
 ```bash
 # Start MongoDB Atlas Local (with vector search support)
 pnpm run docker:up
+# or
+docker compose up -d
 ```
 
-### 3. Seed the Database
+Seed the database:
 
 ```bash
 docker exec -i promptly-mongodb mongosh promptly < seed-data/mongodb/init.js
 ```
 
-### 4. Generate API Code
+#### Option B: PostgreSQL + pgvector
+
+```bash
+# Start PostgreSQL 17 with pgvector extension
+docker compose -f docker-compose.postgres.yml up -d
+```
+
+Flyway migrations run automatically on first boot — no manual seeding needed.
+
+### 3. Generate API Code
 
 ```bash
 # Generate Java interfaces + Angular SDK from OpenAPI spec
 pnpm run build:openapi
 ```
 
-### 5. Run the Platform
+### 4. Run the Platform
 
 ```bash
 # Start both backend and frontend concurrently
@@ -249,8 +269,11 @@ pnpm run start:all
 Or run them individually:
 
 ```bash
-# Backend (Spring Boot on :8080)
+# Backend — MongoDB (default)
 pnpm run start:backend
+
+# Backend — PostgreSQL
+SPRING_PROFILES_ACTIVE=postgres mvn spring-boot:run -Ppersistence-postgres -f apps/backend/core/pom.xml
 
 # Frontend (Angular on :4200)
 pnpm run start:frontend
@@ -275,10 +298,32 @@ Configure via environment variables:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `PROMPTLY_PERSISTENCE_TYPE` | Database backend (`mongo` or `postgres`) | `mongo` |
 | `PROMPTLY_LLM_API_KEY` | API key for the configured LLM provider | — |
 | `PROMPTLY_LLM_PROVIDER` | LLM provider (`openai`, `anthropic`, `gemini`, `ollama`) | `gemini` |
 | `PROMPTLY_LLM_MODEL` | Model name | `gemini-2.5-flash` |
 | `PROMPTLY_DEPLOYMENT_MODE` | `saas` or `self-hosted` | `self-hosted` |
+| `R2DBC_URL` | R2DBC connection URL (PostgreSQL mode only) | `r2dbc:postgresql://localhost:5432/promptly` |
+| `DB_USER` | Database username (PostgreSQL mode only) | `promptly` |
+| `DB_PASSWORD` | Database password (PostgreSQL mode only) | `promptly` |
+
+### Database Switching
+
+Promptly uses **Maven profiles** at build time and **Spring profiles** at runtime to switch databases:
+
+| Database | Maven Profile | Spring Profile | Docker Compose |
+|----------|--------------|----------------|----------------|
+| MongoDB | `persistence-mongo` (default) | *(none / default)* | `docker-compose.yml` |
+| PostgreSQL | `persistence-postgres` | `postgres` | `docker-compose.postgres.yml` |
+
+**Build & test with PostgreSQL:**
+
+```bash
+# Compile and test with PostgreSQL adapters + Testcontainers
+mvn clean verify -Ppersistence-postgres -f apps/backend/core/pom.xml
+```
+
+**Architecture:** Each module follows the hexagonal (ports & adapters) pattern. The persistence port interfaces are database-agnostic. MongoDB and PostgreSQL adapters implement the same ports and are activated conditionally via `@ConditionalOnProperty(name = "promptly.persistence.type")`.
 
 ---
 

@@ -62,10 +62,16 @@ export class PromptsPage {
     this.searchInput = page.getByPlaceholder(/search|filter/i);
   }
 
-  /** Navigate to prompts page via sidebar link (avoids full reload) */
   async navigate(_projectId?: string) {
-    // Click the Prompts sidebar link
     const promptsLink = this.page.getByRole('link', { name: 'Prompts', exact: true });
+    
+    if (!this.page.url().includes('proj-001')) {
+      const projectsPage = new ProjectsPage(this.page);
+      await projectsPage.navigate();
+      await projectsPage.selectProject('customer-ops');
+      await promptsLink.waitFor({ state: 'visible', timeout: 10_000 });
+    }
+
     await promptsLink.click();
     await this.page.waitForLoadState('domcontentloaded');
     // Wait for heading or table to appear
@@ -134,10 +140,16 @@ export class WorkflowsPage {
     this.createWorkflowButton = page.getByRole('button', { name: /create|new workflow/i });
   }
 
-  /** Navigate to workflows page via sidebar link (avoids full reload) */
   async navigate(_projectId?: string) {
-    // Click the Workflows sidebar link
     const workflowsLink = this.page.getByRole('link', { name: 'Workflows', exact: true });
+
+    if (!this.page.url().includes('proj-001')) {
+      const projectsPage = new ProjectsPage(this.page);
+      await projectsPage.navigate();
+      await projectsPage.selectProject('customer-ops');
+      await workflowsLink.waitFor({ state: 'visible', timeout: 10_000 });
+    }
+
     await workflowsLink.click();
     await this.page.waitForLoadState('domcontentloaded');
     await this.page.waitForTimeout(2000);

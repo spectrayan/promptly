@@ -49,7 +49,7 @@ public class ScanApplicationService implements ScanPromptUseCase {
                                 log.info("Scan completed: promptId={}, score={}, status={}",
                                         promptId, saved.getOverallScore(), saved.getStatus());
                                 eventPublisher.publishEvent(new ScanCompleted(
-                                        saved.getId(), saved.getPromptId(),
+                                        saved.getId(), saved.getPromptId(), prompt.name(),
                                         prompt.projectId(),
                                         saved.getPromptVersion(), saved.getStatus(),
                                         saved.getOverallScore(), saved.getFindings().size()

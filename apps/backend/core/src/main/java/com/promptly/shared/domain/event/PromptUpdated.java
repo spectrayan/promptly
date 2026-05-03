@@ -10,13 +10,14 @@ import java.time.Instant;
  */
 public record PromptUpdated(
         String aggregateId,
+        String promptName,
         String projectId,
         int version,
         Instant occurredAt
 ) implements DomainEvent {
 
-    public PromptUpdated(String promptId, String projectId, int version) {
-        this(promptId, projectId, version, Instant.now());
+    public PromptUpdated(String promptId, String promptName, String projectId, int version) {
+        this(promptId, promptName, projectId, version, Instant.now());
     }
 
     public String promptId() { return aggregateId; }

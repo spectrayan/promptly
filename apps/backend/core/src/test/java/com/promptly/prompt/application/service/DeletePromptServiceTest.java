@@ -1,5 +1,6 @@
 package com.promptly.prompt.application.service;
 
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.ContentFormat;
 import com.promptly.prompt.domain.model.Prompt;
@@ -17,7 +18,7 @@ import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -28,12 +29,13 @@ import static org.mockito.Mockito.*;
 class DeletePromptServiceTest {
 
     @Mock private PromptPersistencePort persistencePort;
+    @Mock private PromptHistoryPersistencePort historyRepository;
 
     private DeletePromptService service;
 
     @BeforeEach
     void setUp() {
-        service = new DeletePromptService(persistencePort);
+        service = new DeletePromptService(persistencePort, historyRepository);
     }
 
     private Prompt deletablePrompt() {
@@ -70,11 +72,13 @@ class DeletePromptServiceTest {
         @DisplayName("should delete a DRAFT prompt")
         void shouldDeleteDraft() {
             when(persistencePort.findById("p-1")).thenReturn(Mono.just(deletablePrompt()));
+            when(historyRepository.deleteByPromptId("p-1")).thenReturn(Mono.empty());
             when(persistencePort.deleteById("p-1")).thenReturn(Mono.empty());
 
             StepVerifier.create(service.deletePrompt("p-1"))
                     .verifyComplete();
 
+            verify(historyRepository).deleteByPromptId("p-1");
             verify(persistencePort).deleteById("p-1");
         }
     }

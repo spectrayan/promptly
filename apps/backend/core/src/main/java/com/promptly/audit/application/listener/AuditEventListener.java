@@ -40,7 +40,7 @@ public class AuditEventListener {
     void on(PromptCreated event) {
         log.debug("Audit: PromptCreated {}", event.aggregateId());
         save("prompt.created", "prompt", event.aggregateId(), event.version(),
-                Map.of("name", event.name()));
+                Map.of("name", event.promptName()));
     }
 
     @Async

@@ -1,6 +1,7 @@
 package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptUpdated;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.*;
 import com.promptly.shared.systemprompt.SystemPromptPort;
@@ -12,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
@@ -27,12 +28,13 @@ import static org.mockito.Mockito.*;
 class SystemPromptServiceTest {
 
     @Mock private PromptPersistencePort persistencePort;
+    @Mock private PromptHistoryPersistencePort historyRepository;
 
     private SystemPromptService service;
 
     @BeforeEach
     void setUp() {
-        service = new SystemPromptService(persistencePort);
+        service = new SystemPromptService(persistencePort, historyRepository);
         // Simulate @PostConstruct — loads classpath defaults
         service.loadDefaults();
     }
@@ -110,9 +112,15 @@ class SystemPromptServiceTest {
         @Test
         @DisplayName("should use registry prompt when available")
         void shouldUseRegistryPrompt() {
-            Prompt systemPrompt = buildSystemPrompt("scanner-system-prompt", "Custom scanner instructions");
+            Prompt systemPrompt = buildSystemPrompt("scanner-system-prompt", 1);
             when(persistencePort.findByProjectId(SystemPromptPort.SYSTEM_PROJECT_ID))
                     .thenReturn(Flux.just(systemPrompt));
+            when(historyRepository.findByPromptIdAndVersion("sys-scanner-system-prompt", 1))
+                    .thenReturn(Mono.just(PromptVersion.builder()
+                            .versionNumber(1)
+                            .content("Custom scanner instructions")
+                            .createdBy("admin")
+                            .build()));
 
             String prompt = service.getSystemPrompt("scanner");
             assertThat(prompt).isEqualTo("Custom scanner instructions");
@@ -121,7 +129,7 @@ class SystemPromptServiceTest {
         @Test
         @DisplayName("should not pick up unrelated system prompts")
         void shouldFilterByName() {
-            Prompt wrongPrompt = buildSystemPrompt("improver-system-prompt", "Improver content");
+            Prompt wrongPrompt = buildSystemPrompt("improver-system-prompt", 1);
             when(persistencePort.findByProjectId(SystemPromptPort.SYSTEM_PROJECT_ID))
                     .thenReturn(Flux.just(wrongPrompt));
 
@@ -187,7 +195,7 @@ class SystemPromptServiceTest {
             service.getSystemPrompt("scanner");
 
             // Simulate event from __system__ project
-            service.onPromptUpdated(new PromptUpdated("prompt-1", SystemPromptPort.SYSTEM_PROJECT_ID, 2));
+            service.onPromptUpdated(new PromptUpdated("prompt-1", "Scanner Prompt", SystemPromptPort.SYSTEM_PROJECT_ID, 2));
 
             service.getSystemPrompt("scanner");
 
@@ -201,7 +209,7 @@ class SystemPromptServiceTest {
             service.getSystemPrompt("scanner");
 
             // Event from a regular project — should NOT invalidate cache
-            service.onPromptUpdated(new PromptUpdated("prompt-1", "proj-regular", 2));
+            service.onPromptUpdated(new PromptUpdated("prompt-1", "Regular Prompt", "proj-regular", 2));
 
             service.getSystemPrompt("scanner");
 
@@ -214,15 +222,7 @@ class SystemPromptServiceTest {
     // Helpers
     // ═══════════════════════════════════════════════════════════════
 
-    private Prompt buildSystemPrompt(String name, String content) {
-        var versions = new ArrayList<PromptVersion>();
-        versions.add(PromptVersion.builder()
-                .versionNumber(1)
-                .content(content)
-                .changeMessage("Initial system prompt")
-                .createdBy("admin")
-                .build());
-
+    private Prompt buildSystemPrompt(String name, int currentVersion) {
         return Prompt.builder()
                 .id("sys-" + name)
                 .name(name)
@@ -231,8 +231,7 @@ class SystemPromptServiceTest {
                 .contentFormat(ContentFormat.MARKDOWN)
                 .tags(Set.of("system"))
                 .status(PromptStatus.APPROVED)
-                .currentVersion(1)
-                .versions(versions)
+                .currentVersion(currentVersion)
                 .build();
     }
 }

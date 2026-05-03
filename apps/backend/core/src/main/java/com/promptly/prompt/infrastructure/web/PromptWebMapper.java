@@ -20,9 +20,9 @@ import java.time.ZoneOffset;
 public class PromptWebMapper {
 
     public PromptResponse toPromptResponse(Prompt prompt) {
-        String latestContent = prompt.getVersions().isEmpty()
-                ? null
-                : prompt.getVersions().get(prompt.getVersions().size() - 1).getContent();
+        String latestContent = (prompt.getVersions() != null && !prompt.getVersions().isEmpty())
+                ? prompt.getVersions().get(prompt.getVersions().size() - 1).getContent()
+                : null;
 
         var response = new PromptResponse();
         response.setId(prompt.getId());

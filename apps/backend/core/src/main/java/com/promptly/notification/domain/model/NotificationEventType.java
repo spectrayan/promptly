@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 public enum NotificationEventType {
 
     PROMPT_CREATED("prompt.created",      "edit_note",     "Prompt Created",
-            "Prompt \"{name}\" was created"),
+            "Prompt \"{promptName}\" was created"),
 
     PROMPT_UPDATED("prompt.updated",      "update",        "Prompt Updated",
-            "Prompt updated to version {version}"),
+            "Prompt \"{promptName}\" updated to version {version}"),
 
     WORKFLOW_APPROVED("workflow.approved", "check_circle",  "Workflow Approved",
             "Approved by {approvedBy}"),
@@ -32,10 +32,10 @@ public enum NotificationEventType {
             "Rejected by {rejectedBy}: {reason}"),
 
     SCAN_COMPLETED("scan.completed",      "verified",      "Scan Completed",
-            "Scan finished with score {score}"),
+            "Prompt \"{promptName}\" scan finished with score {score}"),
 
     SCAN_CRITICAL("scan.critical",        "warning",       "Critical Findings",
-            "Critical findings detected! Score: {score}");
+            "Prompt \"{promptName}\" critical findings detected! Score: {score}");
 
     private final String key;
     private final String icon;

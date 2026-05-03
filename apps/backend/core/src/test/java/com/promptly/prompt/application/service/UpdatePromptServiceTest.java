@@ -2,6 +2,7 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptUpdated;
 import com.promptly.prompt.application.port.in.UpdatePromptUseCase.UpdatePromptCommand;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.ContentFormat;
 import com.promptly.prompt.domain.model.Prompt;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,13 +36,14 @@ import static org.mockito.Mockito.*;
 class UpdatePromptServiceTest {
 
     @Mock private PromptPersistencePort persistencePort;
+    @Mock private PromptHistoryPersistencePort historyRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
 
     private UpdatePromptService service;
 
     @BeforeEach
     void setUp() {
-        service = new UpdatePromptService(persistencePort, eventPublisher);
+        service = new UpdatePromptService(persistencePort, historyRepository, eventPublisher);
     }
 
     private Prompt existingPrompt() {
@@ -74,6 +76,8 @@ class UpdatePromptServiceTest {
             when(persistencePort.findById("p-1")).thenReturn(Mono.just(existing));
             when(persistencePort.save(any(Prompt.class)))
                     .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
+            when(historyRepository.save(anyString(), any(PromptVersion.class)))
+                    .thenReturn(Mono.empty());
 
             var command = new UpdatePromptCommand("Updated content", "Fixed typo", "bob");
 

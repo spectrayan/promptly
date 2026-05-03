@@ -17,7 +17,7 @@ class NotificationEventTypeTest {
     @DisplayName("resolveMessage should substitute all placeholders")
     void shouldResolveAllPlaceholders() {
         String result = NotificationEventType.PROMPT_CREATED.resolveMessage(
-                Map.of("name", "My Prompt", "promptId", "p-1")
+                Map.of("promptName", "My Prompt", "promptId", "p-1")
         );
 
         assertThat(result).isEqualTo("Prompt \"My Prompt\" was created");
@@ -30,8 +30,8 @@ class NotificationEventTypeTest {
                 Map.of("promptId", "p-1")
         );
 
-        // {name} should be removed, leaving clean text
-        assertThat(result).doesNotContain("{name}");
+        // {promptName} should be removed, leaving clean text
+        assertThat(result).doesNotContain("{promptName}");
         assertThat(result).contains("was created");
     }
 
@@ -70,10 +70,10 @@ class NotificationEventTypeTest {
     @DisplayName("resolveMessage for version should handle numeric values")
     void shouldHandleNumericValues() {
         String result = NotificationEventType.PROMPT_UPDATED.resolveMessage(
-                Map.of("version", 5)
+                Map.of("version", 5, "promptName", "Test Prompt")
         );
 
-        assertThat(result).isEqualTo("Prompt updated to version 5");
+        assertThat(result).isEqualTo("Prompt \"Test Prompt\" updated to version 5");
     }
 
     @Test

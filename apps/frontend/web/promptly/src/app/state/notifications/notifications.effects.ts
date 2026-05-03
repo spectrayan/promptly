@@ -1,10 +1,9 @@
 /** NgRx effects for real-time Notifications — handles API calls and SSE stream subscription. */
 import { Injectable, inject, OnDestroy } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SseService } from '../../shared/services/sse.service';
-import { environment } from '../../../environments/environment';
+import { NotificationsService, NotificationResponse } from '@promptly/client';
 import {
   connectSse,
   disconnectSse,
@@ -28,18 +27,27 @@ import { EMPTY, Subject, switchMap, map, tap, takeUntil, catchError, mergeMap, t
 
 /** Maps SSE event types to human-readable notification details */
 const EVENT_META: Record<string, { icon: string; title: string }> = {
-  'prompt.created':     { icon: 'edit_note',     title: 'Prompt Created' },
-  'prompt.updated':     { icon: 'update',        title: 'Prompt Updated' },
-  'workflow.approved':  { icon: 'check_circle',  title: 'Workflow Approved' },
-  'workflow.rejected':  { icon: 'cancel',        title: 'Workflow Rejected' },
-  'scan.completed':     { icon: 'verified',      title: 'Scan Completed' },
-  'scan.critical':      { icon: 'warning',       title: 'Critical Findings' },
+  'prompt.created': { icon: 'edit_note', title: 'Prompt Created' },
+  'prompt.updated': { icon: 'update', title: 'Prompt Updated' },
+  'workflow.approved': { icon: 'check_circle', title: 'Workflow Approved' },
+  'workflow.rejected': { icon: 'cancel', title: 'Workflow Rejected' },
+  'scan.completed': { icon: 'verified', title: 'Scan Completed' },
+  'scan.critical': { icon: 'warning', title: 'Critical Findings' },
+};
+
+const NOTIFICATION_TEMPLATES: Record<string, string> = {
+  'prompt.created': 'Prompt "{promptName}" was created',
+  'prompt.updated': 'Prompt "{promptName}" updated to version {version}',
+  'workflow.approved': 'Prompt "{promptName}" approved by {approvedBy}',
+  'workflow.rejected': 'Prompt "{promptName}" rejected by {rejectedBy}: {reason}',
+  'scan.completed': 'Prompt "{promptName}" scan finished with score {score}',
+  'scan.critical': 'Prompt "{promptName}" critical findings detected! Score: {score}',
 };
 
 interface SseEvent {
   eventType?: string;
   promptId?: string;
-  name?: string;
+  promptName?: string;
   version?: number;
   approvedBy?: string;
   rejectedBy?: string;
@@ -49,30 +57,13 @@ interface SseEvent {
   [key: string]: unknown;
 }
 
-interface NotificationListResponse {
-  items: Array<{
-    id: string;
-    type: string;
-    title: string;
-    message: string;
-    icon: string;
-    read: boolean;
-    createdAt: string;
-    projectId: string;
-    payload: Record<string, unknown>;
-  }>;
-  hasMore: boolean;
-  oldestTimestamp?: string;
-}
-
 @Injectable()
 export class NotificationsEffects implements OnDestroy {
   private readonly actions$ = inject(Actions);
-  private readonly http = inject(HttpClient);
+  private readonly notificationsService = inject(NotificationsService);
   private readonly sse = inject(SseService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly disconnect$ = new Subject<void>();
-  private readonly apiBase = environment.apiBasePath;
 
   /**
    * Timestamp after which SSE events should trigger snackbars.
@@ -122,7 +113,7 @@ export class NotificationsEffects implements OnDestroy {
                 'Dismiss',
                 {
                   duration: 5000,
-                  horizontalPosition: 'end',
+                  horizontalPosition: 'center',
                   verticalPosition: 'bottom',
                   panelClass: [`snack-${eventType.split('.')[0]}`],
                 },
@@ -177,12 +168,10 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(loadNotifications),
       switchMap(({ projectId }) =>
-        this.http.get<NotificationListResponse>(
-          `${this.apiBase}/api/v1/notifications?projectId=${projectId}&limit=20`
-        ).pipe(
+        this.notificationsService.listNotifications({ projectId, limit: 20 }).pipe(
           map(res => loadNotificationsSuccess({
-            notifications: res.items.map(item => this.mapApiNotification(item)),
-            hasMore: res.hasMore,
+            notifications: (res.items || []).map(item => this.mapApiNotification(item)),
+            hasMore: res.hasMore || false,
           })),
           catchError(() => EMPTY),
         ),
@@ -195,12 +184,10 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(loadMore),
       switchMap(({ projectId, before }) =>
-        this.http.get<NotificationListResponse>(
-          `${this.apiBase}/api/v1/notifications?projectId=${projectId}&before=${before}&limit=20`
-        ).pipe(
+        this.notificationsService.listNotifications({ projectId, before, limit: 20 }).pipe(
           map(res => loadMoreSuccess({
-            notifications: res.items.map(item => this.mapApiNotification(item)),
-            hasMore: res.hasMore,
+            notifications: (res.items || []).map(item => this.mapApiNotification(item)),
+            hasMore: res.hasMore || false,
           })),
           catchError(() => EMPTY),
         ),
@@ -213,10 +200,8 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(loadUnreadCount),
       switchMap(({ projectId }) =>
-        this.http.get<{ unread: number }>(
-          `${this.apiBase}/api/v1/notifications/count?projectId=${projectId}`
-        ).pipe(
-          map(res => loadUnreadCountSuccess({ count: res.unread })),
+        this.notificationsService.getUnreadNotificationCount({ projectId }).pipe(
+          map(res => loadUnreadCountSuccess({ count: res.unread || 0 })),
           catchError(() => EMPTY),
         ),
       ),
@@ -228,7 +213,7 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(markAsReadApi),
       mergeMap(({ id }) => {
-        this.http.patch(`${this.apiBase}/api/v1/notifications/${id}/read`, {}).subscribe();
+        this.notificationsService.markNotificationAsRead({ id }).subscribe();
         return [markAsRead({ id })];
       }),
     ),
@@ -239,7 +224,7 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(markAllAsReadApi),
       mergeMap(({ projectId }) => {
-        this.http.post(`${this.apiBase}/api/v1/notifications/mark-all-read?projectId=${projectId}`, {}).subscribe();
+        this.notificationsService.markAllNotificationsRead({ projectId }).subscribe();
         return [markAllAsRead()];
       }),
     ),
@@ -250,7 +235,7 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(dismissApi),
       mergeMap(({ id }) => {
-        this.http.delete(`${this.apiBase}/api/v1/notifications/${id}/read`).subscribe();
+        this.notificationsService.dismissNotification({ id }).subscribe();
         return [dismissNotification({ id })];
       }),
     ),
@@ -261,7 +246,7 @@ export class NotificationsEffects implements OnDestroy {
     this.actions$.pipe(
       ofType(clearAllApi),
       mergeMap(({ projectId }) => {
-        this.http.delete(`${this.apiBase}/api/v1/notifications?projectId=${projectId}`).subscribe();
+        this.notificationsService.clearAllNotifications({ projectId }).subscribe();
         return [clearAll()];
       }),
     ),
@@ -282,36 +267,36 @@ export class NotificationsEffects implements OnDestroy {
   }
 
   /** Map API response to frontend Notification */
-  private mapApiNotification(item: NotificationListResponse['items'][0]): Notification {
+  private mapApiNotification(item: NotificationResponse): Notification {
     return {
-      id: item.id,
-      type: item.type,
-      title: item.title,
-      message: item.message,
-      icon: item.icon,
-      timestamp: item.createdAt,
-      read: item.read,
+      id: item.id!,
+      type: item.type!,
+      title: item.title!,
+      message: item.message!,
+      icon: item.icon!,
+      timestamp: item.createdAt!,
+      read: item.read!,
       projectId: item.projectId,
       payload: item.payload,
     };
   }
 
   private buildMessage(eventType: string, event: SseEvent): string {
-    switch (eventType) {
-      case 'prompt.created':
-        return `Prompt "${event.name ?? event.promptId}" was created`;
-      case 'prompt.updated':
-        return `Prompt updated to version ${event.version ?? '?'}`;
-      case 'workflow.approved':
-        return `Approved by ${event.approvedBy ?? 'unknown'}`;
-      case 'workflow.rejected':
-        return `Rejected by ${event.rejectedBy ?? 'unknown'}: ${event.reason ?? ''}`;
-      case 'scan.completed':
-        return `Scan finished with score ${event.score ?? '?'}`;
-      case 'scan.critical':
-        return `Critical findings detected! Score: ${event.score ?? '?'}`;
-      default:
-        return JSON.stringify(event).slice(0, 100);
+    const template = NOTIFICATION_TEMPLATES[eventType];
+    if (!template) {
+      return JSON.stringify(event).slice(0, 100);
     }
+
+    const tokens: Record<string, any> = {
+      ...event,
+      promptName: event.promptName ?? event.promptId,
+      version: event.version ?? '?',
+      approvedBy: event.approvedBy ?? 'unknown',
+      rejectedBy: event.rejectedBy ?? 'unknown',
+      score: event.score ?? '?',
+      reason: event.reason ?? '',
+    };
+
+    return template.replace(/{(\w+)}/g, (_, key) => String(tokens[key] ?? ''));
   }
 }
