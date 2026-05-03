@@ -1,11 +1,12 @@
-package com.promptly.workflow.infrastructure.persistence.repository;
+package com.promptly.workflow.infrastructure.persistence.mongo.repository;
 
 import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
 import com.promptly.workflow.domain.model.WorkflowStatus;
-import com.promptly.workflow.infrastructure.persistence.mapper.WorkflowPersistenceMapper;
+import com.promptly.workflow.infrastructure.persistence.mongo.mapper.WorkflowPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
  * Adapter implementing the domain's WorkflowPersistencePort port.
  */
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class WorkflowMongoAdapter implements WorkflowPersistencePort {
 

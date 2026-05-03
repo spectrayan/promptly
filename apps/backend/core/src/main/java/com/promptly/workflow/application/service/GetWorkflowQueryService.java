@@ -3,6 +3,7 @@ package com.promptly.workflow.application.service;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import com.promptly.workflow.application.port.in.GetWorkflowUseCase;
 import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
+import com.promptly.workflow.application.port.out.WorkflowStepPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
 import com.promptly.workflow.domain.model.WorkflowStatus;
 import lombok.RequiredArgsConstructor;
@@ -17,21 +18,47 @@ import reactor.core.publisher.Mono;
 public class GetWorkflowQueryService implements GetWorkflowUseCase {
 
     private final WorkflowPersistencePort workflowRepository;
+    private final WorkflowStepPersistencePort stepRepository;
 
     @Override
     public Mono<Workflow> getWorkflowById(String id) {
         return workflowRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", id)));
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", id)))
+                .flatMap(this::hydrateSteps);
     }
 
     @Override
     public Flux<Workflow> getPendingWorkflows() {
         return workflowRepository.findByStatus(WorkflowStatus.PENDING)
-                .concatWith(workflowRepository.findByStatus(WorkflowStatus.IN_REVIEW));
+                .concatWith(workflowRepository.findByStatus(WorkflowStatus.IN_REVIEW))
+                .flatMap(this::hydrateSteps);
     }
 
     @Override
     public Flux<Workflow> getWorkflowsByPromptId(String promptId) {
-        return workflowRepository.findByPromptId(promptId);
+        return workflowRepository.findByPromptId(promptId)
+                .flatMap(this::hydrateSteps);
+    }
+
+    @Override
+    public Flux<Workflow> getWorkflowsByProjectId(String projectId) {
+        return workflowRepository.findByProjectId(projectId)
+                .flatMap(this::hydrateSteps);
+    }
+
+    @Override
+    public Flux<Workflow> getAllWorkflows() {
+        return workflowRepository.findAll()
+                .flatMap(this::hydrateSteps);
+    }
+
+    /**
+     * Hydrates a workflow aggregate with its steps from the dedicated collection.
+     */
+    private Mono<Workflow> hydrateSteps(Workflow workflow) {
+        return stepRepository.findByWorkflowId(workflow.getId())
+                .collectList()
+                .doOnNext(workflow::setSteps)
+                .thenReturn(workflow);
     }
 }

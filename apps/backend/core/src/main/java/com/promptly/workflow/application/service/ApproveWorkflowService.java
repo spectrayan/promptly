@@ -4,6 +4,7 @@ import com.promptly.shared.domain.event.WorkflowApproved;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import com.promptly.workflow.application.port.in.ApproveWorkflowUseCase;
 import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
+import com.promptly.workflow.application.port.out.WorkflowStepPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
 import com.promptly.workflow.domain.model.WorkflowStatus;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 public class ApproveWorkflowService implements ApproveWorkflowUseCase {
 
     private final WorkflowPersistencePort workflowRepository;
+    private final WorkflowStepPersistencePort stepRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -25,21 +27,31 @@ public class ApproveWorkflowService implements ApproveWorkflowUseCase {
         log.info("Approving workflow: id={}", command.workflowId());
         return workflowRepository.findById(command.workflowId())
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Workflow", command.workflowId())))
-                .flatMap(workflow -> {
-                    workflow.approveCurrentStep(command.comment());
-                    return workflowRepository.save(workflow)
-                            .doOnSuccess(saved -> {
-                                if (saved.getStatus() == WorkflowStatus.APPROVED) {
-                                    log.info("Workflow fully approved: id={}", saved.getId());
-                                    eventPublisher.publishEvent(new WorkflowApproved(
-                                            saved.getId(), saved.getPromptId(),
-                                            saved.getPromptId(),
-                                            saved.getProjectId(),
-                                            command.approvedBy(),
-                                            saved.getRequestedBy()
-                                    ));
-                                }
-                            });
+                .flatMap(workflow ->
+                    // Load steps from dedicated collection
+                    stepRepository.findByWorkflowId(workflow.getId())
+                            .collectList()
+                            .flatMap(steps -> {
+                                workflow.setSteps(steps);
+                                workflow.approveCurrentStep(command.comment());
+
+                                // Persist updated steps back
+                                return stepRepository.saveAll(workflow.getId(), workflow.getSteps())
+                                        .collectList()
+                                        .then(workflowRepository.save(workflow));
+                            })
+                )
+                .doOnSuccess(saved -> {
+                    if (saved.getStatus() == WorkflowStatus.APPROVED) {
+                        log.info("Workflow fully approved: id={}", saved.getId());
+                        eventPublisher.publishEvent(new WorkflowApproved(
+                                saved.getId(), saved.getPromptId(),
+                                saved.getPromptId(),
+                                saved.getProjectId(),
+                                command.approvedBy(),
+                                saved.getRequestedBy()
+                        ));
+                    }
                 });
     }
 }

@@ -1,4 +1,4 @@
-package com.promptly.workflow.infrastructure.persistence.entity;
+package com.promptly.workflow.infrastructure.persistence.mongo.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,10 +12,12 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * MongoDB document for the Workflow aggregate.
+ * <p>
+ * Steps are stored separately in the {@code workflow_steps} collection
+ * and are not embedded in this document.
  */
 @Data
 @Builder
@@ -45,23 +47,10 @@ public class WorkflowDocument {
     @NotBlank
     @Size(max = 100)
     private String requestedBy;
-    private List<WorkflowStepSubdocument> steps;
 
     @CreatedDate
     private Instant createdAt;
 
     @LastModifiedDate
     private Instant updatedAt;
-
-    @Data
-    @Builder
-    public static class WorkflowStepSubdocument {
-        private int step;
-        private String role;
-        private String assignedTo;
-        private String action;
-        private String comment;
-        private Instant actedAt;
-    }
-
 }

@@ -1,6 +1,6 @@
-package com.promptly.workflow.infrastructure.persistence.repository;
+package com.promptly.workflow.infrastructure.persistence.mongo.repository;
 
-import com.promptly.workflow.infrastructure.persistence.entity.WorkflowDocument;
+import com.promptly.workflow.infrastructure.persistence.mongo.entity.WorkflowDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 

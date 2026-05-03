@@ -8,7 +8,6 @@ import com.promptly.infrastructure.in.web.dto.WorkflowResponse;
 import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
 import com.promptly.infrastructure.in.web.dto.WorkflowStepResponse;
 import com.promptly.workflow.application.port.in.*;
-import com.promptly.workflow.application.port.out.WorkflowPersistencePort;
 import com.promptly.workflow.domain.model.Workflow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,6 @@ public class WorkflowController implements WorkflowsApi {
     private final ApproveWorkflowUseCase approveWorkflowUseCase;
     private final RejectWorkflowUseCase rejectWorkflowUseCase;
     private final GetWorkflowUseCase getWorkflowUseCase;
-    private final WorkflowPersistencePort workflowRepository;
 
     @Override
     public Mono<ResponseEntity<WorkflowResponse>> submitForReview(
@@ -63,13 +61,13 @@ public class WorkflowController implements WorkflowsApi {
         Flux<WorkflowResponse> responseFlux;
 
         if (projectId != null && !projectId.isBlank()) {
-            responseFlux = workflowRepository.findByProjectId(projectId).map(this::toResponse);
+            responseFlux = getWorkflowUseCase.getWorkflowsByProjectId(projectId).map(this::toResponse);
         } else if (promptId != null) {
             responseFlux = getWorkflowUseCase.getWorkflowsByPromptId(promptId).map(this::toResponse);
         } else if (Boolean.TRUE.equals(pendingOnly)) {
             responseFlux = getWorkflowUseCase.getPendingWorkflows().map(this::toResponse);
         } else {
-            responseFlux = workflowRepository.findAll().map(this::toResponse);
+            responseFlux = getWorkflowUseCase.getAllWorkflows().map(this::toResponse);
         }
 
         return Mono.just(ResponseEntity.ok(responseFlux.skip((long) p * s).take(s)));
@@ -106,7 +104,7 @@ public class WorkflowController implements WorkflowsApi {
     // ── Domain → DTO mapping ──────────────────────────────────────────
 
     private WorkflowResponse toResponse(Workflow workflow) {
-        List<WorkflowStepResponse> steps = workflow.getSteps().stream()
+        List<WorkflowStepResponse> steps = (workflow.getSteps() != null ? workflow.getSteps() : java.util.Collections.<com.promptly.workflow.domain.model.WorkflowStep>emptyList()).stream()
                 .map(s -> {
                     var step = new WorkflowStepResponse();
                     step.setStep(s.getStep());

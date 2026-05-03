@@ -1,13 +1,17 @@
-package com.promptly.workflow.infrastructure.persistence.mapper;
+package com.promptly.workflow.infrastructure.persistence.mongo.mapper;
 
 import com.promptly.workflow.domain.model.*;
-import com.promptly.workflow.infrastructure.persistence.entity.WorkflowDocument;
+import com.promptly.workflow.infrastructure.persistence.mongo.entity.WorkflowDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 /**
  * MapStruct mapper between Workflow domain models and MongoDB documents.
+ * <p>
+ * Steps are stored in a separate collection and are not mapped here.
+ * The {@code steps} field on the domain model is ignored during mapping;
+ * it is populated by the application service from {@code WorkflowStepPersistencePort}.
  */
 @Mapper(componentModel = "spring")
 public interface WorkflowPersistenceMapper {
@@ -16,13 +20,11 @@ public interface WorkflowPersistenceMapper {
     WorkflowDocument toDocument(Workflow workflow);
 
     @Mapping(target = "status", source = "status", qualifiedByName = "stringToStatus")
+    @Mapping(target = "steps", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     Workflow toDomain(WorkflowDocument document);
-
-    WorkflowDocument.WorkflowStepSubdocument toStepDoc(WorkflowStep step);
-    WorkflowStep toStepDomain(WorkflowDocument.WorkflowStepSubdocument subdoc);
 
     @Named("statusToString")
     default String statusToString(WorkflowStatus status) {
