@@ -1,6 +1,6 @@
-package com.promptly.project.infrastructure.persistence.repository;
+package com.promptly.project.infrastructure.persistence.mongo.repository;
 
-import com.promptly.project.infrastructure.persistence.entity.ProjectDocument;
+import com.promptly.project.infrastructure.persistence.mongo.entity.ProjectDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
 

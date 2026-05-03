@@ -1,10 +1,11 @@
-package com.promptly.llmconfig.infrastructure.persistence.repository;
+package com.promptly.llmconfig.infrastructure.persistence.mongo.repository;
 
 import com.promptly.llmconfig.application.port.out.LlmConfigPersistencePort;
 import com.promptly.llmconfig.domain.model.LlmConfig;
-import com.promptly.llmconfig.infrastructure.persistence.entity.LlmConfigDocument;
+import com.promptly.llmconfig.infrastructure.persistence.mongo.entity.LlmConfigDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
  * MongoDB adapter implementing the LlmConfigPersistencePort outbound port.
  */
 @Repository
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class LlmConfigMongoAdapter implements LlmConfigPersistencePort {
 

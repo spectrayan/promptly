@@ -1,7 +1,7 @@
-package com.promptly.audit.infrastructure.persistence.mapper;
+package com.promptly.audit.infrastructure.persistence.mongo.mapper;
 
 import com.promptly.audit.domain.model.AuditEntry;
-import com.promptly.audit.infrastructure.persistence.entity.AuditDocument;
+import com.promptly.audit.infrastructure.persistence.mongo.entity.AuditDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

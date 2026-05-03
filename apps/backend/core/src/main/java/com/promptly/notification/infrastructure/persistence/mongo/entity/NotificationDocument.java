@@ -1,4 +1,4 @@
-package com.promptly.notification.infrastructure.persistence.entity;
+package com.promptly.notification.infrastructure.persistence.mongo.entity;
 
 import lombok.Builder;
 import lombok.Data;

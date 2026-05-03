@@ -1,16 +1,18 @@
-package com.promptly.notification.infrastructure.persistence.repository;
+package com.promptly.notification.infrastructure.persistence.mongo.repository;
 
 import com.promptly.notification.application.port.out.NotificationPreferencePersistencePort;
 import com.promptly.notification.domain.model.NotificationPreference;
-import com.promptly.notification.infrastructure.persistence.entity.NotificationPreferenceDocument;
+import com.promptly.notification.infrastructure.persistence.mongo.entity.NotificationPreferenceDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class NotificationPreferenceMongoAdapter implements NotificationPreferencePersistencePort {
 

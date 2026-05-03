@@ -1,6 +1,6 @@
-package com.promptly.llmconfig.infrastructure.persistence.repository;
+package com.promptly.llmconfig.infrastructure.persistence.mongo.repository;
 
-import com.promptly.llmconfig.infrastructure.persistence.entity.LlmConfigDocument;
+import com.promptly.llmconfig.infrastructure.persistence.mongo.entity.LlmConfigDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

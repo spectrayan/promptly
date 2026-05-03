@@ -1,4 +1,4 @@
-package com.promptly.project.infrastructure.persistence.entity;
+package com.promptly.project.infrastructure.persistence.mongo.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

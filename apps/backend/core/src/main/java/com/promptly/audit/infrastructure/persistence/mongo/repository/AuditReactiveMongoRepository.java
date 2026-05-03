@@ -1,6 +1,6 @@
-package com.promptly.audit.infrastructure.persistence.repository;
+package com.promptly.audit.infrastructure.persistence.mongo.repository;
 
-import com.promptly.audit.infrastructure.persistence.entity.AuditDocument;
+import com.promptly.audit.infrastructure.persistence.mongo.entity.AuditDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 

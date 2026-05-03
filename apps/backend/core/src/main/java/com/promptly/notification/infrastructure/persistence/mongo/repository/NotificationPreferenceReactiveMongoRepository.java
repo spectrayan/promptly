@@ -1,6 +1,6 @@
-package com.promptly.notification.infrastructure.persistence.repository;
+package com.promptly.notification.infrastructure.persistence.mongo.repository;
 
-import com.promptly.notification.infrastructure.persistence.entity.NotificationPreferenceDocument;
+import com.promptly.notification.infrastructure.persistence.mongo.entity.NotificationPreferenceDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Mono;
 

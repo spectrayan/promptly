@@ -1,4 +1,4 @@
-package com.promptly.auth.infrastructure.persistence.entity;
+package com.promptly.auth.infrastructure.persistence.mongo.entity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

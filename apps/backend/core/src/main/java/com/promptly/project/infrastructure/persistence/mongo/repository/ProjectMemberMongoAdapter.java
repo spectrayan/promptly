@@ -1,15 +1,17 @@
-package com.promptly.project.infrastructure.persistence.repository;
+package com.promptly.project.infrastructure.persistence.mongo.repository;
 
 import com.promptly.project.application.port.out.ProjectMemberPersistencePort;
 import com.promptly.project.domain.model.ProjectMember;
 import com.promptly.project.domain.model.ProjectRole;
-import com.promptly.project.infrastructure.persistence.entity.ProjectMemberDocument;
+import com.promptly.project.infrastructure.persistence.mongo.entity.ProjectMemberDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProjectMemberMongoAdapter implements ProjectMemberPersistencePort {
 

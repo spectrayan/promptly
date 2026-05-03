@@ -1,11 +1,12 @@
-package com.promptly.project.infrastructure.persistence.repository;
+package com.promptly.project.infrastructure.persistence.mongo.repository;
 
 import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
-import com.promptly.project.infrastructure.persistence.entity.ProjectDocument;
+import com.promptly.project.infrastructure.persistence.mongo.entity.ProjectDocument;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProjectMongoAdapter implements ProjectPersistencePort {
 

@@ -1,10 +1,11 @@
-package com.promptly.audit.infrastructure.persistence.repository;
+package com.promptly.audit.infrastructure.persistence.mongo.repository;
 
 import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
-import com.promptly.audit.infrastructure.persistence.mapper.AuditPersistenceMapper;
+import com.promptly.audit.infrastructure.persistence.mongo.mapper.AuditPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
  * Write-only — no update or delete operations.
  */
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class AuditMongoAdapter implements AuditPersistencePort {
 

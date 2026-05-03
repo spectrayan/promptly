@@ -1,12 +1,13 @@
-package com.promptly.auth.infrastructure.persistence.repository;
+package com.promptly.auth.infrastructure.persistence.mongo.repository;
 
 import com.promptly.auth.application.port.out.UserPersistencePort;
 import com.promptly.auth.domain.model.OrgRole;
 import com.promptly.auth.domain.model.User;
 import com.promptly.auth.domain.model.UserStatus;
-import com.promptly.auth.infrastructure.persistence.entity.UserDocument;
+import com.promptly.auth.infrastructure.persistence.mongo.entity.UserDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
  * Adapter implementing the UserPersistencePort port using reactive MongoDB.
  */
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class UserMongoAdapter implements UserPersistencePort {
 

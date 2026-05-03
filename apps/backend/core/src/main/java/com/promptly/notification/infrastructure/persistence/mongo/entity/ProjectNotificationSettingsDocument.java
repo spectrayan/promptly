@@ -1,4 +1,4 @@
-package com.promptly.notification.infrastructure.persistence.entity;
+package com.promptly.notification.infrastructure.persistence.mongo.entity;
 
 import com.promptly.notification.domain.model.NotificationEventType;
 import lombok.Builder;

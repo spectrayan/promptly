@@ -1,4 +1,4 @@
-package com.promptly.audit.infrastructure.persistence.entity;
+package com.promptly.audit.infrastructure.persistence.mongo.entity;
 
 import lombok.Builder;
 import lombok.Data;

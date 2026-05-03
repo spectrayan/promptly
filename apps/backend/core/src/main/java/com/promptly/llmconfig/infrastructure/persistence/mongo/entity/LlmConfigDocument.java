@@ -1,4 +1,4 @@
-package com.promptly.llmconfig.infrastructure.persistence.entity;
+package com.promptly.llmconfig.infrastructure.persistence.mongo.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

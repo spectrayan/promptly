@@ -1,14 +1,15 @@
-package com.promptly.notification.infrastructure.persistence.repository;
+package com.promptly.notification.infrastructure.persistence.mongo.repository;
 
 import com.promptly.notification.application.port.out.NotificationPersistencePort;
 import com.promptly.notification.domain.model.Notification;
-import com.promptly.notification.infrastructure.persistence.entity.NotificationDocument;
+import com.promptly.notification.infrastructure.persistence.mongo.entity.NotificationDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
  * cursor-based queries and bulk updates.
  */
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class NotificationMongoAdapter implements NotificationPersistencePort {
 
