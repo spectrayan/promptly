@@ -1,14 +1,17 @@
 # ═══════════════════════════════════════════════════════════════════════
 # Promptly — Production Docker Compose
 # ═══════════════════════════════════════════════════════════════════════
+# Deploy the full Promptly stack from a single Docker Hub image.
+#
 # Usage:
 #   docker compose -f docker-compose.prod.yml up -d
 #
 # Environment variables (set in .env or export):
-#   PROMPTLY_LLM_API_KEY          — API key for the configured LLM provider
-#   PROMPTLY_LLM_PROVIDER         — LLM provider (openai, anthropic, gemini, ollama)
-#   PROMPTLY_LLM_MODEL            — Model name (e.g. gemini-2.5-flash)
-#   PROMPTLY_DEPLOYMENT_MODE      — 'saas' or 'self-hosted' (default: self-hosted)
+#   PROMPTLY_VERSION                       — Image version tag (default: latest)
+#   PROMPTLY_LLM_API_KEY                   — API key for the configured LLM provider
+#   PROMPTLY_LLM_PROVIDER                  — LLM provider (openai, anthropic, gemini, ollama)
+#   PROMPTLY_LLM_MODEL                     — Model name (e.g. gemini-2.5-flash)
+#   PROMPTLY_DEPLOYMENT_MODE               — 'saas' or 'self-hosted' (default: self-hosted)
 #   PROMPTLY_LLM_CREDENTIAL_ENCRYPTION_KEY — AES key for SaaS mode API key encryption
 
 services:
@@ -30,19 +33,20 @@ services:
       start_period: 30s
     restart: unless-stopped
 
-  # ── Backend API ─────────────────────────────────────────────────────
-  backend:
+  # ── Promptly (Frontend + Backend) ───────────────────────────────────
+  promptly:
+    image: spectrayan/promptly:${PROMPTLY_VERSION:-latest}
     build:
       context: .
-      dockerfile: apps/backend/core/Dockerfile
-    container_name: promptly-backend
+      dockerfile: Dockerfile
+    container_name: promptly-app
     ports:
-      - "8080:8080"
+      - "3000:3000"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_MONGODB_URI=mongodb://mongodb:27017/promptly
+      - MONGODB_URI=mongodb://mongodb:27017/promptly
       - JWT_SECRET=${JWT_SECRET}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
       - PROMPTLY_LLM_API_KEY=${PROMPTLY_LLM_API_KEY:-}
       - PROMPTLY_LLM_PROVIDER=${PROMPTLY_LLM_PROVIDER:-gemini}
       - PROMPTLY_LLM_MODEL=${PROMPTLY_LLM_MODEL:-gemini-2.5-flash}
@@ -52,11 +56,11 @@ services:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "curl", "-sf", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 45s
+      start_period: 60s
     restart: unless-stopped
 
 volumes:

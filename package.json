@@ -12,6 +12,9 @@
     "build:openapi": "JAVA_HOME=/usr/lib/jvm/java-23-openjdk-amd64 mvn generate-sources -f libs/shared/openapi-spec/pom.xml",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
+    "docker:build": "./scripts/docker-publish.sh latest --no-push",
+    "docker:publish": "./scripts/docker-publish.sh",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d",
     "seed:db": "docker exec -i promptly-mongodb mongosh promptly",
     "graph": "nx graph"
   },
