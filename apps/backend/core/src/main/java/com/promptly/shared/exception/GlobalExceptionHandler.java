@@ -1,8 +1,8 @@
 package com.promptly.shared.exception;
 
-import com.mongodb.MongoWriteException;
 import com.promptly.infrastructure.in.web.dto.ProblemDetails;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -76,13 +76,14 @@ public class GlobalExceptionHandler {
                 ex.getMessage(), "bad-request", ErrorCode.BAD_REQUEST, exchange));
     }
 
-    // ── MongoDB exceptions ─────────────────────────────────────────────
+    // ── Database duplicate key (works for both MongoDB and R2DBC/JDBC) ─
 
-    @ExceptionHandler(MongoWriteException.class)
-    public Mono<ResponseEntity<ProblemDetails>> handleMongoWrite(
-            MongoWriteException ex, ServerWebExchange exchange) {
-        if (ex.getError().getCode() == 11000) {
-            log.warn("MongoDB duplicate key on {}: {}", exchange.getRequest().getPath(), ex.getError().getMessage());
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Mono<ResponseEntity<ProblemDetails>> handleDataIntegrity(
+            DataIntegrityViolationException ex, ServerWebExchange exchange) {
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        if (msg.contains("duplicate key") || msg.contains("unique constraint") || msg.contains("11000")) {
+            log.warn("Duplicate key on {}: {}", exchange.getRequest().getPath(), ex.getMessage());
             return Mono.just(respond(HttpStatus.CONFLICT, "Duplicate Resource",
                     ErrorMessages.DUPLICATE_RESOURCE_GENERIC, "conflict",
                     ErrorCode.DUPLICATE_RESOURCE, exchange));

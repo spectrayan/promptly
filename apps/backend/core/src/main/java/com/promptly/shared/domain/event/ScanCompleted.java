@@ -10,6 +10,7 @@ import java.time.Instant;
 public record ScanCompleted(
         String aggregateId,
         String promptId,
+        String promptName,
         String projectId,
         int promptVersion,
         String status,
@@ -17,9 +18,9 @@ public record ScanCompleted(
         int findingCount,
         Instant occurredAt
 ) implements DomainEvent {
-    public ScanCompleted(String scanId, String promptId, String projectId,
+    public ScanCompleted(String scanId, String promptId, String promptName, String projectId,
                           int promptVersion, String status, double overallScore, int findingCount) {
-        this(scanId, promptId, projectId, promptVersion, status, overallScore, findingCount, Instant.now());
+        this(scanId, promptId, promptName, projectId, promptVersion, status, overallScore, findingCount, Instant.now());
     }
 
     /** Returns true if any findings are critical or high severity. */

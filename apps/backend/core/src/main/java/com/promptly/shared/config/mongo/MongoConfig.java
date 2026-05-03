@@ -1,6 +1,7 @@
-package com.promptly.shared.config;
+package com.promptly.shared.config.mongo;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableReactiveMongoAuditing;
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
  * and can be overridden with environment variables (e.g. {@code MONGODB_URI}).
  */
 @Configuration
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @EnableReactiveMongoAuditing
 public class MongoConfig {
 

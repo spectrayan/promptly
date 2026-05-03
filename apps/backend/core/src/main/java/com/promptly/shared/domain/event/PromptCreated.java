@@ -10,14 +10,14 @@ import java.time.Instant;
  */
 public record PromptCreated(
         String aggregateId,
-        String name,
+        String promptName,
         String projectId,
         int version,
         Instant occurredAt
 ) implements DomainEvent {
 
-    public PromptCreated(String promptId, String name, String projectId, int version) {
-        this(promptId, name, projectId, version, Instant.now());
+    public PromptCreated(String promptId, String promptName, String projectId, int version) {
+        this(promptId, promptName, projectId, version, Instant.now());
     }
 
     /** Convenience accessor matching the old API — the aggregate ID IS the prompt ID. */

@@ -1,7 +1,8 @@
-package com.promptly.shared.infrastructure.persistence;
+package com.promptly.shared.infrastructure.persistence.mongo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Sort;
@@ -26,6 +27,7 @@ import reactor.core.publisher.Mono;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class MongoIndexInitializer {
 
@@ -46,6 +48,16 @@ public class MongoIndexInitializer {
                                 .on("status", Sort.Direction.ASC)),
                 ensureIndex("prompts",
                         new Index().named("idx_prompts_createdAt")
+                                .on("createdAt", Sort.Direction.DESC)),
+
+                // ── Prompt History ─────────────────────────────────────────
+                ensureIndex("prompt_history",
+                        new Index().named("idx_prompt_history_prompt_version")
+                                .on("promptId", Sort.Direction.ASC)
+                                .on("versionNumber", Sort.Direction.DESC)
+                                .unique()),
+                ensureIndex("prompt_history",
+                        new Index().named("idx_prompt_history_createdAt")
                                 .on("createdAt", Sort.Direction.DESC)),
 
                 // ── Projects ───────────────────────────────────────────────
@@ -87,6 +99,16 @@ public class MongoIndexInitializer {
                 ensureIndex("workflows",
                         new Index().named("idx_workflows_createdAt")
                                 .on("createdAt", Sort.Direction.DESC)),
+
+                // ── Workflow Steps ─────────────────────────────────────────
+                ensureIndex("workflow_steps",
+                        new Index().named("idx_wfstep_workflow_step")
+                                .on("workflowId", Sort.Direction.ASC)
+                                .on("step", Sort.Direction.ASC)
+                                .unique()),
+                ensureIndex("workflow_steps",
+                        new Index().named("idx_wfstep_workflow")
+                                .on("workflowId", Sort.Direction.ASC)),
 
                 // ── Scan Results ───────────────────────────────────────────
                 ensureIndex("scan_results",
