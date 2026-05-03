@@ -1,34 +1,10 @@
-spring:
-  application:
-    name: promptly
-
-  profiles:
-    active: dev
-
-  mongodb:
-    uri: ${MONGODB_URI:mongodb://localhost:27017/promptly?maxPoolSize=50&minPoolSize=5&connectTimeoutMS=5000&socketTimeoutMS=30000&serverSelectionTimeoutMS=5000}
-    database: ${MONGODB_DATABASE:promptly}
-    auto-index-creation: false
-
-  # Spring AI — Google Gemini via Vertex AI
-  ai:
-    vertex:
-      ai:
-        gemini:
-          project-id: ${GCP_PROJECT_ID:spectrayan-ai}
-          location: ${GCP_REGION:us-central1}
-          chat:
-            options:
-              model: gemini-2.5-flash
-              temperature: 0.3
-          transport: REST
-
-  modulith:
-    events:
-      republish-outstanding-events-on-restart: false
-
-# ── Promptly Auth Configuration ──
+# ── Promptly Configuration ──────────────────────────────────────────
 promptly:
+  # ── Persistence ──
+  persistence:
+    type: ${PROMPTLY_PERSISTENCE_TYPE:mongo}
+
+  # ── Auth ──
   auth:
     provider: local                    # local | oidc
     jwt:
@@ -61,6 +37,35 @@ promptly:
     enabled: false                     # set to true to enable app-level rate limiting
     requests-per-second: 100
     login-requests-per-minute: 5
+
+spring:
+  application:
+    name: promptly
+
+  profiles:
+    active: dev
+
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://localhost:27017/promptly?maxPoolSize=50&minPoolSize=5&connectTimeoutMS=5000&socketTimeoutMS=30000&serverSelectionTimeoutMS=5000}
+    database: ${MONGODB_DATABASE:promptly}
+    auto-index-creation: false
+
+  # Spring AI — Google Gemini via Vertex AI
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID:spectrayan-ai}
+          location: ${GCP_REGION:us-central1}
+          chat:
+            options:
+              model: gemini-2.5-flash
+              temperature: 0.3
+          transport: REST
+
+  modulith:
+    events:
+      republish-outstanding-events-on-restart: false
 
 server:
   port: 8080

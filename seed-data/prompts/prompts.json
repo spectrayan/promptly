@@ -10,11 +10,7 @@
     "currentVersion": 3,
     "activeEnvironment": "STAGING",
     "status": "APPROVED",
-    "versions": [
-      { "versionNumber": 1, "content": "Classify the ticket into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.", "changeMessage": "Initial version", "createdBy": "alice@promptly.ai", "createdAt": { "$date": "2025-11-15T09:30:00Z" } },
-      { "versionNumber": 2, "content": "You are a customer support classifier (v2). Classify into: BILLING, TECHNICAL, ACCOUNT, GENERAL.", "changeMessage": "Improved accuracy for technical tickets", "createdBy": "bob@promptly.ai", "createdAt": { "$date": "2026-02-10T09:15:00Z" } },
-      { "versionNumber": 3, "content": "You are a customer support classifier. Given a support ticket, classify it into one of: BILLING, TECHNICAL, ACCOUNT, GENERAL.\n\nRules:\n- BILLING: payment issues, invoices, refunds, subscriptions\n- TECHNICAL: bugs, errors, performance, integrations\n- ACCOUNT: login, password, profile, permissions\n- GENERAL: everything else\n\nRespond with ONLY the category name.", "changeMessage": "Added edge case handling for subscription queries", "createdBy": "alice@promptly.ai", "createdAt": { "$date": "2026-03-20T14:22:00Z" } }
-    ],
+    "version": 0,
     "createdBy": "alice@promptly.ai",
     "updatedBy": "alice@promptly.ai",
     "createdAt": { "$date": "2025-11-15T09:30:00Z" },
@@ -31,10 +27,7 @@
     "currentVersion": 5,
     "activeEnvironment": "PRODUCTION",
     "status": "APPROVED",
-    "versions": [
-      { "versionNumber": 1, "content": "Convert the user query to SQL.", "changeMessage": "Initial version", "createdBy": "bob@promptly.ai", "createdAt": { "$date": "2025-09-01T12:00:00Z" } },
-      { "versionNumber": 5, "content": "# SQL Query Generator\n\nYou are a SQL query generator. Convert natural language to safe, read-only PostgreSQL queries.\n\n## Rules\n- ONLY generate SELECT statements\n- NEVER generate INSERT, UPDATE, DELETE, DROP, or ALTER\n- Always include LIMIT 1000 unless user specifies\n- Use table aliases for readability", "changeMessage": "Production-ready with full safety guardrails", "createdBy": "bob@promptly.ai", "createdAt": { "$date": "2026-04-10T08:15:00Z" } }
-    ],
+    "version": 0,
     "createdBy": "bob@promptly.ai",
     "updatedBy": "bob@promptly.ai",
     "createdAt": { "$date": "2025-09-01T12:00:00Z" },
@@ -51,10 +44,7 @@
     "currentVersion": 2,
     "activeEnvironment": "DEV",
     "status": "DRAFT",
-    "versions": [
-      { "versionNumber": 1, "content": "Review this code.", "changeMessage": "Initial version", "createdBy": "carol@promptly.ai", "createdAt": { "$date": "2026-01-10T16:45:00Z" } },
-      { "versionNumber": 2, "content": "{\"system\":\"You are a senior code reviewer\",\"rules\":[\"Flag SQL injection risks\",\"Identify missing null checks\",\"Suggest performance improvements\",\"Check for hardcoded secrets\"]}", "changeMessage": "Added structured output format", "createdBy": "carol@promptly.ai", "createdAt": { "$date": "2026-04-05T11:30:00Z" } }
-    ],
+    "version": 0,
     "createdBy": "carol@promptly.ai",
     "updatedBy": "carol@promptly.ai",
     "createdAt": { "$date": "2026-01-10T16:45:00Z" },
@@ -71,9 +61,7 @@
     "currentVersion": 1,
     "activeEnvironment": "DEV",
     "status": "DRAFT",
-    "versions": [
-      { "versionNumber": 1, "content": "Summarize the following meeting transcript. Include: 1. Key Discussion Points 2. Decisions Made 3. Action Items 4. Open Questions", "changeMessage": "Initial version", "createdBy": "alice@promptly.ai", "createdAt": { "$date": "2026-04-01T10:00:00Z" } }
-    ],
+    "version": 0,
     "createdBy": "alice@promptly.ai",
     "updatedBy": "alice@promptly.ai",
     "createdAt": { "$date": "2026-04-01T10:00:00Z" },
@@ -90,10 +78,7 @@
     "currentVersion": 7,
     "activeEnvironment": "PRODUCTION",
     "status": "APPROVED",
-    "versions": [
-      { "versionNumber": 1, "content": "Check if this content is safe.", "changeMessage": "Initial version", "createdBy": "dave@promptly.ai", "createdAt": { "$date": "2025-06-20T08:00:00Z" } },
-      { "versionNumber": 7, "content": "role: content_moderator\nversion: 7\nthresholds:\n  toxicity: 0.7\n  spam: 0.8\n  pii_detection: true", "changeMessage": "Added misinformation detection category", "createdBy": "dave@promptly.ai", "createdAt": { "$date": "2026-04-18T16:40:00Z" } }
-    ],
+    "version": 0,
     "createdBy": "dave@promptly.ai",
     "updatedBy": "dave@promptly.ai",
     "createdAt": { "$date": "2025-06-20T08:00:00Z" },

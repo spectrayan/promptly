@@ -1,0 +1,30 @@
+# ── PostgreSQL Development Stack ────────────────────────────────────
+# Use this compose file when running Promptly with PostgreSQL instead of MongoDB.
+#
+# Usage:
+#   docker compose -f docker-compose.postgres.yml up -d
+#
+# Backend must be started with the postgres profile:
+#   PROMPTLY_PERSISTENCE_TYPE=postgres SPRING_PROFILES_ACTIVE=postgres mvn spring-boot:run -Ppersistence-postgres
+#
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: promptly-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: promptly
+      POSTGRES_USER: promptly
+      POSTGRES_PASSWORD: promptly
+    volumes:
+      - promptly-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U promptly -d promptly"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  promptly-pg-data:

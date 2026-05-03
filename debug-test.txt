@@ -1,0 +1,385 @@
+
+Running 4 tests using 1 worker
+
+  [38;5;45;1mpw:api [0m=> browserType.launch started [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= browserType.launch succeeded [38;5;45m+137ms[0m
+  [38;5;45;1mpw:api [0m=> browser.newContext started [38;5;45m+20ms[0m
+  [38;5;45;1mpw:api [0m<= browser.newContext succeeded [38;5;45m+16ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.newPage started [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.newPage succeeded [38;5;45m+59ms[0m
+  [38;5;45;1mpw:api [0m=> apiRequestContext.post started [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m→ POST http://127.0.0.1:8080/api/v1/auth/login [38;5;45m+11ms[0m
+  [38;5;45;1mpw:api [0m  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.15 Safari/537.36 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept: */* [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept-encoding: gzip,deflate,br [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 54 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m← 200 OK [38;5;45m+159ms[0m
+  [38;5;45;1mpw:api [0m  vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 774 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  cache-control: no-cache, no-store, max-age=0, must-revalidate [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  pragma: no-cache [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  expires: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-content-type-options: nosniff [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  x-frame-options: DENY [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-xss-protection: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  referrer-policy: no-referrer [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= apiRequestContext.post succeeded [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/", waiting until "commit" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> page.evaluate started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0m<= page.evaluate succeeded [38;5;45m+12ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+17ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+509ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m=> page.waitForSelector started [38;5;45m+8ms[0m
+  [38;5;45;1mpw:api [0mwaiting for locator('text=/Welcome|Dashboard/i') to be visible [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+11ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m  locator resolved to visible <h1 _ngcontent-ng-c1841996595="">Welcome back,  👋</h1> [38;5;45m+164ms[0m
+  [38;5;45;1mpw:api [0m<= page.waitForSelector succeeded [38;5;45m+8ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+8ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+23ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+143ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> locator.waitFor started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mwaiting for getByRole('heading', { name: /welcome|dashboard/i }) to be visible [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+54ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/login" [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m  "networkidle" event fired [38;5;45m+696ms[0m
+  [38;5;45;1mpw:api [0m<= locator.waitFor failed [38;5;45m+14s[0m
+  [38;5;45;1mpw:api [0mtaking page screenshot [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mwaiting for fonts to load... [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0mfonts loaded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.close started [38;5;45m+379ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.close succeeded [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m=> browser.close started [38;5;45m+25ms[0m
+  [38;5;45;1mpw:api [0m<= browser.close succeeded [38;5;45m+27ms[0m
+  ✘  1 [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:11:7 › Projects › displays the dashboard page (16.6s)
+  [38;5;45;1mpw:api [0m=> browserType.launch started [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= browserType.launch succeeded [38;5;45m+128ms[0m
+  [38;5;45;1mpw:api [0m=> browser.newContext started [38;5;45m+15ms[0m
+  [38;5;45;1mpw:api [0m<= browser.newContext succeeded [38;5;45m+14ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.newPage started [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.newPage succeeded [38;5;45m+47ms[0m
+  [38;5;45;1mpw:api [0m=> apiRequestContext.post started [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m→ POST http://127.0.0.1:8080/api/v1/auth/login [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.15 Safari/537.36 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept: */* [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept-encoding: gzip,deflate,br [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 54 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m← 200 OK [38;5;45m+133ms[0m
+  [38;5;45;1mpw:api [0m  vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 774 [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  cache-control: no-cache, no-store, max-age=0, must-revalidate [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  pragma: no-cache [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  expires: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-content-type-options: nosniff [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-frame-options: DENY [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-xss-protection: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  referrer-policy: no-referrer [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= apiRequestContext.post succeeded [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/", waiting until "commit" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+13ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> page.evaluate started [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0m<= page.evaluate succeeded [38;5;45m+19ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+15ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+500ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m=> page.waitForSelector started [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mwaiting for locator('text=/Welcome|Dashboard/i') to be visible [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m  locator resolved to visible <h1 _ngcontent-ng-c1841996595="">Welcome back,  👋</h1> [38;5;45m+127ms[0m
+  [38;5;45;1mpw:api [0m<= page.waitForSelector succeeded [38;5;45m+20ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+31ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+137ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> locator.waitFor started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mwaiting for getByRole('heading', { name: /welcome|dashboard/i }) to be visible [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+56ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/login" [38;5;45m+9ms[0m
+  [38;5;45;1mpw:api [0m  "networkidle" event fired [38;5;45m+708ms[0m
+  [38;5;45;1mpw:api [0m<= locator.waitFor failed [38;5;45m+14s[0m
+  [38;5;45;1mpw:api [0mtaking page screenshot [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0mwaiting for fonts to load... [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0mfonts loaded [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.close started [38;5;45m+357ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.close succeeded [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m=> browser.close started [38;5;45m+22ms[0m
+  [38;5;45;1mpw:api [0m<= browser.close succeeded [38;5;45m+33ms[0m
+  ✘  2 [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:18:7 › Projects › shows project stats on dashboard (16.5s)
+  [38;5;45;1mpw:api [0m=> browserType.launch started [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= browserType.launch succeeded [38;5;45m+88ms[0m
+  [38;5;45;1mpw:api [0m=> browser.newContext started [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m<= browser.newContext succeeded [38;5;45m+14ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.newPage started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.newPage succeeded [38;5;45m+66ms[0m
+  [38;5;45;1mpw:api [0m=> apiRequestContext.post started [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m→ POST http://127.0.0.1:8080/api/v1/auth/login [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.15 Safari/537.36 [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  accept: */* [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept-encoding: gzip,deflate,br [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 54 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m← 200 OK [38;5;45m+150ms[0m
+  [38;5;45;1mpw:api [0m  vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 774 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  cache-control: no-cache, no-store, max-age=0, must-revalidate [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  pragma: no-cache [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  expires: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-content-type-options: nosniff [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-frame-options: DENY [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-xss-protection: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  referrer-policy: no-referrer [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= apiRequestContext.post succeeded [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/", waiting until "commit" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+12ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m=> page.evaluate started [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m<= page.evaluate succeeded [38;5;45m+12ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+18ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+593ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m=> page.waitForSelector started [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mwaiting for locator('text=/Welcome|Dashboard/i') to be visible [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m  locator resolved to visible <h1 _ngcontent-ng-c1841996595="">Welcome back,  👋</h1> [38;5;45m+124ms[0m
+  [38;5;45;1mpw:api [0m<= page.waitForSelector succeeded [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+24ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+151ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m=> page.waitForTimeout started [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+58ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/login" [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m  "networkidle" event fired [38;5;45m+701ms[0m
+  [38;5;45;1mpw:api [0m<= page.waitForTimeout succeeded [38;5;45m+1s[0m
+  [38;5;45;1mpw:api [0m=> expect.toBeVisible started [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0mExpect "toBeVisible" with timeout 10000ms [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0mwaiting for locator('button').filter({ hasText: /arrow_drop_down/ }).first() [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m<= expect.toBeVisible succeeded [38;5;45m+10s[0m
+  [38;5;45;1mpw:api [0mtaking page screenshot [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0mwaiting for fonts to load... [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mfonts loaded [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.close started [38;5;45m+421ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.close succeeded [38;5;45m+8ms[0m
+  [38;5;45;1mpw:api [0m=> browser.close started [38;5;45m+30ms[0m
+  [38;5;45;1mpw:api [0m<= browser.close succeeded [38;5;45m+49ms[0m
+  ✘  3 [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:27:7 › Projects › project dropdown is visible in navbar (13.7s)
+  [38;5;45;1mpw:api [0m=> browserType.launch started [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= browserType.launch succeeded [38;5;45m+98ms[0m
+  [38;5;45;1mpw:api [0m=> browser.newContext started [38;5;45m+9ms[0m
+  [38;5;45;1mpw:api [0m<= browser.newContext succeeded [38;5;45m+35ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.newPage started [38;5;45m+15ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.newPage succeeded [38;5;45m+45ms[0m
+  [38;5;45;1mpw:api [0m=> apiRequestContext.post started [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m→ POST http://127.0.0.1:8080/api/v1/auth/login [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0m  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.15 Safari/537.36 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept: */* [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  accept-encoding: gzip,deflate,br [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 54 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m← 200 OK [38;5;45m+144ms[0m
+  [38;5;45;1mpw:api [0m  vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  content-type: application/json [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  content-length: 774 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  cache-control: no-cache, no-store, max-age=0, must-revalidate [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  pragma: no-cache [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  expires: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-content-type-options: nosniff [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-frame-options: DENY [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  x-xss-protection: 0 [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  referrer-policy: no-referrer [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= apiRequestContext.post succeeded [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/", waiting until "commit" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+12ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0m=> page.evaluate started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0m<= page.evaluate succeeded [38;5;45m+17ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+2ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+20ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+543ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> page.waitForSelector started [38;5;45m+18ms[0m
+  [38;5;45;1mpw:api [0mwaiting for locator('text=/Welcome|Dashboard/i') to be visible [38;5;45m+6ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+21ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+18ms[0m
+  [38;5;45;1mpw:api [0m  locator resolved to visible <h1 _ngcontent-ng-c1841996595="">Welcome back,  👋</h1> [38;5;45m+247ms[0m
+  [38;5;45;1mpw:api [0m<= page.waitForSelector succeeded [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m=> page.goto started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mnavigating to "http://127.0.0.1:4200/dashboard", waiting until "domcontentloaded" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "commit" event fired [38;5;45m+25ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/dashboard" [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m  "domcontentloaded" event fired [38;5;45m+186ms[0m
+  [38;5;45;1mpw:api [0m<= page.goto succeeded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> page.waitForTimeout started [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0m  "load" event fired [38;5;45m+61ms[0m
+  [38;5;45;1mpw:api [0m  navigated to "http://127.0.0.1:4200/login" [38;5;45m+5ms[0m
+  [38;5;45;1mpw:api [0m  "networkidle" event fired [38;5;45m+729ms[0m
+  [38;5;45;1mpw:api [0m<= page.waitForTimeout succeeded [38;5;45m+1s[0m
+  [38;5;45;1mpw:api [0m=> expect.toBeVisible started [38;5;45m+7ms[0m
+  [38;5;45;1mpw:api [0mExpect "toBeVisible" with timeout 10000ms [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0mwaiting for getByRole('link', { name: 'Prompts', exact: true }) [38;5;45m+0ms[0m
+  [38;5;45;1mpw:api [0m<= expect.toBeVisible succeeded [38;5;45m+10s[0m
+  [38;5;45;1mpw:api [0mtaking page screenshot [38;5;45m+4ms[0m
+  [38;5;45;1mpw:api [0mwaiting for fonts to load... [38;5;45m+3ms[0m
+  [38;5;45;1mpw:api [0mfonts loaded [38;5;45m+1ms[0m
+  [38;5;45;1mpw:api [0m=> browserContext.close started [38;5;45m+410ms[0m
+  [38;5;45;1mpw:api [0m<= browserContext.close succeeded [38;5;45m+10ms[0m
+  [38;5;45;1mpw:api [0m=> browser.close started [38;5;45m+32ms[0m
+  [38;5;45;1mpw:api [0m<= browser.close succeeded [38;5;45m+40ms[0m
+  ✘  4 [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:36:7 › Projects › sidebar shows project navigation links (13.8s)
+
+
+  1) [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:11:7 › Projects › displays the dashboard page 
+
+    TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('heading', { name: /welcome|dashboard/i }) to be visible[22m
+
+
+       at ../fixtures/pages.fixture.ts:38
+
+      36 |     await this.page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+      37 |     // Wait for main content to appear
+    > 38 |     await this.heading.waitFor({ state: 'visible', timeout: 15_000 });
+         |                        ^
+      39 |   }
+      40 |
+      41 |   async selectProject(name: string) {
+        at ProjectsPage.navigate (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/pages.fixture.ts:38:24)
+        at /home/bharat/git/promptly/apps/e2e/promptly-e2e/src/specs/projects.spec.ts:13:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/projects-Projects-displays-the-dashboard-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/projects-Projects-displays-the-dashboard-page-chromium/error-context.md
+
+  2) [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:18:7 › Projects › shows project stats on dashboard 
+
+    TimeoutError: locator.waitFor: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('heading', { name: /welcome|dashboard/i }) to be visible[22m
+
+
+       at ../fixtures/pages.fixture.ts:38
+
+      36 |     await this.page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+      37 |     // Wait for main content to appear
+    > 38 |     await this.heading.waitFor({ state: 'visible', timeout: 15_000 });
+         |                        ^
+      39 |   }
+      40 |
+      41 |   async selectProject(name: string) {
+        at ProjectsPage.navigate (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/pages.fixture.ts:38:24)
+        at /home/bharat/git/promptly/apps/e2e/promptly-e2e/src/specs/projects.spec.ts:20:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/projects-Projects-shows-project-stats-on-dashboard-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/projects-Projects-shows-project-stats-on-dashboard-chromium/error-context.md
+
+  3) [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:27:7 › Projects › project dropdown is visible in navbar 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('button').filter({ hasText: /arrow_drop_down/ }).first()
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('button').filter({ hasText: /arrow_drop_down/ }).first()[22m
+
+
+      31 |     // The project dropdown should be visible in the top bar
+      32 |     const projectButton = authenticatedPage.locator('button').filter({ hasText: /arrow_drop_down/ }).first();
+    > 33 |     await expect(projectButton).toBeVisible({ timeout: 10_000 });
+         |                                 ^
+      34 |   });
+      35 |
+      36 |   test('sidebar shows project navigation links', async ({ authenticatedPage }) => {
+        at /home/bharat/git/promptly/apps/e2e/promptly-e2e/src/specs/projects.spec.ts:33:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/projects-Projects-project-dropdown-is-visible-in-navbar-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/projects-Projects-project-dropdown-is-visible-in-navbar-chromium/error-context.md
+
+  4) [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:36:7 › Projects › sidebar shows project navigation links 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('link', { name: 'Prompts', exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for getByRole('link', { name: 'Prompts', exact: true })[22m
+
+
+      40 |     // Use exact name to avoid matching "Search Prompts" quick action
+      41 |     const promptsLink = authenticatedPage.getByRole('link', { name: 'Prompts', exact: true });
+    > 42 |     await expect(promptsLink).toBeVisible({ timeout: 10_000 });
+         |                               ^
+      43 |   });
+      44 | });
+      45 |
+        at /home/bharat/git/promptly/apps/e2e/promptly-e2e/src/specs/projects.spec.ts:42:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/projects-Projects-sidebar-shows-project-navigation-links-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/projects-Projects-sidebar-shows-project-navigation-links-chromium/error-context.md
+
+  4 failed
+    [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:11:7 › Projects › displays the dashboard page 
+    [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:18:7 › Projects › shows project stats on dashboard 
+    [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:27:7 › Projects › project dropdown is visible in navbar 
+    [chromium] › apps/e2e/promptly-e2e/src/specs/projects.spec.ts:36:7 › Projects › sidebar shows project navigation links 
+
+To open last HTML report run:
+
+  npx playwright show-report reports/e2e
+

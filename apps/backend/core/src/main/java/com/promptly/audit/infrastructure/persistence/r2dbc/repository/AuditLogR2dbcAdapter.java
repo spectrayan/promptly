@@ -1,0 +1,102 @@
+package com.promptly.audit.infrastructure.persistence.r2dbc.repository;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.promptly.audit.application.port.out.AuditPersistencePort;
+import com.promptly.audit.domain.model.AuditEntry;
+import com.promptly.audit.infrastructure.persistence.r2dbc.entity.AuditLogR2dbcEntity;
+import io.r2dbc.postgresql.codec.Json;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
+
+/**
+ * R2DBC adapter implementing {@link AuditPersistencePort} for PostgreSQL.
+ */
+@Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@RequiredArgsConstructor
+public class AuditLogR2dbcAdapter implements AuditPersistencePort {
+
+    private final AuditLogR2dbcRepository repository;
+    private final ObjectMapper objectMapper;
+
+    @Override
+    public Mono<AuditEntry> save(AuditEntry entry) {
+        return repository.save(toEntity(entry)).map(this::toDomain);
+    }
+
+    @Override
+    public Flux<AuditEntry> findByResourceId(String resourceId) {
+        return repository.findByResourceId(resourceId).map(this::toDomain);
+    }
+
+    @Override
+    public Flux<AuditEntry> findByActorUserId(String userId) {
+        return repository.findByActorUserId(userId).map(this::toDomain);
+    }
+
+    @Override
+    public Flux<AuditEntry> findAll() {
+        return repository.findAll().map(this::toDomain);
+    }
+
+    @Override
+    public Flux<AuditEntry> findByProjectId(String projectId) {
+        return repository.findByProjectId(projectId).map(this::toDomain);
+    }
+
+    @Override
+    public Flux<AuditEntry> findByAction(String action) {
+        return repository.findByAction(action).map(this::toDomain);
+    }
+
+    // ── Mapping ─────────────────────────────────────────────────────
+
+    @SneakyThrows
+    private AuditLogR2dbcEntity toEntity(AuditEntry entry) {
+        return AuditLogR2dbcEntity.builder()
+                // id left null for INSERT; DB generates via gen_random_uuid()
+                .projectId(entry.getProjectId())
+                .action(entry.getAction())
+                .resourceType(entry.getResourceType())
+                .resourceId(entry.getResourceId())
+                .resourceVersion(entry.getResourceVersion())
+                .actorUserId(entry.getActorUserId())
+                .actorEmail(entry.getActorEmail())
+                .actorRole(entry.getActorRole())
+                .details(entry.getDetails() != null ? Json.of(objectMapper.writeValueAsString(entry.getDetails())) : null)
+                .timestamp(entry.getTimestamp())
+                .createdAt(entry.getCreatedAt())
+                .updatedAt(entry.getUpdatedAt())
+                .build();
+    }
+
+    @SneakyThrows
+    private AuditEntry toDomain(AuditLogR2dbcEntity entity) {
+        Map<String, Object> details = entity.getDetails() != null
+                ? objectMapper.readValue(entity.getDetails().asString(), new TypeReference<>() {})
+                : null;
+
+        return AuditEntry.builder()
+                .id(entity.getId())
+                .projectId(entity.getProjectId())
+                .action(entity.getAction())
+                .resourceType(entity.getResourceType())
+                .resourceId(entity.getResourceId())
+                .resourceVersion(entity.getResourceVersion())
+                .actorUserId(entity.getActorUserId())
+                .actorEmail(entity.getActorEmail())
+                .actorRole(entity.getActorRole())
+                .details(details)
+                .timestamp(entity.getTimestamp())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
+    }
+}

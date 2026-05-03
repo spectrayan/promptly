@@ -1,0 +1,50 @@
+# ── PostgreSQL (R2DBC) Profile ─────────────────────────────────────
+# Activate with: PROMPTLY_PERSISTENCE_TYPE=postgres
+# or: spring.profiles.active=postgres
+#
+# This profile replaces MongoDB with PostgreSQL via R2DBC for all
+# persistence operations. Requires the `persistence-postgres` Maven
+# profile to pull in the correct driver and migration dependencies.
+
+promptly:
+  persistence:
+    type: postgres
+
+spring:
+  # Disable MongoDB auto-configuration when running in Postgres mode
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration
+
+  r2dbc:
+    url: ${R2DBC_URL:r2dbc:postgresql://localhost:5432/promptly}
+    username: ${DB_USER:promptly}
+    password: ${DB_PASSWORD:promptly}
+    pool:
+      initial-size: 5
+      max-size: 50
+      max-idle-time: 30m
+
+  # JDBC DataSource for Spring Modulith event publication (spring-modulith-starter-jdbc)
+  datasource:
+    url: ${FLYWAY_URL:jdbc:postgresql://localhost:5432/promptly}
+    username: ${DB_USER:promptly}
+    password: ${DB_PASSWORD:promptly}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    url: ${FLYWAY_URL:jdbc:postgresql://localhost:5432/promptly}
+    user: ${DB_USER:promptly}
+    password: ${DB_PASSWORD:promptly}
+    locations: classpath:db/migration/postgres
+    baseline-on-migrate: true
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.postgresql: DEBUG
+    # Suppress MongoDB logging in Postgres mode
+    org.springframework.data.mongodb: OFF

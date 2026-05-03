@@ -1,0 +1,65 @@
+
+Running 2 tests using 1 worker
+
+  ✘  1 [chromium] › apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:11:7 › Workflows › displays the workflows page (16.0s)
+  ✘  2 [chromium] › apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:19:7 › Workflows › shows seed data workflows (16.0s)
+
+
+  1) [chromium] › apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:11:7 › Workflows › displays the workflows page 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('link', { name: 'Workflows', exact: true })[22m
+
+
+       at ../fixtures/pages.fixture.ts:141
+
+      139 |     // Click the Workflows sidebar link
+      140 |     const workflowsLink = this.page.getByRole('link', { name: 'Workflows', exact: true });
+    > 141 |     await workflowsLink.click();
+          |                         ^
+      142 |     await this.page.waitForLoadState('domcontentloaded');
+      143 |     await this.page.waitForTimeout(2000);
+      144 |   }
+        at WorkflowsPage.navigate (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/pages.fixture.ts:141:25)
+        at /home/bharat/git/promptly/apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:13:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/workflows-Workflows-displays-the-workflows-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/workflows-Workflows-displays-the-workflows-page-chromium/error-context.md
+
+  2) [chromium] › apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:19:7 › Workflows › shows seed data workflows 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('link', { name: 'Workflows', exact: true })[22m
+
+
+       at ../fixtures/pages.fixture.ts:141
+
+      139 |     // Click the Workflows sidebar link
+      140 |     const workflowsLink = this.page.getByRole('link', { name: 'Workflows', exact: true });
+    > 141 |     await workflowsLink.click();
+          |                         ^
+      142 |     await this.page.waitForLoadState('domcontentloaded');
+      143 |     await this.page.waitForTimeout(2000);
+      144 |   }
+        at WorkflowsPage.navigate (/home/bharat/git/promptly/apps/e2e/promptly-e2e/src/fixtures/pages.fixture.ts:141:25)
+        at /home/bharat/git/promptly/apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:21:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/workflows-Workflows-shows-seed-data-workflows-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/workflows-Workflows-shows-seed-data-workflows-chromium/error-context.md
+
+  2 failed
+    [chromium] › apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:11:7 › Workflows › displays the workflows page 
+    [chromium] › apps/e2e/promptly-e2e/src/specs/workflows.spec.ts:19:7 › Workflows › shows seed data workflows 
+
+To open last HTML report run:
+
+  npx playwright show-report reports/e2e
+
