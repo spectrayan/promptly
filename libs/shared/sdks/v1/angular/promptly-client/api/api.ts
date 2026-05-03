@@ -25,4 +25,7 @@ export * from './search.serviceInterface';
 export * from './workflows.service';
 import { WorkflowsService } from './workflows.service';
 export * from './workflows.serviceInterface';
-export const APIS = [AuditService, AuthService, DeliveryService, ImproverService, ProjectsService, PromptsService, ScannerService, SearchService, WorkflowsService];
+export * from './notifications.service';
+import { NotificationsService } from './notifications.service';
+export * from './notifications.serviceInterface';
+export const APIS = [AuditService, AuthService, DeliveryService, ImproverService, NotificationsService, ProjectsService, PromptsService, ScannerService, SearchService, WorkflowsService];
