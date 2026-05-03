@@ -3,6 +3,7 @@ package com.promptly.prompt.application.service;
 import com.promptly.prompt.PromptModuleApi;
 import com.promptly.prompt.PromptProjection;
 import com.promptly.prompt.application.port.in.UpdatePromptUseCase;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ import reactor.core.publisher.Mono;
 public class PromptApplicationService implements PromptModuleApi {
 
     private final PromptPersistencePort promptRepository;
+    private final PromptHistoryPersistencePort historyRepository;
     private final UpdatePromptService updatePromptService;
 
     @Override
@@ -60,6 +62,7 @@ public class PromptApplicationService implements PromptModuleApi {
     // ── Mapping ──────────────────────────────────────────────────
 
     private PromptProjection toProjection(Prompt p) {
+        // Versions are no longer embedded — latest content fetched on-demand
         String latestContent = (p.getVersions() != null && !p.getVersions().isEmpty())
                 ? p.getVersions().get(p.getVersions().size() - 1).getContent()
                 : null;

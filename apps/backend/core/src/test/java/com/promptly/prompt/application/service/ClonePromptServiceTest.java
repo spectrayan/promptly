@@ -2,6 +2,7 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptCreated;
 import com.promptly.prompt.application.port.in.ClonePromptUseCase.ClonePromptCommand;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.ContentFormat;
 import com.promptly.prompt.domain.model.Prompt;
@@ -20,13 +21,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,13 +36,14 @@ import static org.mockito.Mockito.*;
 class ClonePromptServiceTest {
 
     @Mock private PromptPersistencePort persistencePort;
+    @Mock private PromptHistoryPersistencePort historyRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
 
     private ClonePromptService service;
 
     @BeforeEach
     void setUp() {
-        service = new ClonePromptService(persistencePort, eventPublisher);
+        service = new ClonePromptService(persistencePort, historyRepository, eventPublisher);
     }
 
     private Prompt sourcePrompt() {
@@ -55,10 +55,6 @@ class ClonePromptServiceTest {
                 .tags(new HashSet<>(Set.of("tag1", "tag2")))
                 .currentVersion(2)
                 .status(PromptStatus.APPROVED)
-                .versions(new ArrayList<>(List.of(
-                        PromptVersion.builder().versionNumber(1).content("v1 content").createdBy("alice").build(),
-                        PromptVersion.builder().versionNumber(2).content("v2 content").createdBy("alice").build()
-                )))
                 .build();
         p.setId("source-id");
         return p;
@@ -71,12 +67,17 @@ class ClonePromptServiceTest {
         @BeforeEach
         void stub() {
             when(persistencePort.findById("source-id")).thenReturn(Mono.just(sourcePrompt()));
+            when(historyRepository.findByPromptIdAndVersion("source-id", 2))
+                    .thenReturn(Mono.just(PromptVersion.builder()
+                            .versionNumber(2).content("v2 content").createdBy("alice").build()));
             when(persistencePort.save(any(Prompt.class)))
                     .thenAnswer(inv -> {
                         Prompt p = inv.getArgument(0);
                         p.setId("clone-id");
                         return Mono.just(p);
                     });
+            when(historyRepository.save(anyString(), any(PromptVersion.class)))
+                    .thenReturn(Mono.empty());
         }
 
         @Test

@@ -1,11 +1,10 @@
-package com.promptly.prompt.infrastructure.persistence.mapper;
+package com.promptly.prompt.infrastructure.persistence.mongo.mapper;
 
 import com.promptly.prompt.domain.model.ContentFormat;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.prompt.domain.model.PromptMetadata;
 import com.promptly.prompt.domain.model.PromptStatus;
-import com.promptly.prompt.domain.model.PromptVersion;
-import com.promptly.prompt.infrastructure.persistence.entity.PromptDocument;
+import com.promptly.prompt.infrastructure.persistence.mongo.entity.PromptDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -27,15 +26,12 @@ public interface PromptPersistenceMapper {
     @Mapping(target = "status", source = "status", qualifiedByName = "stringToStatus")
     @Mapping(target = "version", source = "version")
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "versions", ignore = true)
     Prompt toDomain(PromptDocument document);
 
     PromptDocument.MetadataSubdocument toMetadataDoc(PromptMetadata metadata);
 
     PromptMetadata toMetadataDomain(PromptDocument.MetadataSubdocument subdocument);
-
-    PromptDocument.VersionSubdocument toVersionDoc(PromptVersion version);
-
-    PromptVersion toVersionDomain(PromptDocument.VersionSubdocument subdocument);
 
     @Named("formatToString")
     default String formatToString(ContentFormat format) {

@@ -1,6 +1,6 @@
-package com.promptly.prompt.infrastructure.persistence.repository;
+package com.promptly.prompt.infrastructure.persistence.mongo.repository;
 
-import com.promptly.prompt.infrastructure.persistence.entity.PromptDocument;
+import com.promptly.prompt.infrastructure.persistence.mongo.entity.PromptDocument;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;

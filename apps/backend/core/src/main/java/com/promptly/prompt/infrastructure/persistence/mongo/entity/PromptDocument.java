@@ -1,4 +1,4 @@
-package com.promptly.prompt.infrastructure.persistence.entity;
+package com.promptly.prompt.infrastructure.persistence.mongo.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -60,9 +59,6 @@ public class PromptDocument {
     @Field("status")
     private String status;
 
-    @Field("versions")
-    private List<VersionSubdocument> versions;
-
     @Version
     private Long version;
 
@@ -82,16 +78,6 @@ public class PromptDocument {
         private Double temperature;
         private Integer maxTokens;
         private String systemContext;
-    }
-
-    @Data
-    @Builder
-    public static class VersionSubdocument {
-        private int versionNumber;
-        private String content;
-        private String changeMessage;
-        private String createdBy;
-        private Instant createdAt;
     }
 
 }

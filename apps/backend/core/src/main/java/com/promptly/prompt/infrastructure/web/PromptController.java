@@ -9,6 +9,7 @@ import com.promptly.infrastructure.in.web.dto.PromptSummaryResponse;
 import com.promptly.infrastructure.in.web.dto.UpdatePromptRequest;
 import com.promptly.infrastructure.in.web.dto.VersionResponse;
 import com.promptly.prompt.application.port.in.*;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class PromptController implements PromptsApi {
     private final GetPromptUseCase getPromptUseCase;
     private final RollbackPromptUseCase rollbackPromptUseCase;
     private final DeletePromptUseCase deletePromptUseCase;
+    private final PromptHistoryPersistencePort historyRepository;
     private final PromptWebMapper mapper;
 
     @Override
@@ -91,7 +93,7 @@ public class PromptController implements PromptsApi {
             String id, ServerWebExchange exchange) {
         return getPromptUseCase.getPromptById(id)
                 .map(prompt -> ResponseEntity.ok(
-                        Flux.fromIterable(prompt.getVersions())
+                        historyRepository.findByPromptId(id)
                                 .map(mapper::toVersionResponse)
                 ));
     }
@@ -99,8 +101,7 @@ public class PromptController implements PromptsApi {
     @Override
     public Mono<ResponseEntity<VersionResponse>> getSpecificVersion(
             String id, Integer versionNumber, ServerWebExchange exchange) {
-        return getPromptUseCase.getPromptById(id)
-                .map(prompt -> prompt.getVersion(versionNumber))
+        return historyRepository.findByPromptIdAndVersion(id, versionNumber)
                 .map(mapper::toVersionResponse)
                 .map(ResponseEntity::ok);
     }

@@ -2,7 +2,9 @@ package com.promptly.prompt;
 
 import com.promptly.AbstractIntegrationTest;
 import com.promptly.prompt.application.port.in.*;
-import com.promptly.prompt.infrastructure.persistence.repository.PromptReactiveMongoRepository;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
+import com.promptly.prompt.infrastructure.persistence.mongo.repository.PromptReactiveMongoRepository;
+import com.promptly.prompt.infrastructure.persistence.mongo.repository.PromptHistoryReactiveMongoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,15 @@ class PromptModuleIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private PromptReactiveMongoRepository promptRepository;
 
+    @Autowired
+    private PromptHistoryReactiveMongoRepository historyRepository;
+
+    @Autowired
+    private PromptHistoryPersistencePort historyPort;
+
     @BeforeEach
     void setUp() {
+        historyRepository.deleteAll().block();
         promptRepository.deleteAll().block();
     }
 
@@ -55,8 +64,19 @@ class PromptModuleIntegrationTest extends AbstractIntegrationTest {
         .assertNext(prompt -> {
             assertThat(prompt.getName()).isEqualTo("Integration Test Prompt");
             assertThat(prompt.getCurrentVersion()).isEqualTo(1);
-            assertThat(prompt.getVersions()).hasSize(1);
-            assertThat(prompt.getVersions().get(0).getContent()).isEqualTo("Hello, this is a test prompt.");
+        })
+        .verifyComplete();
+
+        // Verify history was persisted separately
+        StepVerifier.create(
+                promptRepository.findAll().single()
+                        .flatMapMany(doc -> historyPort.findByPromptId(doc.getId()))
+                        .collectList()
+        )
+        .assertNext(versions -> {
+            assertThat(versions).hasSize(1);
+            assertThat(versions.get(0).getContent()).isEqualTo("Hello, this is a test prompt.");
+            assertThat(versions.get(0).getVersionNumber()).isEqualTo(1);
         })
         .verifyComplete();
     }
@@ -78,8 +98,16 @@ class PromptModuleIntegrationTest extends AbstractIntegrationTest {
         )
         .assertNext(prompt -> {
             assertThat(prompt.getCurrentVersion()).isEqualTo(2);
-            assertThat(prompt.getVersions()).hasSize(2);
         })
+        .verifyComplete();
+
+        // Verify both versions exist in history
+        StepVerifier.create(
+                promptRepository.findAll().single()
+                        .flatMapMany(doc -> historyPort.findByPromptId(doc.getId()))
+                        .collectList()
+        )
+        .assertNext(versions -> assertThat(versions).hasSize(2))
         .verifyComplete();
     }
 

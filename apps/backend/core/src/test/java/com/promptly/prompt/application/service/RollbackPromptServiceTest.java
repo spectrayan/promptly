@@ -2,6 +2,7 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptRolledBack;
 import com.promptly.prompt.application.port.in.RollbackPromptUseCase.RollbackPromptCommand;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.*;
 import com.promptly.shared.exception.ResourceNotFoundException;
@@ -32,23 +33,24 @@ import static org.mockito.Mockito.*;
 class RollbackPromptServiceTest {
 
     @Mock private PromptPersistencePort persistencePort;
+    @Mock private PromptHistoryPersistencePort historyRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
 
     private RollbackPromptService service;
 
     @BeforeEach
     void setUp() {
-        service = new RollbackPromptService(persistencePort, eventPublisher);
+        service = new RollbackPromptService(persistencePort, historyRepository, eventPublisher);
     }
 
     private Prompt twoVersionDraft() {
+        // Simulates a prompt loaded from persistence — no in-memory versions,
+        // currentVersion tracks the latest version number in prompt_history.
         Prompt p = Prompt.builder()
                 .id("p-1").name("Test").description("d").projectId("proj-1")
                 .contentFormat(ContentFormat.TEXT).tags(Set.of())
-                .status(PromptStatus.DRAFT).currentVersion(0)
+                .status(PromptStatus.DRAFT).currentVersion(2)
                 .versions(new ArrayList<>()).build();
-        p.createNewVersion("Version 1 content", "Initial", "alice");
-        p.createNewVersion("Version 2 content", "Update", "bob");
         return p;
     }
 
@@ -65,6 +67,15 @@ class RollbackPromptServiceTest {
             when(persistencePort.findById("p-1")).thenReturn(Mono.just(twoVersionDraft()));
             when(persistencePort.save(any(Prompt.class)))
                     .thenAnswer(inv -> Mono.just(inv.getArgument(0)));
+            when(historyRepository.findByPromptIdAndVersion("p-1", 1))
+                    .thenReturn(Mono.just(PromptVersion.builder()
+                            .versionNumber(1)
+                            .content("Version 1 content")
+                            .changeMessage("Initial")
+                            .createdBy("alice")
+                            .build()));
+            when(historyRepository.save(anyString(), any(PromptVersion.class)))
+                    .thenReturn(Mono.empty());
         }
 
         @Test
@@ -122,14 +133,16 @@ class RollbackPromptServiceTest {
         }
 
         @Test
-        @DisplayName("should fail when target version does not exist")
+        @DisplayName("should fail when target version does not exist in history")
         void targetVersionNotFound() {
             when(persistencePort.findById("p-1")).thenReturn(Mono.just(twoVersionDraft()));
+            when(historyRepository.findByPromptIdAndVersion("p-1", 99))
+                    .thenReturn(Mono.empty());
 
             StepVerifier.create(service.rollbackToVersion(
                     new RollbackPromptCommand("p-1", 99, "alice")
             ))
-                    .expectError(IllegalArgumentException.class)
+                    .expectError(ResourceNotFoundException.class)
                     .verify();
         }
 

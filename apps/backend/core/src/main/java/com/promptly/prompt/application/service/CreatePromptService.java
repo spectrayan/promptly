@@ -2,10 +2,12 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptCreated;
 import com.promptly.prompt.application.port.in.CreatePromptUseCase;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.ContentFormat;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.prompt.domain.model.PromptStatus;
+import com.promptly.prompt.domain.model.PromptVersion;
 import com.promptly.shared.exception.DuplicateResourceException;
 import com.promptly.shared.exception.ErrorCode;
 import com.promptly.shared.exception.ErrorMessages;
@@ -20,6 +22,9 @@ import java.util.HashSet;
 /**
  * Application service for creating new prompts.
  * Enforces uniqueness invariant (name + project) and publishes {@link PromptCreated}.
+ * <p>
+ * Uses a two-port persistence flow: prompt metadata via {@link PromptPersistencePort}
+ * and initial version via {@link PromptHistoryPersistencePort}.
  */
 @Slf4j
 @Service
@@ -27,6 +32,7 @@ import java.util.HashSet;
 public class CreatePromptService implements CreatePromptUseCase {
 
     private final PromptPersistencePort promptRepository;
+    private final PromptHistoryPersistencePort historyRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -52,9 +58,11 @@ public class CreatePromptService implements CreatePromptUseCase {
                             .build();
 
                     // createNewVersion checks isEditable — DRAFT status is always allowed
-                    prompt.createNewVersion(command.content(), "Initial version", command.author());
+                    PromptVersion newVersion = prompt.createNewVersion(command.content(), "Initial version", command.author());
 
                     return promptRepository.save(prompt)
+                            .flatMap(saved -> historyRepository.save(saved.getId(), newVersion)
+                                    .thenReturn(saved))
                             .doOnSuccess(saved -> {
                                 log.info("Prompt created: id={}, name={}", saved.getId(), saved.getName());
                                 eventPublisher.publishEvent(

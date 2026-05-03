@@ -1,6 +1,7 @@
 package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptUpdated;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.shared.systemprompt.SystemPromptPort;
@@ -36,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SystemPromptService implements SystemPromptPort {
 
     private final PromptPersistencePort promptRepository;
+    private final PromptHistoryPersistencePort historyRepository;
 
     /** Classpath defaults loaded at startup. */
     private final Map<String, String> defaults = new ConcurrentHashMap<>();
@@ -100,12 +102,11 @@ public class SystemPromptService implements SystemPromptPort {
                     .next()
                     .block();
 
-            if (systemPrompt != null
-                    && systemPrompt.getVersions() != null
-                    && !systemPrompt.getVersions().isEmpty()) {
-                String content = systemPrompt.getVersions()
-                        .get(systemPrompt.getVersions().size() - 1)
-                        .getContent();
+            if (systemPrompt != null && systemPrompt.getCurrentVersion() > 0) {
+                String content = historyRepository
+                        .findByPromptIdAndVersion(systemPrompt.getId(), systemPrompt.getCurrentVersion())
+                        .map(v -> v.getContent())
+                        .block();
                 if (content != null && !content.isBlank()) {
                     log.info("Resolved system prompt for '{}' from __system__ project", feature);
                     return content;

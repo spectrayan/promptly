@@ -2,8 +2,10 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.shared.domain.event.PromptUpdated;
 import com.promptly.prompt.application.port.in.UpdatePromptUseCase;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
+import com.promptly.prompt.domain.model.PromptVersion;
 import com.promptly.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,9 @@ import reactor.core.publisher.Mono;
  * Application service for updating existing prompts.
  * Creates a new version — content is never overwritten.
  * Business rule enforcement (isEditable) is delegated to the Prompt aggregate.
+ * <p>
+ * Uses a two-port persistence flow: prompt metadata via {@link PromptPersistencePort}
+ * and new version via {@link PromptHistoryPersistencePort}.
  */
 @Slf4j
 @Service
@@ -22,6 +27,7 @@ import reactor.core.publisher.Mono;
 public class UpdatePromptService implements UpdatePromptUseCase {
 
     private final PromptPersistencePort promptRepository;
+    private final PromptHistoryPersistencePort historyRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -31,13 +37,15 @@ public class UpdatePromptService implements UpdatePromptUseCase {
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("Prompt", id)))
                 .flatMap(prompt -> {
                     // Business rule check happens inside createNewVersion
-                    prompt.createNewVersion(command.content(), command.changeMessage(), command.author());
-                    return promptRepository.save(prompt);
+                    PromptVersion newVersion = prompt.createNewVersion(command.content(), command.changeMessage(), command.author());
+                    return promptRepository.save(prompt)
+                            .flatMap(saved -> historyRepository.save(saved.getId(), newVersion)
+                                    .thenReturn(saved));
                 })
                 .doOnSuccess(saved -> {
                     log.info("Prompt updated: id={}, version={}", saved.getId(), saved.getCurrentVersion());
                     eventPublisher.publishEvent(
-                            new PromptUpdated(saved.getId(), saved.getProjectId(), saved.getCurrentVersion())
+                            new PromptUpdated(saved.getId(), saved.getName(), saved.getProjectId(), saved.getCurrentVersion())
                     );
                 });
     }

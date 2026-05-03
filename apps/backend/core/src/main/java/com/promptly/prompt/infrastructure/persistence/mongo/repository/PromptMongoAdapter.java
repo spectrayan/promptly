@@ -1,11 +1,12 @@
-package com.promptly.prompt.infrastructure.persistence.repository;
+package com.promptly.prompt.infrastructure.persistence.mongo.repository;
 
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
-import com.promptly.prompt.infrastructure.persistence.mapper.PromptPersistenceMapper;
+import com.promptly.prompt.infrastructure.persistence.mongo.mapper.PromptPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
  * Converts between domain models and MongoDB documents using MapStruct.
  */
 @Component
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "mongo", matchIfMissing = true)
 @RequiredArgsConstructor
 public class PromptMongoAdapter implements PromptPersistencePort {
 
