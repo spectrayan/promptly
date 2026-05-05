@@ -1,6 +1,5 @@
 package com.promptly.audit.infrastructure.persistence.r2dbc.entity;
 
-import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +17,7 @@ import java.time.Instant;
  * <p>
  * The {@code id} field is left {@code null} for new entities so that
  * Spring Data R2DBC performs an INSERT (isNew = id == null) and the
- * database generates the UUID via {@code gen_random_uuid()}.
+ * database generates the UUID via {@code gen_random_uuid()} or equivalent.
  */
 @Data
 @Builder
@@ -53,8 +52,8 @@ public class AuditLogR2dbcEntity {
     @Column("actor_role")
     private String actorRole;
 
-    /** JSONB details column — uses R2DBC PostgreSQL native Json codec. */
-    private Json details;
+    /** JSON details column — stored as TEXT/JSONB depending on the SQL dialect. */
+    private String details;
 
     private Instant timestamp;
 

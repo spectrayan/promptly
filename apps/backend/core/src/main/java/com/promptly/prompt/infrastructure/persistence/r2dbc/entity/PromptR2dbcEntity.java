@@ -1,6 +1,5 @@
 package com.promptly.prompt.infrastructure.persistence.r2dbc.entity;
 
-import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +15,9 @@ import java.time.Instant;
 
 /**
  * R2DBC entity for the {@code prompts} table.
+ * <p>
+ * JSON columns (e.g., tags) are stored as plain {@code String} to remain
+ * database-agnostic across PostgreSQL, H2, and SQLite.
  */
 @Data
 @Builder
@@ -36,8 +38,8 @@ public class PromptR2dbcEntity {
     @Column("content_format")
     private String contentFormat;
 
-    /** JSON array of tags — stored as JSONB in PostgreSQL, uses native Json codec. */
-    private Json tags;
+    /** JSON array of tags — stored as TEXT/JSONB depending on the SQL dialect. */
+    private String tags;
 
     @Column("metadata_model")
     private String metadataModel;

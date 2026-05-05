@@ -10,10 +10,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * R2DBC adapter implementing {@link PromptHistoryPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link PromptHistoryPersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class PromptHistoryR2dbcAdapter implements PromptHistoryPersistencePort {
 

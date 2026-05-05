@@ -10,13 +10,13 @@ import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
 
 /**
- * R2DBC configuration for PostgreSQL persistence.
+ * R2DBC configuration for SQL persistence (PostgreSQL, H2, SQLite).
  * <p>
  * Enables R2DBC repositories and auditing (createdAt, updatedAt auto-population)
- * only when the persistence type is set to {@code "postgres"}.
+ * only when the persistence type is set to {@code "sql"}.
  */
 @Configuration
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @EnableR2dbcRepositories(basePackages = "com.promptly.**.infrastructure.persistence.r2dbc")
 @EnableR2dbcAuditing
 public class R2dbcConfig {

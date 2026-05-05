@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.*;
 import com.promptly.prompt.infrastructure.persistence.r2dbc.entity.PromptR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -17,10 +16,11 @@ import reactor.core.publisher.Mono;
 import java.util.Set;
 
 /**
- * R2DBC adapter implementing {@link PromptPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link PromptPersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class PromptR2dbcAdapter implements PromptPersistencePort {
 
@@ -79,7 +79,7 @@ public class PromptR2dbcAdapter implements PromptPersistencePort {
                 .description(prompt.getDescription())
                 .projectId(prompt.getProjectId())
                 .contentFormat(prompt.getContentFormat() != null ? prompt.getContentFormat().name() : null)
-                .tags(prompt.getTags() != null ? Json.of(objectMapper.writeValueAsString(prompt.getTags())) : Json.of("[]"))
+                .tags(prompt.getTags() != null ? objectMapper.writeValueAsString(prompt.getTags()) : "[]")
                 .metadataModel(md != null ? md.getModel() : null)
                 .metadataTemperature(md != null ? md.getTemperature() : null)
                 .metadataMaxTokens(md != null ? md.getMaxTokens() : null)
@@ -97,7 +97,7 @@ public class PromptR2dbcAdapter implements PromptPersistencePort {
     @SneakyThrows
     private Prompt toDomain(PromptR2dbcEntity entity) {
         Set<String> tags = entity.getTags() != null
-                ? objectMapper.readValue(entity.getTags().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getTags(), new TypeReference<>() {})
                 : Set.of();
 
         PromptMetadata metadata = null;

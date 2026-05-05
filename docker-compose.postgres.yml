@@ -5,7 +5,7 @@
 #   docker compose -f docker-compose.postgres.yml up -d
 #
 # Backend must be started with the postgres profile:
-#   PROMPTLY_PERSISTENCE_TYPE=postgres SPRING_PROFILES_ACTIVE=postgres mvn spring-boot:run -Ppersistence-postgres
+#   PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=postgres mvn spring-boot:run -Ppersistence-sql
 #
 services:
   postgres:

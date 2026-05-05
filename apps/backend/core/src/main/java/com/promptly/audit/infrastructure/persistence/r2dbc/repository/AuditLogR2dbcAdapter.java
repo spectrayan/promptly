@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import com.promptly.audit.infrastructure.persistence.r2dbc.entity.AuditLogR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,10 +15,10 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 /**
- * R2DBC adapter implementing {@link AuditPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link AuditPersistencePort} for SQL databases.
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class AuditLogR2dbcAdapter implements AuditPersistencePort {
 
@@ -56,12 +55,9 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
         return repository.findByAction(action).map(this::toDomain);
     }
 
-    // ── Mapping ─────────────────────────────────────────────────────
-
     @SneakyThrows
     private AuditLogR2dbcEntity toEntity(AuditEntry entry) {
         return AuditLogR2dbcEntity.builder()
-                // id left null for INSERT; DB generates via gen_random_uuid()
                 .projectId(entry.getProjectId())
                 .action(entry.getAction())
                 .resourceType(entry.getResourceType())
@@ -70,7 +66,7 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
                 .actorUserId(entry.getActorUserId())
                 .actorEmail(entry.getActorEmail())
                 .actorRole(entry.getActorRole())
-                .details(entry.getDetails() != null ? Json.of(objectMapper.writeValueAsString(entry.getDetails())) : null)
+                .details(entry.getDetails() != null ? objectMapper.writeValueAsString(entry.getDetails()) : null)
                 .timestamp(entry.getTimestamp())
                 .createdAt(entry.getCreatedAt())
                 .updatedAt(entry.getUpdatedAt())
@@ -80,7 +76,7 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
     @SneakyThrows
     private AuditEntry toDomain(AuditLogR2dbcEntity entity) {
         Map<String, Object> details = entity.getDetails() != null
-                ? objectMapper.readValue(entity.getDetails().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getDetails(), new TypeReference<>() {})
                 : null;
 
         return AuditEntry.builder()

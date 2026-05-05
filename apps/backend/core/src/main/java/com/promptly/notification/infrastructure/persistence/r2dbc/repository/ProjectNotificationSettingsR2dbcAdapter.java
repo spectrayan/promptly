@@ -6,7 +6,6 @@ import com.promptly.notification.application.port.out.ProjectNotificationSetting
 import com.promptly.notification.domain.model.NotificationEventType;
 import com.promptly.notification.domain.model.ProjectNotificationSettings;
 import com.promptly.notification.infrastructure.persistence.r2dbc.entity.ProjectNotificationSettingsR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,10 +15,10 @@ import reactor.core.publisher.Mono;
 import java.util.Set;
 
 /**
- * R2DBC adapter implementing {@link ProjectNotificationSettingsPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link ProjectNotificationSettingsPersistencePort} for SQL databases.
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class ProjectNotificationSettingsR2dbcAdapter implements ProjectNotificationSettingsPersistencePort {
 
@@ -36,13 +35,11 @@ public class ProjectNotificationSettingsR2dbcAdapter implements ProjectNotificat
         return repository.save(toEntity(settings)).map(this::toDomain);
     }
 
-    // ── Mapping ─────────────────────────────────────────────────────
-
     @SneakyThrows
     private ProjectNotificationSettingsR2dbcEntity toEntity(ProjectNotificationSettings s) {
         return ProjectNotificationSettingsR2dbcEntity.builder()
                 .projectId(s.getProjectId())
-                .enabledEvents(s.getEnabledEvents() != null ? Json.of(objectMapper.writeValueAsString(s.getEnabledEvents())) : Json.of("[]"))
+                .enabledEvents(s.getEnabledEvents() != null ? objectMapper.writeValueAsString(s.getEnabledEvents()) : "[]")
                 .updatedAt(s.getUpdatedAt())
                 .build();
     }
@@ -50,7 +47,7 @@ public class ProjectNotificationSettingsR2dbcAdapter implements ProjectNotificat
     @SneakyThrows
     private ProjectNotificationSettings toDomain(ProjectNotificationSettingsR2dbcEntity entity) {
         Set<String> enabledEvents = entity.getEnabledEvents() != null
-                ? objectMapper.readValue(entity.getEnabledEvents().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getEnabledEvents(), new TypeReference<>() {})
                 : NotificationEventType.allKeys();
 
         return ProjectNotificationSettings.builder()

@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Supported values for {@code type}:
  * <ul>
  *   <li>{@code mongo} — MongoDB (default)</li>
- *   <li>{@code postgres} — PostgreSQL via R2DBC</li>
+ *   <li>{@code sql} — SQL databases via R2DBC (PostgreSQL, H2, SQLite)</li>
  * </ul>
  *
  * @param type the persistence backend type (default: "mongo")
@@ -25,9 +25,17 @@ public record PersistenceProperties(String type) {
     }
 
     /**
-     * Returns whether the active persistence type is PostgreSQL.
+     * Returns whether the active persistence type is SQL (PostgreSQL, H2, SQLite).
      */
+    public boolean isSql() {
+        return "sql".equalsIgnoreCase(type);
+    }
+
+    /**
+     * @deprecated Use {@link #isSql()} instead. Retained for backward compatibility.
+     */
+    @Deprecated(forRemoval = true)
     public boolean isPostgres() {
-        return "postgres".equalsIgnoreCase(type);
+        return isSql();
     }
 }

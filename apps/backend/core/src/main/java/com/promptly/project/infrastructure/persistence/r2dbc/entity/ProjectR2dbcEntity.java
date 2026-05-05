@@ -1,6 +1,5 @@
 package com.promptly.project.infrastructure.persistence.r2dbc.entity;
 
-import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,8 +28,8 @@ public class ProjectR2dbcEntity {
     private String name;
     private String description;
 
-    /** JSON array of tags — stored as JSONB in PostgreSQL, uses native Json codec. */
-    private Json tags;
+    /** JSON array of tags — stored as TEXT/JSONB depending on the SQL dialect. */
+    private String tags;
 
     @Column("created_by")
     private String createdBy;

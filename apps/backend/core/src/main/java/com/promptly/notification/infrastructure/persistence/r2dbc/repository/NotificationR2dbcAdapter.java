@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.notification.application.port.out.NotificationPersistencePort;
 import com.promptly.notification.domain.model.Notification;
 import com.promptly.notification.infrastructure.persistence.r2dbc.entity.NotificationR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -17,10 +16,11 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * R2DBC adapter implementing {@link NotificationPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link NotificationPersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class NotificationR2dbcAdapter implements NotificationPersistencePort {
 
@@ -75,7 +75,7 @@ public class NotificationR2dbcAdapter implements NotificationPersistencePort {
                 .title(n.getTitle())
                 .message(n.getMessage())
                 .icon(n.getIcon())
-                .payload(n.getPayload() != null ? Json.of(objectMapper.writeValueAsString(n.getPayload())) : null)
+                .payload(n.getPayload() != null ? objectMapper.writeValueAsString(n.getPayload()) : null)
                 .read(n.isRead())
                 .createdAt(n.getCreatedAt())
                 .build();
@@ -84,7 +84,7 @@ public class NotificationR2dbcAdapter implements NotificationPersistencePort {
     @SneakyThrows
     private Notification toDomain(NotificationR2dbcEntity entity) {
         Map<String, Object> payload = entity.getPayload() != null
-                ? objectMapper.readValue(entity.getPayload().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getPayload(), new TypeReference<>() {})
                 : null;
 
         return Notification.builder()

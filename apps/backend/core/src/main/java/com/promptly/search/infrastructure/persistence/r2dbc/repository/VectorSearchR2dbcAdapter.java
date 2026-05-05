@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 /**
  * R2DBC adapter implementing {@link VectorSearchPort} for PostgreSQL with pgvector.
  * <p>
- * Uses raw SQL via {@link DatabaseClient} because Spring Data R2DBC does not natively
- * support pgvector types. The HNSW index on the {@code prompt_embeddings} table
- * accelerates cosine similarity queries.
+ * This adapter is PostgreSQL-specific due to pgvector extension usage.
+ * Other SQL dialects (H2, SQLite) do not support vector search.
+ * Activated when {@code promptly.persistence.type=sql} AND pgvector is available.
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class VectorSearchR2dbcAdapter implements VectorSearchPort {
 

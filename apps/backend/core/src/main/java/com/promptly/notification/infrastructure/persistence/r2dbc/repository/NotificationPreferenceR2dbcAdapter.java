@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.notification.application.port.out.NotificationPreferencePersistencePort;
 import com.promptly.notification.domain.model.NotificationPreference;
 import com.promptly.notification.infrastructure.persistence.r2dbc.entity.NotificationPreferenceR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,10 +15,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * R2DBC adapter implementing {@link NotificationPreferencePersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link NotificationPreferencePersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class NotificationPreferenceR2dbcAdapter implements NotificationPreferencePersistencePort {
 
@@ -43,7 +43,7 @@ public class NotificationPreferenceR2dbcAdapter implements NotificationPreferenc
         return NotificationPreferenceR2dbcEntity.builder()
                 .userId(p.getUserId())
                 .projectId(p.getProjectId())
-                .mutedEvents(p.getMutedEvents() != null ? Json.of(objectMapper.writeValueAsString(p.getMutedEvents())) : Json.of("[]"))
+                .mutedEvents(p.getMutedEvents() != null ? objectMapper.writeValueAsString(p.getMutedEvents()) : "[]")
                 .inAppEnabled(p.isInAppEnabled())
                 .emailEnabled(p.isEmailEnabled())
                 .updatedAt(p.getUpdatedAt())
@@ -53,7 +53,7 @@ public class NotificationPreferenceR2dbcAdapter implements NotificationPreferenc
     @SneakyThrows
     private NotificationPreference toDomain(NotificationPreferenceR2dbcEntity entity) {
         Set<String> mutedEvents = entity.getMutedEvents() != null
-                ? objectMapper.readValue(entity.getMutedEvents().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getMutedEvents(), new TypeReference<>() {})
                 : new HashSet<>();
 
         return NotificationPreference.builder()

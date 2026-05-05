@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.infrastructure.persistence.r2dbc.entity.ProjectR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,10 +15,11 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 /**
- * R2DBC adapter implementing {@link ProjectPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link ProjectPersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class ProjectR2dbcAdapter implements ProjectPersistencePort {
 
@@ -53,7 +53,7 @@ public class ProjectR2dbcAdapter implements ProjectPersistencePort {
         return ProjectR2dbcEntity.builder()
                 .name(project.getName())
                 .description(project.getDescription())
-                .tags(project.getTags() != null ? Json.of(objectMapper.writeValueAsString(project.getTags())) : Json.of("[]"))
+                .tags(project.getTags() != null ? objectMapper.writeValueAsString(project.getTags()) : "[]")
                 .createdBy(project.getCreatedBy())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
@@ -63,7 +63,7 @@ public class ProjectR2dbcAdapter implements ProjectPersistencePort {
     @SneakyThrows
     private Project toDomain(ProjectR2dbcEntity entity) {
         List<String> tags = entity.getTags() != null
-                ? objectMapper.readValue(entity.getTags().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getTags(), new TypeReference<>() {})
                 : List.of();
 
         return Project.builder()

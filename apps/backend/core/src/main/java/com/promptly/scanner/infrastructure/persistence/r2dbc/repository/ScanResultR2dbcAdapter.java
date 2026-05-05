@@ -6,7 +6,6 @@ import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
 import com.promptly.scanner.domain.model.Finding;
 import com.promptly.scanner.domain.model.ScanResult;
 import com.promptly.scanner.infrastructure.persistence.r2dbc.entity.ScanResultR2dbcEntity;
-import io.r2dbc.postgresql.codec.Json;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,10 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * R2DBC adapter implementing {@link ScanResultPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link ScanResultPersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
 
@@ -67,7 +67,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
                 .llmProvider(scanResult.getLlmProvider())
                 .llmModel(scanResult.getLlmModel())
                 .scannedBy(scanResult.getScannedBy())
-                .findings(scanResult.getFindings() != null ? Json.of(objectMapper.writeValueAsString(scanResult.getFindings())) : Json.of("[]"))
+                .findings(scanResult.getFindings() != null ? objectMapper.writeValueAsString(scanResult.getFindings()) : "[]")
                 .scannedAt(scanResult.getScannedAt())
                 .version(scanResult.getVersion() != null && scanResult.getVersion() > 0 ? scanResult.getVersion() : null)
                 .createdAt(scanResult.getCreatedAt())
@@ -78,7 +78,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
     @SneakyThrows
     private ScanResult toDomain(ScanResultR2dbcEntity entity) {
         List<Finding> findings = entity.getFindings() != null
-                ? objectMapper.readValue(entity.getFindings().asString(), new TypeReference<>() {})
+                ? objectMapper.readValue(entity.getFindings(), new TypeReference<>() {})
                 : new ArrayList<>();
 
         return ScanResult.builder()

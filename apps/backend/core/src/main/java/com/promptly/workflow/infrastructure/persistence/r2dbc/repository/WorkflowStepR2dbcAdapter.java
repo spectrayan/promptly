@@ -12,10 +12,11 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 /**
- * R2DBC adapter implementing {@link WorkflowStepPersistencePort} for PostgreSQL.
+ * R2DBC adapter implementing {@link WorkflowStepPersistencePort} for SQL databases
+ * (PostgreSQL, H2, SQLite).
  */
 @Component
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 @RequiredArgsConstructor
 public class WorkflowStepR2dbcAdapter implements WorkflowStepPersistencePort {
 

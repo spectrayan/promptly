@@ -1,6 +1,5 @@
 package com.promptly.notification.infrastructure.persistence.r2dbc.entity;
 
-import io.r2dbc.postgresql.codec.Json;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,9 +27,9 @@ public class ProjectNotificationSettingsR2dbcEntity {
     @Column("project_id")
     private String projectId;
 
-    /** JSONB array of enabled event type keys — uses R2DBC PostgreSQL native Json codec. */
+    /** JSON array of enabled event type keys — stored as TEXT/JSONB depending on the SQL dialect. */
     @Column("enabled_events")
-    private Json enabledEvents;
+    private String enabledEvents;
 
     @LastModifiedDate
     @Column("updated_at")

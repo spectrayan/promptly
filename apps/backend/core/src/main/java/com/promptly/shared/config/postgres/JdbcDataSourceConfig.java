@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 /**
- * Manually registers a JDBC {@link DataSource} bean when running in PostgreSQL mode.
+ * Manually registers a JDBC {@link DataSource} bean when running in SQL mode.
  * <p>
  * Spring Boot 4's {@code DataSourceAutoConfiguration} is mutually exclusive with
  * R2DBC auto-configuration — when the R2DBC {@code ConnectionFactory} is present,
@@ -22,7 +22,7 @@ import javax.sql.DataSource;
  * compilation under the default MongoDB profile (which lacks HikariCP on the classpath).
  */
 @Configuration
-@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "postgres")
+@ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
 public class JdbcDataSourceConfig {
 
     @Bean
