@@ -1,0 +1,34 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Promptly — Root .dockerignore
+# ═══════════════════════════════════════════════════════════════════════
+# Reduces build context for faster Docker builds.
+
+.git
+.github
+.idea
+.angular
+.nx
+
+node_modules
+
+# Logs and temp files
+*.log
+*.txt
+*.class
+
+# Test artifacts
+reports/
+test-results/
+playwright-output.txt
+debug-test.txt
+**/target/surefire-reports/
+**/target/failsafe-reports/
+
+# Documentation (not needed in images)
+docs/
+*.md
+!README.md
+LICENSE
+
+# Seed data
+seed-data/

@@ -1,185 +1,163 @@
-# @promptly/client@1.0.0
+# @promptly/client — Angular SDK
 
-Enterprise AI Prompt Governance Platform — REST API  Promptly enables organizations to manage, version, secure, and deploy AI prompts with full governance controls. This specification covers all seven bounded contexts: Prompt Registry, Workflow Engine, Vulnerability Scanner, Quality Improver, Runtime Delivery, Audit & Compliance, and Semantic Search. 
+<p align="center">
+  <img src="https://img.shields.io/badge/Angular-21+-dd0031?style=flat-square&logo=angular" alt="Angular" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/OpenAPI-3.0-85ea2d?style=flat-square&logo=openapi-initiative" alt="OpenAPI" />
+  <img src="https://img.shields.io/npm/v/@promptly/client?style=flat-square&color=cb3837&logo=npm" alt="npm" />
+</p>
 
-The version of the OpenAPI document: 1.0.0
+---
 
-## Building
+## Overview
 
-To install the required dependencies and to build the typescript sources run:
+Auto-generated Angular HTTP client for the **Promptly** REST API. This SDK provides type-safe service classes for all Promptly API endpoints, including prompts, workflows, scans, search, audit, and runtime delivery.
 
-```console
+> ⚠️ **This package is auto-generated.** Do not edit files manually — regenerate from the OpenAPI spec instead.
+
+## Installation
+
+```bash
+npm install @promptly/client
+# or
+pnpm add @promptly/client
+```
+
+## Quick Start
+
+### Standalone (Angular 17+, recommended)
+
+```typescript
+import { ApplicationConfig } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideApi } from '@promptly/client';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    provideApi(),                          // uses default base path
+    // provideApi('http://localhost:8080'), // or specify a custom base path
+  ],
+};
+```
+
+### With Custom Configuration
+
+```typescript
+import { provideApi, Configuration } from '@promptly/client';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    {
+      provide: Configuration,
+      useFactory: (authService: AuthService) =>
+        new Configuration({
+          basePath: environment.apiUrl,
+          withCredentials: true,
+          username: authService.getUsername(),
+          password: authService.getPassword(),
+        }),
+      deps: [AuthService],
+    },
+  ],
+};
+```
+
+### Legacy NgModule (Angular < 17)
+
+```typescript
+import { ApiModule } from '@promptly/client';
+
+@NgModule({
+  imports: [ApiModule],
+})
+export class AppModule {}
+```
+
+## Using the API Services
+
+Inject any of the generated services directly into your components or services:
+
+```typescript
+import { PromptsService, PromptResponse } from '@promptly/client';
+
+@Component({ ... })
+export class PromptListComponent {
+  private readonly promptsService = inject(PromptsService);
+
+  prompts$ = this.promptsService.listPrompts({ page: 0, size: 20 });
+}
+```
+
+## Available API Services
+
+| Service | Covers |
+|---------|--------|
+| `PromptsService` | Prompt CRUD, versioning, rollback |
+| `WorkflowsService` | Submit, approve, reject workflows |
+| `ScannerService` | Trigger and view vulnerability scans |
+| `ImproverService` | AI-powered prompt improvement |
+| `SearchService` | Semantic search |
+| `AuditService` | Audit log queries |
+| `DeliveryService` | Runtime prompt delivery |
+| `ProjectsService` | Project management |
+| `AuthService` | Login, register, token management |
+
+## Multiple API Clients
+
+If you use multiple OpenAPI-generated SDKs, alias the providers:
+
+```typescript
+import { provideApi as providePromptlyApi } from '@promptly/client';
+import { provideApi as provideOtherApi } from 'other-api';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    providePromptlyApi(environment.promptlyUrl),
+    provideOtherApi(environment.otherUrl),
+  ],
+};
+```
+
+## Customizing Parameter Encoding
+
+For non-standard path parameter styles, provide a custom encoder:
+
+```typescript
+new Configuration({
+  encodeParam: (param: Param) => myCustomEncoder(param),
+});
+```
+
+## Building from Source
+
+```bash
 npm install
 npm run build
 ```
 
-## Publishing
+## Regeneration
 
-First build the package then run `npm publish dist` (don't forget to specify the `dist` folder!)
+From the monorepo root:
 
-## Consuming
-
-Navigate to the folder of your consuming project and run one of next commands.
-
-_published:_
-
-```console
-npm install @promptly/client@1.0.0 --save
+```bash
+pnpm run build:openapi
 ```
 
-_without publishing (not recommended):_
+---
 
-```console
-npm install PATH_TO_GENERATED_PACKAGE/dist.tgz --save
-```
+## Related
 
-_It's important to take the tgz file, otherwise you'll get trouble with links on windows_
+- [Main README](../../../../../../README.md) — full platform overview
+- [OpenAPI Spec](../../../openapi-spec) — the source YAML specification
+- [TypeScript SDK](../../query/typescript/promptly-query) — Fetch-based TypeScript client
+- [Python SDK](../../query/python/promptly-query) — Python client
+- [Java Query SDK](../../query/java-spring/promptly-query) — Spring WebClient SDK
 
-_using `npm link`:_
+---
 
-In PATH_TO_GENERATED_PACKAGE/dist:
-
-```console
-npm link
-```
-
-In your project:
-
-```console
-npm link @promptly/client
-```
-
-__Note for Windows users:__ The Angular CLI has troubles to use linked npm packages.
-Please refer to this issue <https://github.com/angular/angular-cli/issues/8284> for a solution / workaround.
-Published packages are not effected by this issue.
-
-### General usage
-
-In your Angular project:
-
-```typescript
-
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { provideApi } from '@promptly/client';
-
-export const appConfig: ApplicationConfig = {
-    providers: [
-        // ...
-        provideHttpClient(),
-        provideApi()
-    ],
-};
-```
-
-**NOTE**
-If you're still using `AppModule` and haven't [migrated](https://angular.dev/reference/migrations/standalone) yet, you can still import an Angular module:
-```typescript
-import { ApiModule } from '@promptly/client';
-```
-
-If different from the generated base path, during app bootstrap, you can provide the base path to your service.
-
-```typescript
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { provideApi } from '@promptly/client';
-
-export const appConfig: ApplicationConfig = {
-    providers: [
-        // ...
-        provideHttpClient(),
-        provideApi('http://localhost:9999')
-    ],
-};
-```
-
-```typescript
-// with a custom configuration
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { provideApi } from '@promptly/client';
-
-export const appConfig: ApplicationConfig = {
-    providers: [
-        // ...
-        provideHttpClient(),
-        provideApi({
-            withCredentials: true,
-            username: 'user',
-            password: 'password'
-        })
-    ],
-};
-```
-
-```typescript
-// with factory building a custom configuration
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { provideApi, Configuration } from '@promptly/client';
-
-export const appConfig: ApplicationConfig = {
-    providers: [
-        // ...
-        provideHttpClient(),
-        {
-            provide: Configuration,
-            useFactory: (authService: AuthService) => new Configuration({
-                    basePath: 'http://localhost:9999',
-                    withCredentials: true,
-                    username: authService.getUsername(),
-                    password: authService.getPassword(),
-            }),
-            deps: [AuthService],
-            multi: false
-        }
-    ],
-};
-```
-
-### Using multiple OpenAPI files / APIs
-
-In order to use multiple APIs generated from different OpenAPI files,
-you can create an alias name when importing the modules
-in order to avoid naming conflicts:
-
-```typescript
-import { provideApi as provideUserApi } from 'my-user-api-path';
-import { provideApi as provideAdminApi } from 'my-admin-api-path';
-import { HttpClientModule } from '@angular/common/http';
-import { environment } from '../environments/environment';
-
-export const appConfig: ApplicationConfig = {
-    providers: [
-        // ...
-        provideHttpClient(),
-        provideUserApi(environment.basePath),
-        provideAdminApi(environment.basePath),
-    ],
-};
-```
-
-### Customizing path parameter encoding
-
-Without further customization, only [path-parameters][parameter-locations-url] of [style][style-values-url] 'simple'
-and Dates for format 'date-time' are encoded correctly.
-
-Other styles (e.g. "matrix") are not that easy to encode
-and thus are best delegated to other libraries (e.g.: [@honoluluhenk/http-param-expander]).
-
-To implement your own parameter encoding (or call another library),
-pass an arrow-function or method-reference to the `encodeParam` property of the Configuration-object
-(see [General Usage](#general-usage) above).
-
-Example value for use in your Configuration-Provider:
-
-```typescript
-new Configuration({
-    encodeParam: (param: Param) => myFancyParamEncoder(param),
-})
-```
-
-[parameter-locations-url]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#parameter-locations
-[style-values-url]: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md#style-values
-[@honoluluhenk/http-param-expander]: https://www.npmjs.com/package/@honoluluhenk/http-param-expander
+<p align="center">
+  Part of the <a href="https://github.com/spectrayan/promptly">Promptly</a> platform · Auto-generated by <a href="https://openapi-generator.tech">OpenAPI Generator</a>
+</p>

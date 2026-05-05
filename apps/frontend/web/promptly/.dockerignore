@@ -1,0 +1,13 @@
+# Promptly Frontend -- .dockerignore
+# Reduce Docker build context size
+
+node_modules
+dist
+out-tsc
+.angular
+.git
+.idea
+*.log
+*.txt
+reports
+test-results

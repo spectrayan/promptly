@@ -1,59 +1,138 @@
-# PromptlyUi
+<p align="center">
+  <img src="public/logo.png" alt="Promptly Logo" width="120" />
+</p>
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+<h1 align="center">Promptly — Frontend</h1>
 
-## Development server
+<p align="center">
+  <strong>Angular 21 web application for the Promptly AI governance platform.</strong>
+</p>
 
-To start a local development server, run:
+<p align="center">
+  <img src="https://img.shields.io/badge/Angular-21-dd0031?style=flat-square&logo=angular" alt="Angular 21" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Material%203-21-673ab7?style=flat-square&logo=material-design" alt="Material 3" />
+  <img src="https://img.shields.io/badge/NgRx-21-412846?style=flat-square&logo=ngrx" alt="NgRx" />
+</p>
+
+---
+
+## Overview
+
+This is the **Angular 21** frontend for [Promptly](../../../../../../README.md) — the enterprise AI prompt governance platform. It provides a full-featured UI for managing AI prompts, workflows, vulnerability scans, semantic search, audit logs, and more.
+
+### Key Technologies
+
+| Technology | Purpose |
+|-----------|---------|
+| **Angular 21** | Component framework (standalone components, signals, new control flow) |
+| **Angular Material 21** | Material 3 design system with dark/light theme |
+| **NgRx 21** | Centralized state management (store, effects, entity) |
+| **Monaco Editor** | In-browser prompt editing with syntax highlighting |
+| **SCSS** | Themeable styling with CSS custom properties |
+| **`@promptly/client`** | Auto-generated API client SDK from OpenAPI spec |
+| **`@spectrayan/ng-sse-client`** | Real-time SSE notifications |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js 22+**
+- **pnpm 10+**
+- A running [Promptly backend](../../backend/core) on `:8080`
+
+### Install Dependencies
+
+From the **monorepo root**:
 
 ```bash
-ng serve
+pnpm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Start the Dev Server
 
 ```bash
-ng generate component component-name
+# From monorepo root (recommended)
+pnpm run start:frontend
+
+# Or from this directory
+npx ng serve
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The app will be available at **[http://localhost:4200](http://localhost:4200)** and will auto-reload on file changes.
+
+### Build for Production
 
 ```bash
-ng generate --help
+npx ng build --configuration=production
 ```
 
-## Building
+Build artifacts are output to `dist/`.
 
-To build the project run:
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── core/                # Auth service, guards, interceptors, SSE client
+│   ├── shared/              # Reusable components, pipes, directives
+│   ├── features/            # Feature modules
+│   │   ├── dashboard/       # Personalized landing page
+│   │   ├── prompts/         # Prompt list, detail, editor, version diff
+│   │   ├── workflows/       # Approval workflow management
+│   │   ├── scanner/         # Vulnerability scan results
+│   │   ├── search/          # Semantic search UI
+│   │   └── audit/           # Audit log viewer
+│   └── layout/              # Shell, header, sidebar, notifications
+├── assets/                  # Static assets
+├── environments/            # Environment configurations
+└── styles/                  # Global SCSS, theme tokens
+```
+
+---
+
+## Testing
+
+### Unit Tests
 
 ```bash
-ng build
+npx ng test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Runs with [Vitest](https://vitest.dev/).
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### End-to-End Tests
 
 ```bash
-ng test
+# From monorepo root
+npx playwright test
 ```
 
-## Running end-to-end tests
+E2E tests are located in `apps/e2e/` and use [Playwright](https://playwright.dev/).
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## Architecture Notes
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+- **Facade pattern** — each feature has a facade that mediates between components and the NgRx store
+- **Hybrid state management** — NgRx for complex async state, Angular Signals for local/simple state
+- **API-first** — all HTTP calls go through the generated `@promptly/client` SDK; never use `HttpClient` directly
+- **Material 3 theming** — a single `theme.scss` drives the entire design system with CSS custom properties
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Related Documentation
+
+- [Main README](../../../../../../README.md) — full platform overview
+- [Architecture Docs](../../../../../../docs/architecture) — ADRs and design decisions
+- [Contributing Guide](../../../../../../CONTRIBUTING.md) — coding standards and PR process
+
+---
+
+<p align="center">
+  Part of the <a href="https://github.com/spectrayan/promptly">Promptly</a> platform · Built with ❤️ by <a href="https://github.com/spectrayan">Spectrayan</a>
+</p>
