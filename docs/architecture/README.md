@@ -1,22 +1,27 @@
-# Architecture Decision Records — Index
+# 📐 Architecture Decision Records
 
-**Project:** Promptly  
-**Maintained by:** Spectrayan Team
+**Project:** Promptly — Enterprise AI Prompt Governance Platform  
+**Maintained by:** [Spectrayan](https://github.com/spectrayan)
 
 ---
 
-This directory contains Architecture Decision Records (ADRs) documenting the
-key technical decisions made during the design and implementation of the
-Promptly AI Prompt Governance Platform.
+This directory contains **Architecture Decision Records (ADRs)** documenting the key technical decisions made during the design and implementation of Promptly.
 
-## ADR Template Standard
+## What are ADRs?
+
+ADRs capture the **context**, **decision**, and **consequences** of architecturally significant choices. They serve as a knowledge base for current and future contributors, explaining *why* things are built the way they are.
+
+## ADR Standard
 
 All ADRs follow a consistent format:
-- **Authors** are always **"Spectrayan Team"**
-- **All diagrams** use Mermaid (no ASCII art)
-- **Status** is one of: `Proposed`, `Accepted`, `Deprecated`, `Superseded`
 
-## Index
+- **Authors** — Spectrayan Team
+- **Diagrams** — All diagrams use [Mermaid](https://mermaid.js.org/) (no ASCII art)
+- **Status** — One of: `Proposed` · `Accepted` · `Deprecated` · `Superseded`
+
+---
+
+## 📋 ADR Index
 
 | # | Title | Status | Key Topic |
 |---|-------|--------|-----------|
@@ -30,7 +35,9 @@ All ADRs follow a consistent format:
 | [008](008-reactive-persistence.md) | Reactive Persistence with WebFlux & MongoDB | Accepted | Non-blocking I/O, document mapping |
 | [009](009-sse-notifications.md) | Real-Time Notifications via SSE | Accepted | Server-Sent Events, NgRx integration |
 
-## High-Level Architecture
+---
+
+## 🏛️ High-Level Architecture
 
 ```mermaid
 graph TB
@@ -51,7 +58,7 @@ graph TB
     end
 
     subgraph Data ["Data Layer"]
-        MONGO[(MongoDB)]
+        MONGO[("MongoDB")]
         LLM["LLM APIs\n(Gemini / OpenAI)"]
     end
 
@@ -75,3 +82,28 @@ graph TB
     style DOM fill:#E3F2FD,stroke:#1565C0
     style MONGO fill:#9C27B0,color:#fff,stroke:#6A1B9A
 ```
+
+### Layer Responsibilities
+
+| Layer | Description |
+|-------|-------------|
+| **Frontend** | Angular 21 with NgRx state, Material 3 UI, facade-mediated data flow |
+| **API / Controllers** | WebFlux reactive controllers implementing generated OpenAPI interfaces |
+| **Application Services** | Orchestration layer — coordinates domain logic, events, and port calls |
+| **Domain Aggregates** | Pure Java POJOs — business rules, entities, value objects (no framework deps) |
+| **Ports** | Interfaces defining inbound/outbound contracts (hexagonal architecture) |
+| **Infrastructure Adapters** | MongoDB / PostgreSQL implementations, LLM API clients, SSE emitters |
+
+---
+
+## 📎 Related
+
+- [Main README](../../README.md) — project overview and quick start
+- [Contributing Guide](../../CONTRIBUTING.md) — coding standards and how to contribute
+- [Changelog](../../CHANGELOG.md) — release history
+
+---
+
+<p align="center">
+  Part of the <a href="https://github.com/spectrayan/promptly">Promptly</a> platform
+</p>

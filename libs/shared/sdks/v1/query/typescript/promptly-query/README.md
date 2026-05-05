@@ -1,138 +1,160 @@
-# @promptly/query@1.0.0
+# @promptly/query — TypeScript SDK
 
-A TypeScript SDK client for the localhost API.
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-5.x-3178c6?style=flat-square&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Fetch%20API-Native-4285f4?style=flat-square" alt="Fetch API" />
+  <img src="https://img.shields.io/badge/OpenAPI-3.0-85ea2d?style=flat-square&logo=openapi-initiative" alt="OpenAPI" />
+  <img src="https://img.shields.io/npm/v/@promptly/query?style=flat-square&color=cb3837&logo=npm" alt="npm" />
+</p>
 
-## Usage
+---
 
-First, install the SDK from npm.
+## Overview
+
+A **read-only TypeScript SDK** for querying the Promptly REST API. Built on the native **Fetch API** — works in Node.js, browsers, and edge runtimes. This SDK is ideal for:
+
+- 🚀 **Node.js microservices** that fetch prompts at runtime
+- ⚡ **Edge functions** (Vercel, Cloudflare Workers, Deno Deploy)
+- 🌐 **Browser-based tools** consuming Promptly data
+- 🧪 **Integration tests** validating prompt delivery
+
+> ⚠️ **This package is auto-generated.** Do not edit files manually — regenerate from the OpenAPI spec instead.
+
+## Installation
 
 ```bash
-npm install @promptly/query --save
+npm install @promptly/query
+# or
+pnpm add @promptly/query
+# or
+yarn add @promptly/query
 ```
 
-Next, try it out.
+## Quick Start
 
+```typescript
+import { Configuration, PromptlyQueryApi } from '@promptly/query';
 
-```ts
-import {
-  Configuration,
-  PromptlyQueryApi,
-} from '@promptly/query';
-import type { DeliverPromptRequest } from '@promptly/query';
+const api = new PromptlyQueryApi(
+  new Configuration({ basePath: 'http://localhost:8080' })
+);
 
-async function example() {
-  console.log("🚀 Testing @promptly/query SDK...");
-  const api = new PromptlyQueryApi();
+// Fetch a prompt for your AI agent
+const prompt = await api.deliverPrompt({
+  appId: 'my-app',
+  usecase: 'summarization',
+  agent: 'agent-1',
+});
 
-  const body = {
-    // string | Application/project identifier
-    appId: appId_example,
-    // string | Use case filter (optional)
-    usecase: usecase_example,
-    // string | Agent identifier filter (optional)
-    agent: agent_example,
-  } satisfies DeliverPromptRequest;
-
-  try {
-    const data = await api.deliverPrompt(body);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Run the test
-example().catch(console.error);
+console.log(prompt.content);
 ```
 
+### Usage with Authentication
 
-## Documentation
+```typescript
+import { Configuration, PromptlyQueryApi } from '@promptly/query';
 
-### API Endpoints
+const api = new PromptlyQueryApi(
+  new Configuration({
+    basePath: 'https://your-promptly-instance.com',
+    accessToken: 'your-jwt-token',
+  })
+);
 
-All URIs are relative to *http://localhost:8080*
+const prompts = await api.listPrompts({ page: 0, size: 20 });
+```
 
-| Class | Method | HTTP request | Description
-| ----- | ------ | ------------ | -------------
-*PromptlyQueryApi* | [**deliverPrompt**](docs/PromptlyQueryApi.md#deliverprompt) | **GET** /api/v1/deliver | Deliver prompt to AI agent
-*PromptlyQueryApi* | [**getProject**](docs/PromptlyQueryApi.md#getproject) | **GET** /api/v1/projects/{id} | Get project by ID
-*PromptlyQueryApi* | [**getPrompt**](docs/PromptlyQueryApi.md#getprompt) | **GET** /api/v1/prompts/{id} | Get prompt details
-*PromptlyQueryApi* | [**getSpecificVersion**](docs/PromptlyQueryApi.md#getspecificversion) | **GET** /api/v1/prompts/{id}/versions/{versionNumber} | Get a specific version
-*PromptlyQueryApi* | [**getVersionHistory**](docs/PromptlyQueryApi.md#getversionhistory) | **GET** /api/v1/prompts/{id}/versions | Get version history
-*PromptlyQueryApi* | [**listProjects**](docs/PromptlyQueryApi.md#listprojects) | **GET** /api/v1/projects | List projects (paginated)
-*PromptlyQueryApi* | [**listPrompts**](docs/PromptlyQueryApi.md#listprompts) | **GET** /api/v1/prompts | List prompts (paginated)
-*PromptlyQueryApi* | [**searchPrompts**](docs/PromptlyQueryApi.md#searchprompts) | **GET** /api/v1/search | Semantic search for prompts
+### Usage in Express / Node.js
 
+```typescript
+import express from 'express';
+import { Configuration, PromptlyQueryApi } from '@promptly/query';
 
-### Models
+const app = express();
+const promptly = new PromptlyQueryApi(
+  new Configuration({ basePath: process.env.PROMPTLY_URL })
+);
 
-- [ContentFormat](docs/ContentFormat.md)
-- [DeliveryResponse](docs/DeliveryResponse.md)
-- [ProblemDetails](docs/ProblemDetails.md)
-- [ProjectResponse](docs/ProjectResponse.md)
-- [PromptResponse](docs/PromptResponse.md)
-- [PromptStatus](docs/PromptStatus.md)
-- [PromptSummaryResponse](docs/PromptSummaryResponse.md)
-- [SearchResponse](docs/SearchResponse.md)
-- [ValidationError](docs/ValidationError.md)
-- [VersionResponse](docs/VersionResponse.md)
+app.get('/ai/prompt', async (req, res) => {
+  const prompt = await promptly.deliverPrompt({
+    appId: req.query.app as string,
+    usecase: req.query.usecase as string,
+  });
+  res.json({ prompt: prompt.content });
+});
+```
 
-### Authorization
+## Available API Methods
 
+| Method | HTTP | Endpoint | Description |
+|--------|------|----------|-------------|
+| `deliverPrompt` | `GET` | `/api/v1/deliver` | Fetch a prompt for AI agent runtime |
+| `getPrompt` | `GET` | `/api/v1/prompts/{id}` | Get prompt details by ID |
+| `listPrompts` | `GET` | `/api/v1/prompts` | List prompts (paginated) |
+| `getVersionHistory` | `GET` | `/api/v1/prompts/{id}/versions` | Get version history |
+| `getSpecificVersion` | `GET` | `/api/v1/prompts/{id}/versions/{v}` | Get a specific version |
+| `getProject` | `GET` | `/api/v1/projects/{id}` | Get project by ID |
+| `listProjects` | `GET` | `/api/v1/projects` | List projects (paginated) |
+| `searchPrompts` | `GET` | `/api/v1/search` | Semantic search for prompts |
 
-Authentication schemes defined for the API:
-<a id="BearerAuth"></a>
-#### BearerAuth
+## Models
 
+| Model | Description |
+|-------|-------------|
+| `DeliveryResponse` | Prompt content delivered to AI agents |
+| `PromptResponse` | Full prompt details with metadata |
+| `PromptSummaryResponse` | Lightweight prompt summary for list views |
+| `VersionResponse` | Version snapshot with content and metadata |
+| `ProjectResponse` | Project details |
+| `SearchResponse` | Semantic search result with relevance score |
+| `ContentFormat` | Enum: `PLAIN_TEXT`, `MARKDOWN`, `JSON` |
+| `PromptStatus` | Enum: `DRAFT`, `IN_REVIEW`, `APPROVED`, `REJECTED` |
 
-- **Type**: HTTP Bearer Token authentication (JWT)
+## Runtime Compatibility
 
-## About
+| Environment | Supported |
+|------------|-----------|
+| Node.js 18+ | ✅ |
+| Deno | ✅ |
+| Cloudflare Workers | ✅ |
+| Browsers (ES6+) | ✅ |
+| Webpack / Vite | ✅ |
+| CommonJS | ✅ |
+| ES Modules | ✅ |
 
-This TypeScript SDK client supports the [Fetch API](https://fetch.spec.whatwg.org/)
-and is automatically generated by the
-[OpenAPI Generator](https://openapi-generator.tech) project:
-
-- API version: `1.0.0`
-- Package version: `1.0.0`
-- Generator version: `7.21.0`
-- Build package: `org.openapitools.codegen.languages.TypeScriptFetchClientCodegen`
-
-The generated npm module supports the following:
-
-- Environments
-  * Node.js
-  * Webpack
-  * Browserify
-- Language levels
-  * ES5 - you must have a Promises/A+ library installed
-  * ES6
-- Module systems
-  * CommonJS
-  * ES6 module system
-
-For more information, please visit [https://promptly.dev](https://promptly.dev)
-
-## Development
-
-### Building
-
-To build the TypeScript source code, you need to have Node.js and npm installed.
-After cloning the repository, navigate to the project directory and run:
+## Building from Source
 
 ```bash
 npm install
 npm run build
 ```
 
-### Publishing
-
-Once you've built the package, you can publish it to npm:
+## Publishing
 
 ```bash
 npm publish
 ```
 
-## License
+## Regeneration
 
-[Proprietary](https://promptly.dev/license)
+From the monorepo root:
+
+```bash
+pnpm run build:openapi
+```
+
+---
+
+## Related
+
+- [Main README](../../../../../../../README.md) — full platform overview
+- [OpenAPI Spec](../../../../openapi-spec) — the source YAML specification
+- [Angular SDK](../../../angular/promptly-client) — Angular client (for Angular apps)
+- [Python SDK](../../python/promptly-query) — Python client
+- [Java Query SDK](../../java-spring/promptly-query) — Spring WebClient SDK
+
+---
+
+<p align="center">
+  Part of the <a href="https://github.com/spectrayan/promptly">Promptly</a> platform · Auto-generated by <a href="https://openapi-generator.tech">OpenAPI Generator</a>
+</p>
