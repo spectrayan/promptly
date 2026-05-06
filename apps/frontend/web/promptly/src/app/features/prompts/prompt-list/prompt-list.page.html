@@ -4,6 +4,24 @@
     <p>Manage and version your AI prompts</p>
   </div>
   <div class="header-actions">
+    <button mat-icon-button (click)="toggleViewMode()" [matTooltip]="viewMode() === 'list' ? 'Switch to Card View' : 'Switch to List View'">
+      <mat-icon>{{ viewMode() === 'list' ? 'grid_view' : 'list' }}</mat-icon>
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="importExportMenu" matTooltip="Import / Export">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #importExportMenu="matMenu">
+      <button mat-menu-item (click)="openImportDialog()">
+        <mat-icon>upload_file</mat-icon>
+        <span>Import Prompts</span>
+      </button>
+      <button mat-menu-item (click)="exportAll()">
+        <mat-icon>download</mat-icon>
+        <span>Export All (JSON)</span>
+      </button>
+    </mat-menu>
+
     <button mat-flat-button color="primary" (click)="openCreatePage()" id="new-prompt-btn">
       <mat-icon>add</mat-icon> New Prompt
     </button>
@@ -13,60 +31,140 @@
 @if (facade.loading()) {
   <div class="loading-center"><mat-spinner diameter="40" /></div>
 } @else {
-  <mat-card>
-    <table mat-table [dataSource]="paginatedPrompts()" matSort
-           (matSortChange)="onSortChange($event)" class="prompt-table">
+  @if (viewMode() === 'list') {
+    <mat-card>
+      <table mat-table [dataSource]="paginatedPrompts()" matSort
+             (matSortChange)="onSortChange($event)" class="prompt-table">
 
-      <!-- Name — sortable -->
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-        <td mat-cell *matCellDef="let p">
-          <div class="prompt-name-cell">
-            <div>
-              <a class="prompt-link" (click)="goToPrompt(p.id)">{{ p.name }}</a>
-              @if (p.description) {
-                <div class="cell-subtitle">{{ p.description }}</div>
+        <!-- Name — sortable -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let p">
+            <div class="prompt-name-cell">
+              <div>
+                <a class="prompt-link" (click)="goToPrompt(p.id!)">{{ p.name }}</a>
+                @if (p.description) {
+                  <div class="cell-subtitle">{{ p.description }}</div>
+                }
+                <div style="display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap;">
+                  @for (tag of p.tags; track tag) {
+                    <span class="badge" [class]="tag.toLowerCase() === 'business' || tag.toLowerCase() === 'core' ? 'badge-tag-special' : 'badge-tag-generic'">{{ tag }}</span>
+                  }
+                </div>
+              </div>
+              <button mat-icon-button class="copy-id-btn"
+                      (click)="copyId(p.id!, $event)"
+                      [matTooltip]="'Copy ID: ' + p.id">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Status & Scans -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status & Security</th>
+          <td mat-cell *matCellDef="let p">
+            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+              <!-- Workflow Status -->
+              <span class="badge"
+                    [class.badge-success]="p.status === 'APPROVED'"
+                    [class.badge-warning]="p.status === 'IN_REVIEW'"
+                    [class.badge-danger]="p.status === 'REJECTED'"
+                    [class.badge-neutral]="p.status === 'DRAFT' || p.status === 'DEPRECATED' || !p.status">
+                {{ p.status | enumLabel }}
+              </span>
+              <!-- Security Status -->
+              @if (p.scanStatus && p.scanStatus !== 'NONE') {
+                <span class="badge"
+                      [class.badge-scan-pass]="p.scanStatus === 'PASS'"
+                      [class.badge-scan-warn]="p.scanStatus === 'WARN'"
+                      [class.badge-scan-fail]="p.scanStatus === 'FAIL'">
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px; margin-right: 4px;">security</mat-icon>
+                  {{ p.scanStatus }}
+                </span>
               }
             </div>
-            <button mat-icon-button class="copy-id-btn"
-                    (click)="copyId(p.id, $event)"
-                    [matTooltip]="'Copy ID: ' + p.id">
-              <mat-icon>content_copy</mat-icon>
-            </button>
+          </td>
+        </ng-container>
+
+        <!-- Version — sortable -->
+        <ng-container matColumnDef="currentVersion">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Version</th>
+          <td mat-cell *matCellDef="let p"><span class="badge badge-info">v{{ p.currentVersion }}</span></td>
+        </ng-container>
+
+        <!-- Updated — sortable -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile">Updated</th>
+          <td mat-cell *matCellDef="let p" class="cell-muted hide-mobile">{{ p.updatedAt | date:'MMM d, h:mm a' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="goToPrompt(row.id!)" class="clickable-row"></tr>
+      </table>
+      
+      @if (sortedPrompts().length === 0) {
+        <div class="empty-state">
+          <mat-icon>edit_note</mat-icon>
+          <p>No prompts yet. Create your first one!</p>
+        </div>
+      }
+
+      <mat-paginator
+        [length]="sortedPrompts().length"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons />
+    </mat-card>
+  } @else {
+    <!-- Card View -->
+    <div class="prompt-grid">
+      @for (p of paginatedPrompts(); track p.id) {
+        <div class="prompt-card-glass" (click)="goToPrompt(p.id!)">
+          <div class="card-header-row">
+            <!-- Security Status on left -->
+            @if (p.scanStatus && p.scanStatus !== 'NONE') {
+              <span class="badge"
+                    [class.badge-scan-pass]="p.scanStatus === 'PASS'"
+                    [class.badge-scan-warn]="p.scanStatus === 'WARN'"
+                    [class.badge-scan-fail]="p.scanStatus === 'FAIL'">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px; margin-right: 4px;">security</mat-icon>
+                {{ p.scanStatus }}
+              </span>
+            } @else {
+              <span></span> <!-- Spacer -->
+            }
+            
+            <!-- Workflow Status on right -->
+            <span class="badge"
+                  [class.badge-success]="p.status === 'APPROVED'"
+                  [class.badge-warning]="p.status === 'IN_REVIEW'"
+                  [class.badge-danger]="p.status === 'REJECTED'"
+                  [class.badge-neutral]="p.status === 'DRAFT' || p.status === 'DEPRECATED' || !p.status">
+              {{ p.status | enumLabel }}
+            </span>
           </div>
-        </td>
-      </ng-container>
 
-      <!-- Status — sortable -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-        <td mat-cell *matCellDef="let p">
-          <span class="badge"
-                [class.badge-success]="p.status === 'APPROVED'"
-                [class.badge-warning]="p.status === 'IN_REVIEW'"
-                [class.badge-danger]="p.status === 'REJECTED'"
-                [class.badge-neutral]="p.status === 'DRAFT' || p.status === 'DEPRECATED' || !p.status">
-            {{ p.status | enumLabel }}
-          </span>
-        </td>
-      </ng-container>
+          <h3 class="card-title">{{ p.name }}</h3>
+          <p class="card-description">{{ p.description }}</p>
 
-      <!-- Version — sortable -->
-      <ng-container matColumnDef="currentVersion">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Version</th>
-        <td mat-cell *matCellDef="let p"><span class="badge badge-info">v{{ p.currentVersion }}</span></td>
-      </ng-container>
+          <div class="card-tags">
+            @for (tag of p.tags; track tag) {
+              <span class="badge" [class]="tag.toLowerCase() === 'business' || tag.toLowerCase() === 'core' ? 'badge-tag-special' : 'badge-tag-generic'">{{ tag }}</span>
+            }
+          </div>
 
-      <!-- Updated — sortable -->
-      <ng-container matColumnDef="updatedAt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile">Updated</th>
-        <td mat-cell *matCellDef="let p" class="cell-muted hide-mobile">{{ p.updatedAt | date:'MMM d, h:mm a' }}</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="goToPrompt(row.id)" class="clickable-row"></tr>
-    </table>
-
+          <div class="card-footer">
+            <span>v{{ p.currentVersion }}</span>
+            <span>{{ p.updatedAt | date:'MMM d, yyyy' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+    
     @if (sortedPrompts().length === 0) {
       <div class="empty-state">
         <mat-icon>edit_note</mat-icon>
@@ -80,6 +178,7 @@
       [pageIndex]="pageIndex()"
       [pageSizeOptions]="[5, 10, 25, 50]"
       (page)="onPageChange($event)"
-      showFirstLastButtons />
-  </mat-card>
+      showFirstLastButtons 
+      class="grid-paginator" />
+  }
 }
