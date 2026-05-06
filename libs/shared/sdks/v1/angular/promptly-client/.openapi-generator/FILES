@@ -1,5 +1,4 @@
 .gitignore
-README.md
 api.base.service.ts
 api.module.ts
 api/audit.service.ts
@@ -8,6 +7,8 @@ api/auth.service.ts
 api/auth.serviceInterface.ts
 api/delivery.service.ts
 api/delivery.serviceInterface.ts
+api/exchange.service.ts
+api/exchange.serviceInterface.ts
 api/improver.service.ts
 api/improver.serviceInterface.ts
 api/notifications.service.ts
@@ -36,10 +37,14 @@ model/create-project-request.model.ts
 model/create-prompt-request.model.ts
 model/delivery-response.model.ts
 model/duplicate-check-response.model.ts
+model/export-manifest-filters.model.ts
+model/export-manifest-summary.model.ts
+model/export-manifest.model.ts
 model/finding-response.model.ts
 model/finding-type.model.ts
 model/generate-from-idea-request.model.ts
 model/generate-from-idea-response.model.ts
+model/import-result-response.model.ts
 model/improvement-response.model.ts
 model/login-request.model.ts
 model/models.ts
@@ -54,6 +59,9 @@ model/project-member-response.model.ts
 model/project-notification-settings-response.model.ts
 model/project-response.model.ts
 model/project-role.model.ts
+model/prompt-bundle-approval.model.ts
+model/prompt-bundle-scan.model.ts
+model/prompt-bundle.model.ts
 model/prompt-response.model.ts
 model/prompt-status.model.ts
 model/prompt-summary-response.model.ts

@@ -32,8 +32,16 @@ export interface PromptResponse {
     tags?: Array<string>;
     createdAt?: string;
     updatedAt?: string;
+    scanStatus?: PromptResponse.ScanStatusEnum;
 }
 export namespace PromptResponse {
+    export const ScanStatusEnum = {
+        Pass: 'PASS',
+        Warn: 'WARN',
+        Fail: 'FAIL',
+        None: 'NONE'
+    } as const;
+    export type ScanStatusEnum = typeof ScanStatusEnum[keyof typeof ScanStatusEnum];
 }
 
 
