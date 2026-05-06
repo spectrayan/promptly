@@ -1,4 +1,4 @@
-package com.promptly.export.domain.model;
+package com.promptly.exchange.domain.model;
 
 import lombok.Builder;
 import lombok.Data;

@@ -38,6 +38,8 @@ public class PromptWebMapper {
         response.setCreatedAt(toOffsetDateTime(prompt.getCreatedAt()));
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
         response.setStatus(toDtoStatus(prompt.getStatus()));
+        // TODO: In the future, fetch real scan status from the scanner module
+        response.setScanStatus(PromptResponse.ScanStatusEnum.PASS);
         return response;
     }
 
@@ -50,6 +52,8 @@ public class PromptWebMapper {
         response.setCurrentVersion(prompt.getCurrentVersion());
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
         response.setStatus(toDtoStatus(prompt.getStatus()));
+        response.setTags(prompt.getTags() != null ? new java.util.ArrayList<>(prompt.getTags()) : null);
+        response.setScanStatus(PromptSummaryResponse.ScanStatusEnum.PASS); // TODO: fetch real scan status
         return response;
     }
 

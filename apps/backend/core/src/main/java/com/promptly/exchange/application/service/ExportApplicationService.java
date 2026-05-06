@@ -1,9 +1,11 @@
-package com.promptly.export.application.service;
+package com.promptly.exchange.application.service;
 
-import com.promptly.export.domain.model.ExportManifest;
-import com.promptly.export.domain.model.PromptBundle;
+import com.promptly.exchange.domain.model.ExportManifest;
+import com.promptly.exchange.domain.model.PromptBundle;
 import com.promptly.prompt.PromptModuleApi;
 import com.promptly.prompt.PromptProjection;
+import com.promptly.exchange.application.port.in.ExportUseCase;
+import com.promptly.exchange.application.port.in.ImportUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ExportApplicationService {
+public class ExportApplicationService implements ExportUseCase, ImportUseCase {
 
     private final PromptModuleApi promptModuleApi;
 
