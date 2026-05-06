@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.promptly.infrastructure.in.web.dto.PromptStatus;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.OffsetDateTime;
@@ -22,7 +25,7 @@ import jakarta.annotation.Generated;
  * PromptSummaryResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-29T16:30:34.655679900-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-05-05T23:45:25.362554800-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class PromptSummaryResponse {
 
   private @Nullable String id;
@@ -39,6 +42,50 @@ public class PromptSummaryResponse {
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private @Nullable OffsetDateTime updatedAt;
+
+  @Valid
+  private List<String> tags = new ArrayList<>();
+
+  /**
+   * Gets or Sets scanStatus
+   */
+  public enum ScanStatusEnum {
+    PASS("PASS"),
+    
+    WARN("WARN"),
+    
+    FAIL("FAIL"),
+    
+    NONE("NONE");
+
+    private final String value;
+
+    ScanStatusEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ScanStatusEnum fromValue(String value) {
+      for (ScanStatusEnum b : ScanStatusEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  private @Nullable ScanStatusEnum scanStatus;
 
   public PromptSummaryResponse id(@Nullable String id) {
     this.id = id;
@@ -187,6 +234,56 @@ public class PromptSummaryResponse {
     this.updatedAt = updatedAt;
   }
 
+  public PromptSummaryResponse tags(List<String> tags) {
+    this.tags = tags;
+    return this;
+  }
+
+  public PromptSummaryResponse addTagsItem(String tagsItem) {
+    if (this.tags == null) {
+      this.tags = new ArrayList<>();
+    }
+    this.tags.add(tagsItem);
+    return this;
+  }
+
+  /**
+   * Get tags
+   * @return tags
+   */
+  
+  @Schema(name = "tags", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("tags")
+  public List<String> getTags() {
+    return tags;
+  }
+
+  @JsonProperty("tags")
+  public void setTags(List<String> tags) {
+    this.tags = tags;
+  }
+
+  public PromptSummaryResponse scanStatus(@Nullable ScanStatusEnum scanStatus) {
+    this.scanStatus = scanStatus;
+    return this;
+  }
+
+  /**
+   * Get scanStatus
+   * @return scanStatus
+   */
+  
+  @Schema(name = "scanStatus", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("scanStatus")
+  public @Nullable ScanStatusEnum getScanStatus() {
+    return scanStatus;
+  }
+
+  @JsonProperty("scanStatus")
+  public void setScanStatus(@Nullable ScanStatusEnum scanStatus) {
+    this.scanStatus = scanStatus;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -202,12 +299,14 @@ public class PromptSummaryResponse {
         Objects.equals(this.projectId, promptSummaryResponse.projectId) &&
         Objects.equals(this.status, promptSummaryResponse.status) &&
         Objects.equals(this.currentVersion, promptSummaryResponse.currentVersion) &&
-        Objects.equals(this.updatedAt, promptSummaryResponse.updatedAt);
+        Objects.equals(this.updatedAt, promptSummaryResponse.updatedAt) &&
+        Objects.equals(this.tags, promptSummaryResponse.tags) &&
+        Objects.equals(this.scanStatus, promptSummaryResponse.scanStatus);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, projectId, status, currentVersion, updatedAt);
+    return Objects.hash(id, name, description, projectId, status, currentVersion, updatedAt, tags, scanStatus);
   }
 
   @Override
@@ -221,6 +320,8 @@ public class PromptSummaryResponse {
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    currentVersion: ").append(toIndentedString(currentVersion)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
+    sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
+    sb.append("    scanStatus: ").append(toIndentedString(scanStatus)).append("\n");
     sb.append("}");
     return sb.toString();
   }

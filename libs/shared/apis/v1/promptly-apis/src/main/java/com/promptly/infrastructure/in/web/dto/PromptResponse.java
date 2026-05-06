@@ -26,7 +26,7 @@ import jakarta.annotation.Generated;
  * PromptResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-29T16:30:34.655679900-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-05-05T23:45:25.362554800-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class PromptResponse {
 
   private @Nullable String id;
@@ -53,6 +53,47 @@ public class PromptResponse {
 
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
   private @Nullable OffsetDateTime updatedAt;
+
+  /**
+   * Gets or Sets scanStatus
+   */
+  public enum ScanStatusEnum {
+    PASS("PASS"),
+    
+    WARN("WARN"),
+    
+    FAIL("FAIL"),
+    
+    NONE("NONE");
+
+    private final String value;
+
+    ScanStatusEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ScanStatusEnum fromValue(String value) {
+      for (ScanStatusEnum b : ScanStatusEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  private @Nullable ScanStatusEnum scanStatus;
 
   public PromptResponse id(@Nullable String id) {
     this.id = id;
@@ -293,6 +334,27 @@ public class PromptResponse {
     this.updatedAt = updatedAt;
   }
 
+  public PromptResponse scanStatus(@Nullable ScanStatusEnum scanStatus) {
+    this.scanStatus = scanStatus;
+    return this;
+  }
+
+  /**
+   * Get scanStatus
+   * @return scanStatus
+   */
+  
+  @Schema(name = "scanStatus", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("scanStatus")
+  public @Nullable ScanStatusEnum getScanStatus() {
+    return scanStatus;
+  }
+
+  @JsonProperty("scanStatus")
+  public void setScanStatus(@Nullable ScanStatusEnum scanStatus) {
+    this.scanStatus = scanStatus;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -312,12 +374,13 @@ public class PromptResponse {
         Objects.equals(this.latestContent, promptResponse.latestContent) &&
         Objects.equals(this.tags, promptResponse.tags) &&
         Objects.equals(this.createdAt, promptResponse.createdAt) &&
-        Objects.equals(this.updatedAt, promptResponse.updatedAt);
+        Objects.equals(this.updatedAt, promptResponse.updatedAt) &&
+        Objects.equals(this.scanStatus, promptResponse.scanStatus);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, projectId, status, contentFormat, currentVersion, latestContent, tags, createdAt, updatedAt);
+    return Objects.hash(id, name, description, projectId, status, contentFormat, currentVersion, latestContent, tags, createdAt, updatedAt, scanStatus);
   }
 
   @Override
@@ -335,6 +398,7 @@ public class PromptResponse {
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
+    sb.append("    scanStatus: ").append(toIndentedString(scanStatus)).append("\n");
     sb.append("}");
     return sb.toString();
   }
