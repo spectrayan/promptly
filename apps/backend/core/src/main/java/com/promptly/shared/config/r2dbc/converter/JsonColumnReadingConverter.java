@@ -22,6 +22,6 @@ public class JsonColumnReadingConverter implements Converter<String, JsonColumn>
 
     @Override
     public JsonColumn convert(String source) {
-        return JsonColumn.fromJson(source);
+        return JsonColumn.of(source);
     }
 }

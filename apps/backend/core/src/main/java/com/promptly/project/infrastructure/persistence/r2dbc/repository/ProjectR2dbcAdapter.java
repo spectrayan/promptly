@@ -3,7 +3,6 @@ package com.promptly.project.infrastructure.persistence.r2dbc.repository;
 import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
 import com.promptly.project.infrastructure.persistence.r2dbc.entity.ProjectR2dbcEntity;
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -48,7 +47,7 @@ public class ProjectR2dbcAdapter implements ProjectPersistencePort {
         return ProjectR2dbcEntity.builder()
                 .name(project.getName())
                 .description(project.getDescription())
-                .tags(JsonColumn.ofOrEmptyArray(project.getTags()))
+                .tags(project.getTags() != null ? project.getTags() : List.of())
                 .createdBy(project.getCreatedBy())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
@@ -56,13 +55,11 @@ public class ProjectR2dbcAdapter implements ProjectPersistencePort {
     }
 
     private Project toDomain(ProjectR2dbcEntity entity) {
-        List<String> tags = entity.getTags() != null ? entity.getTags().toList() : List.of();
-
         return Project.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .description(entity.getDescription())
-                .tags(tags)
+                .tags(entity.getTags() != null ? entity.getTags() : List.of())
                 .createdBy(entity.getCreatedBy())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())

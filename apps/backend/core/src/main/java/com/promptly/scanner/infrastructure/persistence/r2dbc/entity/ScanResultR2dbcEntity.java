@@ -17,7 +17,9 @@ import java.time.Instant;
 /**
  * R2DBC entity for the {@code scan_results} table.
  * <p>
- * Findings are stored as a JSON column (JSONB on PostgreSQL, JSON on H2).
+ * The {@code findings} field uses {@link JsonColumn} wrapper because its domain
+ * type ({@code List<Finding>}) is a complex domain object that generic converters
+ * cannot handle. The adapter converts between {@code JsonColumn} and the domain type.
  */
 @Data
 @Builder
@@ -52,7 +54,7 @@ public class ScanResultR2dbcEntity {
     @Column("scanned_by")
     private String scannedBy;
 
-    /** JSON array of findings — JSONB on PostgreSQL, JSON on H2. */
+    /** JSON array of findings — uses JsonColumn wrapper (complex domain type). */
     private JsonColumn findings;
 
     @Column("scanned_at")

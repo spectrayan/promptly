@@ -3,7 +3,6 @@ package com.promptly.notification.infrastructure.persistence.r2dbc.repository;
 import com.promptly.notification.application.port.out.NotificationPreferencePersistencePort;
 import com.promptly.notification.domain.model.NotificationPreference;
 import com.promptly.notification.infrastructure.persistence.r2dbc.entity.NotificationPreferenceR2dbcEntity;
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -38,7 +37,7 @@ public class NotificationPreferenceR2dbcAdapter implements NotificationPreferenc
         return NotificationPreferenceR2dbcEntity.builder()
                 .userId(p.getUserId())
                 .projectId(p.getProjectId())
-                .mutedEvents(JsonColumn.ofOrEmptyArray(p.getMutedEvents()))
+                .mutedEvents(p.getMutedEvents() != null ? p.getMutedEvents() : Set.of())
                 .inAppEnabled(p.isInAppEnabled())
                 .emailEnabled(p.isEmailEnabled())
                 .updatedAt(p.getUpdatedAt())
@@ -46,15 +45,11 @@ public class NotificationPreferenceR2dbcAdapter implements NotificationPreferenc
     }
 
     private NotificationPreference toDomain(NotificationPreferenceR2dbcEntity entity) {
-        Set<String> mutedEvents = entity.getMutedEvents() != null
-                ? entity.getMutedEvents().toSet()
-                : new HashSet<>();
-
         return NotificationPreference.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId())
                 .projectId(entity.getProjectId())
-                .mutedEvents(mutedEvents)
+                .mutedEvents(entity.getMutedEvents() != null ? entity.getMutedEvents() : new HashSet<>())
                 .inAppEnabled(entity.isInAppEnabled())
                 .emailEnabled(entity.isEmailEnabled())
                 .updatedAt(entity.getUpdatedAt())

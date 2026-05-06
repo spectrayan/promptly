@@ -1,6 +1,5 @@
 package com.promptly.notification.infrastructure.persistence.r2dbc.entity;
 
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +10,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.Set;
 
 /**
  * R2DBC entity for the {@code notification_preferences} table.
@@ -31,9 +31,9 @@ public class NotificationPreferenceR2dbcEntity {
     @Column("project_id")
     private String projectId;
 
-    /** JSON array of muted event type keys — JSONB on PostgreSQL, JSON on H2. */
+    /** JSON array of muted event type keys — converter handles Set ↔ JSON string. */
     @Column("muted_events")
-    private JsonColumn mutedEvents;
+    private Set<String> mutedEvents;
 
     @Column("in_app_enabled")
     private boolean inAppEnabled;

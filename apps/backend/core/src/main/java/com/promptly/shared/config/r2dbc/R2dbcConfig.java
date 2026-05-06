@@ -1,7 +1,9 @@
 package com.promptly.shared.config.r2dbc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.shared.config.r2dbc.converter.JsonColumnReadingConverter;
 import com.promptly.shared.config.r2dbc.converter.JsonColumnWritingConverter;
+import com.promptly.shared.config.r2dbc.converter.JsonConverters;
 import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -18,13 +20,9 @@ import java.util.List;
 /**
  * R2DBC configuration for SQL persistence (PostgreSQL, H2, SQLite).
  * <p>
- * Enables R2DBC repositories, auditing (createdAt/updatedAt auto-population),
- * and custom JSON column converters.
- * <p>
- * The {@link JsonColumnReadingConverter} and {@link JsonColumnWritingConverter}
- * handle transparent JSON ↔ Java serialization for entity fields typed as
- * {@link com.promptly.shared.config.r2dbc.converter.JsonColumn}. This keeps
- * adapters free of manual {@code ObjectMapper} calls for JSON column handling.
+ * Registers typed JSON converters that use the Spring-managed {@link ObjectMapper}
+ * to transparently convert between database JSON/JSONB columns and Java types
+ * ({@code Set<String>}, {@code List<String>}, {@code Map<String, Object>}).
  */
 @Configuration
 @ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
@@ -37,19 +35,21 @@ public class R2dbcConfig {
         return new R2dbcTransactionManager(connectionFactory);
     }
 
-    /**
-     * Registers custom R2DBC converters for JSON column handling.
-     * <p>
-     * These converters enable transparent serialization between the
-     * database's native JSON/JSONB type and the application's
-     * {@link com.promptly.shared.config.r2dbc.converter.JsonColumn} wrapper.
-     */
     @Bean
-    public R2dbcCustomConversions r2dbcCustomConversions(ConnectionFactory connectionFactory) {
+    public R2dbcCustomConversions r2dbcCustomConversions(ConnectionFactory connectionFactory,
+                                                         ObjectMapper objectMapper) {
         var dialect = DialectResolver.getDialect(connectionFactory);
         return R2dbcCustomConversions.of(dialect, List.of(
+                // JsonColumn wrapper (for complex domain-specific JSON like List<Finding>)
                 new JsonColumnReadingConverter(),
-                new JsonColumnWritingConverter()
+                new JsonColumnWritingConverter(),
+                // Typed converters — entity fields use Set/List/Map directly
+                new JsonConverters.StringToSetConverter(objectMapper),
+                new JsonConverters.SetToStringConverter(objectMapper),
+                new JsonConverters.StringToListConverter(objectMapper),
+                new JsonConverters.ListToStringConverter(objectMapper),
+                new JsonConverters.StringToMapConverter(objectMapper),
+                new JsonConverters.MapToStringConverter(objectMapper)
         ));
     }
 }

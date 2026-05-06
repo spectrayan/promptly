@@ -3,7 +3,6 @@ package com.promptly.notification.infrastructure.persistence.r2dbc.repository;
 import com.promptly.notification.application.port.out.NotificationPersistencePort;
 import com.promptly.notification.domain.model.Notification;
 import com.promptly.notification.infrastructure.persistence.r2dbc.entity.NotificationR2dbcEntity;
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.Map;
 
 /**
  * R2DBC adapter implementing {@link NotificationPersistencePort} for SQL databases.
@@ -70,17 +68,13 @@ public class NotificationR2dbcAdapter implements NotificationPersistencePort {
                 .title(n.getTitle())
                 .message(n.getMessage())
                 .icon(n.getIcon())
-                .payload(JsonColumn.of(n.getPayload()))
+                .payload(n.getPayload())
                 .read(n.isRead())
                 .createdAt(n.getCreatedAt())
                 .build();
     }
 
     private Notification toDomain(NotificationR2dbcEntity entity) {
-        Map<String, Object> payload = entity.getPayload() != null
-                ? entity.getPayload().toMap()
-                : null;
-
         return Notification.builder()
                 .id(entity.getId())
                 .userId(entity.getUserId())
@@ -89,7 +83,7 @@ public class NotificationR2dbcAdapter implements NotificationPersistencePort {
                 .title(entity.getTitle())
                 .message(entity.getMessage())
                 .icon(entity.getIcon())
-                .payload(payload)
+                .payload(entity.getPayload())
                 .read(entity.isRead())
                 .createdAt(entity.getCreatedAt())
                 .build();

@@ -1,6 +1,5 @@
 package com.promptly.audit.infrastructure.persistence.r2dbc.entity;
 
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,13 +11,10 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * R2DBC entity for the {@code audit_logs} table.
- * <p>
- * The {@code id} field is left {@code null} for new entities so that
- * Spring Data R2DBC performs an INSERT (isNew = id == null) and the
- * database generates the UUID via {@code gen_random_uuid()} or equivalent.
  */
 @Data
 @Builder
@@ -53,8 +49,8 @@ public class AuditLogR2dbcEntity {
     @Column("actor_role")
     private String actorRole;
 
-    /** JSON details column — JSONB on PostgreSQL, JSON on H2. */
-    private JsonColumn details;
+    /** JSON details — converter handles Map ↔ JSON string. */
+    private Map<String, Object> details;
 
     private Instant timestamp;
 

@@ -3,14 +3,11 @@ package com.promptly.audit.infrastructure.persistence.r2dbc.repository;
 import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import com.promptly.audit.infrastructure.persistence.r2dbc.entity.AuditLogR2dbcEntity;
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 /**
  * R2DBC adapter implementing {@link AuditPersistencePort} for SQL databases.
@@ -62,7 +59,7 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
                 .actorUserId(entry.getActorUserId())
                 .actorEmail(entry.getActorEmail())
                 .actorRole(entry.getActorRole())
-                .details(JsonColumn.of(entry.getDetails()))
+                .details(entry.getDetails())
                 .timestamp(entry.getTimestamp())
                 .createdAt(entry.getCreatedAt())
                 .updatedAt(entry.getUpdatedAt())
@@ -70,10 +67,6 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
     }
 
     private AuditEntry toDomain(AuditLogR2dbcEntity entity) {
-        Map<String, Object> details = entity.getDetails() != null
-                ? entity.getDetails().toMap()
-                : null;
-
         return AuditEntry.builder()
                 .id(entity.getId())
                 .projectId(entity.getProjectId())
@@ -84,7 +77,7 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
                 .actorUserId(entity.getActorUserId())
                 .actorEmail(entity.getActorEmail())
                 .actorRole(entity.getActorRole())
-                .details(details)
+                .details(entity.getDetails())
                 .timestamp(entity.getTimestamp())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())

@@ -1,6 +1,5 @@
 package com.promptly.notification.infrastructure.persistence.r2dbc.entity;
 
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +10,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * R2DBC entity for the {@code notifications} table.
@@ -36,8 +36,8 @@ public class NotificationR2dbcEntity {
     private String message;
     private String icon;
 
-    /** JSON payload — JSONB on PostgreSQL, JSON on H2. */
-    private JsonColumn payload;
+    /** JSON payload — converter handles Map ↔ JSON string. */
+    private Map<String, Object> payload;
 
     @Column("is_read")
     private boolean read;
