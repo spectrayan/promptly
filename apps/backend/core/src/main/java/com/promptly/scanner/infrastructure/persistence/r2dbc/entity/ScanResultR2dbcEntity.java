@@ -1,6 +1,6 @@
 package com.promptly.scanner.infrastructure.persistence.r2dbc.entity;
 
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
+import com.promptly.scanner.infrastructure.persistence.r2dbc.converter.FindingList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +17,8 @@ import java.time.Instant;
 /**
  * R2DBC entity for the {@code scan_results} table.
  * <p>
- * The {@code findings} field uses {@link JsonColumn} wrapper because its domain
- * type ({@code List<Finding>}) is a complex domain object that generic converters
- * cannot handle. The adapter converts between {@code JsonColumn} and the domain type.
+ * The {@code findings} field uses the {@link FindingList} wrapper — R2DBC
+ * converters handle JSON serialization via the Spring-managed {@code ObjectMapper}.
  */
 @Data
 @Builder
@@ -54,8 +53,8 @@ public class ScanResultR2dbcEntity {
     @Column("scanned_by")
     private String scannedBy;
 
-    /** JSON array of findings — uses JsonColumn wrapper (complex domain type). */
-    private JsonColumn findings;
+    /** JSON array of findings — converter handles FindingList ↔ JSON string. */
+    private FindingList findings;
 
     @Column("scanned_at")
     private Instant scannedAt;

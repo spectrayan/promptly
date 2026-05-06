@@ -1,29 +1,20 @@
 package com.promptly.scanner.infrastructure.persistence.r2dbc.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
-import com.promptly.scanner.domain.model.Finding;
 import com.promptly.scanner.domain.model.ScanResult;
+import com.promptly.scanner.infrastructure.persistence.r2dbc.converter.FindingList;
 import com.promptly.scanner.infrastructure.persistence.r2dbc.entity.ScanResultR2dbcEntity;
-import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * R2DBC adapter implementing {@link ScanResultPersistencePort} for SQL databases.
  * <p>
- * Uses {@link ObjectMapper} only for the {@code findings} field because
- * {@code List<Finding>} is a complex domain type that cannot be handled
- * by generic R2DBC converters. All other JSON fields in other entities
- * use typed fields with R2DBC converters and need no {@code ObjectMapper}.
+ * No {@code ObjectMapper} needed — the {@link FindingList} field is handled
+ * by R2DBC converters automatically.
  */
 @Component
 @ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
@@ -31,7 +22,6 @@ import java.util.List;
 public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
 
     private final ScanResultR2dbcRepository repository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<ScanResult> save(ScanResult scanResult) {
@@ -60,11 +50,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
 
     // ── Mapping ─────────────────────────────────────────────────────
 
-    @SneakyThrows
     private ScanResultR2dbcEntity toEntity(ScanResult scanResult) {
-        String findingsJson = objectMapper.writeValueAsString(
-                scanResult.getFindings() != null ? scanResult.getFindings() : List.of());
-
         return ScanResultR2dbcEntity.builder()
                 .id(scanResult.getId())
                 .projectId(scanResult.getProjectId())
@@ -75,7 +61,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
                 .llmProvider(scanResult.getLlmProvider())
                 .llmModel(scanResult.getLlmModel())
                 .scannedBy(scanResult.getScannedBy())
-                .findings(JsonColumn.of(findingsJson))
+                .findings(new FindingList(scanResult.getFindings()))
                 .scannedAt(scanResult.getScannedAt())
                 .version(scanResult.getVersion() != null && scanResult.getVersion() > 0 ? scanResult.getVersion() : null)
                 .createdAt(scanResult.getCreatedAt())
@@ -83,12 +69,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
                 .build();
     }
 
-    @SneakyThrows
     private ScanResult toDomain(ScanResultR2dbcEntity entity) {
-        List<Finding> findings = entity.getFindings() != null
-                ? objectMapper.readValue(entity.getFindings().asString(), new TypeReference<>() {})
-                : new ArrayList<>();
-
         return ScanResult.builder()
                 .id(entity.getId())
                 .projectId(entity.getProjectId())
@@ -99,7 +80,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
                 .llmProvider(entity.getLlmProvider())
                 .llmModel(entity.getLlmModel())
                 .scannedBy(entity.getScannedBy())
-                .findings(findings)
+                .findings(entity.getFindings() != null ? entity.getFindings().toList() : null)
                 .scannedAt(entity.getScannedAt())
                 .version(entity.getVersion())
                 .createdAt(entity.getCreatedAt())

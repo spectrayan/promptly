@@ -1,8 +1,8 @@
 package com.promptly.shared.config.r2dbc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.promptly.shared.config.r2dbc.converter.JsonColumnReadingConverter;
-import com.promptly.shared.config.r2dbc.converter.JsonColumnWritingConverter;
+import com.promptly.scanner.infrastructure.persistence.r2dbc.converter.FindingListReadingConverter;
+import com.promptly.scanner.infrastructure.persistence.r2dbc.converter.FindingListWritingConverter;
 import com.promptly.shared.config.r2dbc.converter.JsonConverters;
 import io.r2dbc.spi.ConnectionFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,8 +21,9 @@ import java.util.List;
  * R2DBC configuration for SQL persistence (PostgreSQL, H2, SQLite).
  * <p>
  * Registers typed JSON converters that use the Spring-managed {@link ObjectMapper}
- * to transparently convert between database JSON/JSONB columns and Java types
- * ({@code Set<String>}, {@code List<String>}, {@code Map<String, Object>}).
+ * to transparently convert between database JSON/JSONB columns and Java types.
+ * All JSON serialization is handled in the converter layer — adapters are
+ * clean field-to-field mappers with no {@code ObjectMapper} dependency.
  */
 @Configuration
 @ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
@@ -40,16 +41,16 @@ public class R2dbcConfig {
                                                          ObjectMapper objectMapper) {
         var dialect = DialectResolver.getDialect(connectionFactory);
         return R2dbcCustomConversions.of(dialect, List.of(
-                // JsonColumn wrapper (for complex domain-specific JSON like List<Finding>)
-                new JsonColumnReadingConverter(),
-                new JsonColumnWritingConverter(),
-                // Typed converters — entity fields use Set/List/Map directly
+                // Generic JSON converters for Set<String>, List<String>, Map<String,Object>
                 new JsonConverters.StringToSetConverter(objectMapper),
                 new JsonConverters.SetToStringConverter(objectMapper),
                 new JsonConverters.StringToListConverter(objectMapper),
                 new JsonConverters.ListToStringConverter(objectMapper),
                 new JsonConverters.StringToMapConverter(objectMapper),
-                new JsonConverters.MapToStringConverter(objectMapper)
+                new JsonConverters.MapToStringConverter(objectMapper),
+                // Domain-specific: FindingList (List<Finding>)
+                new FindingListReadingConverter(objectMapper),
+                new FindingListWritingConverter(objectMapper)
         ));
     }
 }
