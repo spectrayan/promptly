@@ -1,5 +1,6 @@
 package com.promptly.notification.infrastructure.persistence.r2dbc.entity;
 
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,8 +36,8 @@ public class NotificationR2dbcEntity {
     private String message;
     private String icon;
 
-    /** JSON payload — stored as TEXT/JSONB depending on the SQL dialect. */
-    private String payload;
+    /** JSON payload — JSONB on PostgreSQL, JSON on H2. */
+    private JsonColumn payload;
 
     @Column("is_read")
     private boolean read;

@@ -1,5 +1,6 @@
 package com.promptly.scanner.infrastructure.persistence.r2dbc.entity;
 
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ import java.time.Instant;
 /**
  * R2DBC entity for the {@code scan_results} table.
  * <p>
- * Findings are stored as a JSON string column (TEXT/JSONB depending on dialect).
+ * Findings are stored as a JSON column (JSONB on PostgreSQL, JSON on H2).
  */
 @Data
 @Builder
@@ -51,8 +52,8 @@ public class ScanResultR2dbcEntity {
     @Column("scanned_by")
     private String scannedBy;
 
-    /** JSON array of findings — stored as TEXT/JSONB depending on the SQL dialect. */
-    private String findings;
+    /** JSON array of findings — JSONB on PostgreSQL, JSON on H2. */
+    private JsonColumn findings;
 
     @Column("scanned_at")
     private Instant scannedAt;

@@ -1,13 +1,12 @@
 package com.promptly.scanner.infrastructure.persistence.r2dbc.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.scanner.application.port.out.ScanResultPersistencePort;
 import com.promptly.scanner.domain.model.Finding;
 import com.promptly.scanner.domain.model.ScanResult;
 import com.promptly.scanner.infrastructure.persistence.r2dbc.entity.ScanResultR2dbcEntity;
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -17,8 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * R2DBC adapter implementing {@link ScanResultPersistencePort} for SQL databases
- * (PostgreSQL, H2, SQLite).
+ * R2DBC adapter implementing {@link ScanResultPersistencePort} for SQL databases.
+ * <p>
+ * The {@code findings} field uses {@link JsonColumn} for DB-level JSON handling.
+ * Domain-specific deserialization ({@code List<Finding>}) uses
+ * {@link JsonColumn#readValue(TypeReference)} since {@code Finding} is a domain type.
  */
 @Component
 @ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
@@ -26,7 +28,6 @@ import java.util.List;
 public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
 
     private final ScanResultR2dbcRepository repository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<ScanResult> save(ScanResult scanResult) {
@@ -55,7 +56,6 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
 
     // ── Mapping ─────────────────────────────────────────────────────
 
-    @SneakyThrows
     private ScanResultR2dbcEntity toEntity(ScanResult scanResult) {
         return ScanResultR2dbcEntity.builder()
                 .id(scanResult.getId())
@@ -67,7 +67,7 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
                 .llmProvider(scanResult.getLlmProvider())
                 .llmModel(scanResult.getLlmModel())
                 .scannedBy(scanResult.getScannedBy())
-                .findings(scanResult.getFindings() != null ? objectMapper.writeValueAsString(scanResult.getFindings()) : "[]")
+                .findings(JsonColumn.ofOrEmptyArray(scanResult.getFindings()))
                 .scannedAt(scanResult.getScannedAt())
                 .version(scanResult.getVersion() != null && scanResult.getVersion() > 0 ? scanResult.getVersion() : null)
                 .createdAt(scanResult.getCreatedAt())
@@ -75,10 +75,9 @@ public class ScanResultR2dbcAdapter implements ScanResultPersistencePort {
                 .build();
     }
 
-    @SneakyThrows
     private ScanResult toDomain(ScanResultR2dbcEntity entity) {
         List<Finding> findings = entity.getFindings() != null
-                ? objectMapper.readValue(entity.getFindings(), new TypeReference<>() {})
+                ? entity.getFindings().readValue(new TypeReference<>() {}, new ArrayList<>())
                 : new ArrayList<>();
 
         return ScanResult.builder()

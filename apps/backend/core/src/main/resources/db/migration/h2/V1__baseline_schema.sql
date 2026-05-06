@@ -1,7 +1,7 @@
 -- ════════════════════════════════════════════════════════════════════
 -- V1__baseline_schema.sql
--- Baseline schema for Promptly — H2 (dialect-agnostic SQL)
--- Mirrors the PostgreSQL schema using H2-compatible types.
+-- Baseline schema for Promptly — H2
+-- Mirrors the PostgreSQL schema. Uses native JSON type (H2 2.x+).
 -- ════════════════════════════════════════════════════════════════════
 
 -- ══════════════════════════════════════════════════════════════════
@@ -29,7 +29,7 @@ CREATE TABLE projects (
     id              VARCHAR(36)  PRIMARY KEY DEFAULT RANDOM_UUID(),
     name            VARCHAR(200) NOT NULL,
     description     VARCHAR(1000),
-    tags            CLOB         DEFAULT '[]',
+    tags            JSON         DEFAULT JSON '[]',
     created_by      VARCHAR(100),
     created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -58,7 +58,7 @@ CREATE TABLE prompts (
     description              VARCHAR(1000),
     project_id               VARCHAR(100) NOT NULL,
     content_format           VARCHAR(20),
-    tags                     CLOB         DEFAULT '[]',
+    tags                     JSON         DEFAULT JSON '[]',
     metadata_model           VARCHAR(100),
     metadata_temperature     DOUBLE PRECISION,
     metadata_max_tokens      INTEGER,
@@ -139,7 +139,7 @@ CREATE TABLE audit_logs (
     actor_user_id     VARCHAR(100) NOT NULL,
     actor_email       VARCHAR(255),
     actor_role        VARCHAR(50),
-    details           CLOB,
+    details           JSON,
     timestamp         TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -164,7 +164,7 @@ CREATE TABLE scan_results (
     llm_provider    VARCHAR(50),
     llm_model       VARCHAR(100),
     scanned_by      VARCHAR(100),
-    findings        CLOB         DEFAULT '[]',
+    findings        JSON         DEFAULT JSON '[]',
     scanned_at      TIMESTAMP WITH TIME ZONE,
     version         BIGINT       NOT NULL DEFAULT 0,
     created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -186,7 +186,7 @@ CREATE TABLE notifications (
     title           VARCHAR(200) NOT NULL,
     message         CLOB,
     icon            VARCHAR(50),
-    payload         CLOB,
+    payload         JSON,
     is_read         BOOLEAN      NOT NULL DEFAULT false,
     created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -197,7 +197,7 @@ CREATE TABLE notification_preferences (
     id              VARCHAR(36)  PRIMARY KEY DEFAULT RANDOM_UUID(),
     user_id         VARCHAR(100) NOT NULL,
     project_id      VARCHAR(100) NOT NULL,
-    muted_events    CLOB         DEFAULT '[]',
+    muted_events    JSON         DEFAULT JSON '[]',
     in_app_enabled  BOOLEAN      NOT NULL DEFAULT true,
     email_enabled   BOOLEAN      NOT NULL DEFAULT true,
     updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -207,7 +207,7 @@ CREATE TABLE notification_preferences (
 CREATE TABLE project_notification_settings (
     id              VARCHAR(36)  PRIMARY KEY DEFAULT RANDOM_UUID(),
     project_id      VARCHAR(100) NOT NULL UNIQUE,
-    enabled_events  CLOB         DEFAULT '[]',
+    enabled_events  JSON         DEFAULT JSON '[]',
     updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

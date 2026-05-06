@@ -1,12 +1,10 @@
 package com.promptly.audit.infrastructure.persistence.r2dbc.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.audit.application.port.out.AuditPersistencePort;
 import com.promptly.audit.domain.model.AuditEntry;
 import com.promptly.audit.infrastructure.persistence.r2dbc.entity.AuditLogR2dbcEntity;
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -23,7 +21,6 @@ import java.util.Map;
 public class AuditLogR2dbcAdapter implements AuditPersistencePort {
 
     private final AuditLogR2dbcRepository repository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<AuditEntry> save(AuditEntry entry) {
@@ -55,7 +52,6 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
         return repository.findByAction(action).map(this::toDomain);
     }
 
-    @SneakyThrows
     private AuditLogR2dbcEntity toEntity(AuditEntry entry) {
         return AuditLogR2dbcEntity.builder()
                 .projectId(entry.getProjectId())
@@ -66,17 +62,16 @@ public class AuditLogR2dbcAdapter implements AuditPersistencePort {
                 .actorUserId(entry.getActorUserId())
                 .actorEmail(entry.getActorEmail())
                 .actorRole(entry.getActorRole())
-                .details(entry.getDetails() != null ? objectMapper.writeValueAsString(entry.getDetails()) : null)
+                .details(JsonColumn.of(entry.getDetails()))
                 .timestamp(entry.getTimestamp())
                 .createdAt(entry.getCreatedAt())
                 .updatedAt(entry.getUpdatedAt())
                 .build();
     }
 
-    @SneakyThrows
     private AuditEntry toDomain(AuditLogR2dbcEntity entity) {
         Map<String, Object> details = entity.getDetails() != null
-                ? objectMapper.readValue(entity.getDetails(), new TypeReference<>() {})
+                ? entity.getDetails().toMap()
                 : null;
 
         return AuditEntry.builder()

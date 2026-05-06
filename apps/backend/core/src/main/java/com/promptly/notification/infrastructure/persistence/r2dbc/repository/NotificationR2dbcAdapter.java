@@ -1,12 +1,10 @@
 package com.promptly.notification.infrastructure.persistence.r2dbc.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.notification.application.port.out.NotificationPersistencePort;
 import com.promptly.notification.domain.model.Notification;
 import com.promptly.notification.infrastructure.persistence.r2dbc.entity.NotificationR2dbcEntity;
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -16,8 +14,7 @@ import java.time.Instant;
 import java.util.Map;
 
 /**
- * R2DBC adapter implementing {@link NotificationPersistencePort} for SQL databases
- * (PostgreSQL, H2, SQLite).
+ * R2DBC adapter implementing {@link NotificationPersistencePort} for SQL databases.
  */
 @Component
 @ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
@@ -25,7 +22,6 @@ import java.util.Map;
 public class NotificationR2dbcAdapter implements NotificationPersistencePort {
 
     private final NotificationR2dbcRepository repository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<Notification> save(Notification notification) {
@@ -66,7 +62,6 @@ public class NotificationR2dbcAdapter implements NotificationPersistencePort {
 
     // ── Mapping ─────────────────────────────────────────────────────
 
-    @SneakyThrows
     private NotificationR2dbcEntity toEntity(Notification n) {
         return NotificationR2dbcEntity.builder()
                 .userId(n.getUserId())
@@ -75,16 +70,15 @@ public class NotificationR2dbcAdapter implements NotificationPersistencePort {
                 .title(n.getTitle())
                 .message(n.getMessage())
                 .icon(n.getIcon())
-                .payload(n.getPayload() != null ? objectMapper.writeValueAsString(n.getPayload()) : null)
+                .payload(JsonColumn.of(n.getPayload()))
                 .read(n.isRead())
                 .createdAt(n.getCreatedAt())
                 .build();
     }
 
-    @SneakyThrows
     private Notification toDomain(NotificationR2dbcEntity entity) {
         Map<String, Object> payload = entity.getPayload() != null
-                ? objectMapper.readValue(entity.getPayload(), new TypeReference<>() {})
+                ? entity.getPayload().toMap()
                 : null;
 
         return Notification.builder()

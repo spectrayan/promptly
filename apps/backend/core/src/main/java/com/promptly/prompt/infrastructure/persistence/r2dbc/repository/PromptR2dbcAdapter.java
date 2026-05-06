@@ -1,12 +1,10 @@
 package com.promptly.prompt.infrastructure.persistence.r2dbc.repository;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.*;
 import com.promptly.prompt.infrastructure.persistence.r2dbc.entity.PromptR2dbcEntity;
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -18,6 +16,9 @@ import java.util.Set;
 /**
  * R2DBC adapter implementing {@link PromptPersistencePort} for SQL databases
  * (PostgreSQL, H2, SQLite).
+ * <p>
+ * JSON columns are handled by {@link JsonColumn} and R2DBC converters —
+ * no manual {@code ObjectMapper} needed.
  */
 @Component
 @ConditionalOnProperty(name = "promptly.persistence.type", havingValue = "sql")
@@ -25,7 +26,6 @@ import java.util.Set;
 public class PromptR2dbcAdapter implements PromptPersistencePort {
 
     private final PromptR2dbcRepository repository;
-    private final ObjectMapper objectMapper;
 
     @Override
     public Mono<Prompt> save(Prompt prompt) {
@@ -69,7 +69,6 @@ public class PromptR2dbcAdapter implements PromptPersistencePort {
 
     // ── Mapping ─────────────────────────────────────────────────────
 
-    @SneakyThrows
     private PromptR2dbcEntity toEntity(Prompt prompt) {
         PromptMetadata md = prompt.getMetadata();
 
@@ -79,7 +78,7 @@ public class PromptR2dbcAdapter implements PromptPersistencePort {
                 .description(prompt.getDescription())
                 .projectId(prompt.getProjectId())
                 .contentFormat(prompt.getContentFormat() != null ? prompt.getContentFormat().name() : null)
-                .tags(prompt.getTags() != null ? objectMapper.writeValueAsString(prompt.getTags()) : "[]")
+                .tags(JsonColumn.ofOrEmptyArray(prompt.getTags()))
                 .metadataModel(md != null ? md.getModel() : null)
                 .metadataTemperature(md != null ? md.getTemperature() : null)
                 .metadataMaxTokens(md != null ? md.getMaxTokens() : null)
@@ -94,11 +93,8 @@ public class PromptR2dbcAdapter implements PromptPersistencePort {
                 .build();
     }
 
-    @SneakyThrows
     private Prompt toDomain(PromptR2dbcEntity entity) {
-        Set<String> tags = entity.getTags() != null
-                ? objectMapper.readValue(entity.getTags(), new TypeReference<>() {})
-                : Set.of();
+        Set<String> tags = entity.getTags() != null ? entity.getTags().toSet() : Set.of();
 
         PromptMetadata metadata = null;
         if (entity.getMetadataModel() != null || entity.getMetadataTemperature() != null

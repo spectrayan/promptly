@@ -1,5 +1,6 @@
 package com.promptly.audit.infrastructure.persistence.r2dbc.entity;
 
+import com.promptly.shared.config.r2dbc.converter.JsonColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -52,8 +53,8 @@ public class AuditLogR2dbcEntity {
     @Column("actor_role")
     private String actorRole;
 
-    /** JSON details column — stored as TEXT/JSONB depending on the SQL dialect. */
-    private String details;
+    /** JSON details column — JSONB on PostgreSQL, JSON on H2. */
+    private JsonColumn details;
 
     private Instant timestamp;
 
