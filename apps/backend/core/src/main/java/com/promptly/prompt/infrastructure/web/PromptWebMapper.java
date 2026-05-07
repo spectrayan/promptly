@@ -20,10 +20,6 @@ import java.time.ZoneOffset;
 public class PromptWebMapper {
 
     public PromptResponse toPromptResponse(Prompt prompt) {
-        String latestContent = (prompt.getVersions() != null && !prompt.getVersions().isEmpty())
-                ? prompt.getVersions().get(prompt.getVersions().size() - 1).getContent()
-                : null;
-
         var response = new PromptResponse();
         response.setId(prompt.getId());
         response.setName(prompt.getName());
@@ -33,13 +29,13 @@ public class PromptWebMapper {
                 ? ContentFormat.fromValue(prompt.getContentFormat().name())
                 : null);
         response.setCurrentVersion(prompt.getCurrentVersion());
-        response.setLatestContent(latestContent);
+        response.setLatestContent(prompt.getContent());
         response.setTags(prompt.getTags() != null ? new java.util.ArrayList<>(prompt.getTags()) : null);
         response.setCreatedAt(toOffsetDateTime(prompt.getCreatedAt()));
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
         response.setStatus(toDtoStatus(prompt.getStatus()));
-        // TODO: In the future, fetch real scan status from the scanner module
-        response.setScanStatus(PromptResponse.ScanStatusEnum.PASS);
+        // scanStatus is not set here — it remains null until a real scan is performed.
+        // The frontend guards display with: @if (p.scanStatus && p.scanStatus !== 'NONE')
         return response;
     }
 
@@ -53,7 +49,7 @@ public class PromptWebMapper {
         response.setUpdatedAt(toOffsetDateTime(prompt.getUpdatedAt()));
         response.setStatus(toDtoStatus(prompt.getStatus()));
         response.setTags(prompt.getTags() != null ? new java.util.ArrayList<>(prompt.getTags()) : null);
-        response.setScanStatus(PromptSummaryResponse.ScanStatusEnum.PASS); // TODO: fetch real scan status
+        // scanStatus is left null — populated only after a real scan completes
         return response;
     }
 

@@ -55,6 +55,9 @@ public class PromptDocument {
     @Field("currentVersion")
     private int currentVersion;
 
+    @Field("content")
+    private String content;
+
     @NotNull
     @Field("status")
     private String status;

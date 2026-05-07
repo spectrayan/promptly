@@ -11,6 +11,7 @@ import com.promptly.infrastructure.in.web.dto.VersionResponse;
 import com.promptly.prompt.application.port.in.*;
 import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
+import com.promptly.improver.application.port.in.ImprovePromptUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,6 +36,7 @@ public class PromptController implements PromptsApi {
     private final GetPromptUseCase getPromptUseCase;
     private final RollbackPromptUseCase rollbackPromptUseCase;
     private final DeletePromptUseCase deletePromptUseCase;
+    private final ImprovePromptUseCase improvePromptUseCase;
     private final PromptHistoryPersistencePort historyRepository;
     private final PromptWebMapper mapper;
 
@@ -125,8 +127,16 @@ public class PromptController implements PromptsApi {
     @Override
     public Mono<ResponseEntity<GenerateFromIdeaResponse>> generateFromIdea(
             Mono<GenerateFromIdeaRequest> generateFromIdeaRequest, ServerWebExchange exchange) {
-        // TODO: Implement AI-powered prompt generation from an idea
-        return Mono.just(ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build());
+        return generateFromIdeaRequest
+                .flatMap(req -> improvePromptUseCase.generateFromIdea(req.getIdea()))
+                .map(result -> {
+                    var response = new GenerateFromIdeaResponse();
+                    response.setGeneratedContent(result.generatedContent());
+                    response.setTitle(result.title());
+                    response.setSummary(result.summary());
+                    return response;
+                })
+                .map(ResponseEntity::ok);
     }
 
     /**

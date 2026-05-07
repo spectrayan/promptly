@@ -57,6 +57,9 @@ public class PromptR2dbcEntity {
     @Column("current_version")
     private int currentVersion;
 
+    @Column("content")
+    private String content;
+
     private String status;
 
     @Version

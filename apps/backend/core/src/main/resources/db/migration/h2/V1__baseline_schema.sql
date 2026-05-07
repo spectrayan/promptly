@@ -64,6 +64,7 @@ CREATE TABLE prompts (
     metadata_max_tokens      INTEGER,
     metadata_system_context  CLOB,
     current_version          INTEGER      NOT NULL DEFAULT 0,
+    content                  CLOB,
     status                   VARCHAR(20)  NOT NULL DEFAULT 'DRAFT',
     version                  BIGINT       NOT NULL DEFAULT 0,
     created_at               TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
