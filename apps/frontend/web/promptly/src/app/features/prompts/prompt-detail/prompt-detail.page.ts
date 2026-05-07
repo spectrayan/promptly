@@ -20,9 +20,11 @@ import { ImproverFacade } from '../../../state/improver/improver.facade';
 import { VersionDiffComponent } from '../components/version-diff/version-diff.component';
 import { CloneDialogComponent } from '../components/clone-dialog/clone-dialog.component';
 import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
+import { MarkdownPreviewComponent } from '../../../shared/components/markdown-preview/markdown-preview.component';
 import { AuthFacade } from '../../../state/auth/auth.facade';
 import { WorkflowsFacade } from '../../../state/workflows/workflows.facade';
 import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
+import { UserResolverService } from '../../../core/services/user-resolver.service';
 
 @Component({
   selector: 'promptly-prompt-detail',
@@ -33,7 +35,7 @@ import { EnumLabelPipe } from '../../../shared/pipes/enum-label.pipe';
     MatIconModule, MatChipsModule, MatTooltipModule,
     MatFormFieldModule, MatInputModule,
     MatProgressSpinnerModule, MatSnackBarModule, MatDialogModule,
-    VersionDiffComponent, MonacoEditorComponent, EnumLabelPipe,
+    VersionDiffComponent, MonacoEditorComponent, MarkdownPreviewComponent, EnumLabelPipe,
   ],
   templateUrl: './prompt-detail.page.html',
   styleUrl: './prompt-detail.page.scss',
@@ -48,8 +50,9 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  readonly userResolver = inject(UserResolverService);
 
-  private projectId: string | null = null;
+  projectId: string | null = null;
   versionColumns = ['versionNumber', 'changeMessage', 'createdBy', 'createdAt', 'actions'];
 
   // ── Edit mode state ───────────────────────────────────────────
@@ -57,6 +60,13 @@ export class PromptDetailPage implements OnInit, OnDestroy {
   editContent = '';
   editChangeMessage = '';
   showDiff = false;
+
+  // ── View mode for markdown preview ─────────────────────────────
+  readonly viewMode = signal<'edit' | 'split' | 'preview'>('edit');
+  readonly isMarkdownFormat = computed(() => {
+    const p = this.facade.selected();
+    return p?.contentFormat?.toUpperCase() === 'MARKDOWN';
+  });
 
   // ═══════════════════════════════════════════════════════════════════
   // Business rules computed from prompt state (mirrors backend specs)
@@ -94,6 +104,25 @@ export class PromptDetailPage implements OnInit, OnDestroy {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.facade.loadPrompt(id);
     this.scannerFacade.loadScanResult(id);
+
+    // Load project members for user name resolution
+    if (this.projectId) {
+      this.userResolver.loadProjectMembers(this.projectId);
+    }
+
+    // Auto-enter edit mode when navigated from scan report
+    const queryParams = this.route.snapshot.queryParamMap;
+    if (queryParams.get('editMode') === 'true') {
+      // Wait for prompt to load, then enter edit mode
+      setTimeout(() => {
+        this.onEdit();
+        const suggestion = queryParams.get('suggestion');
+        if (suggestion) {
+          this.snackBar.open('💡 Scan remediation suggestion loaded — see editor notes', 'OK', { duration: 6000 });
+          this.editChangeMessage = 'Fix: Applied scan remediation';
+        }
+      }, 800);
+    }
   }
 
   ngOnDestroy(): void {
