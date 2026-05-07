@@ -1,6 +1,7 @@
 package com.promptly.prompt.application.service;
 
 
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
@@ -31,6 +32,7 @@ public class SystemProjectSeeder {
 
     private final ProjectPersistencePort projectRepository;
     private final PromptPersistencePort promptRepository;
+    private final PromptHistoryPersistencePort historyRepository;
     private final SystemPromptPort systemPromptPort;
 
     /** Feature → prompt name mapping for seeding. */
@@ -112,7 +114,10 @@ public class SystemProjectSeeder {
         prompt.createNewVersion(defaultContent, "Initial system default", "system");
         prompt.markApproved();
 
+        var initialVersion = prompt.getVersions().get(0);
         return promptRepository.save(prompt)
+                .flatMap(saved -> historyRepository.save(saved.getId(), initialVersion)
+                        .thenReturn(saved))
                 .doOnNext(saved -> log.info("Seeded system prompt '{}' (id={}) for feature '{}'",
                         promptName, saved.getId(), feature));
     }

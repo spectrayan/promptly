@@ -2,6 +2,7 @@ package com.promptly.prompt.application.service;
 
 import com.promptly.project.application.port.out.ProjectPersistencePort;
 import com.promptly.project.domain.model.Project;
+import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import com.promptly.shared.systemprompt.SystemPromptPort;
@@ -25,13 +26,14 @@ class SystemProjectSeederTest {
 
     @Mock ProjectPersistencePort projectRepository;
     @Mock PromptPersistencePort promptRepository;
+    @Mock PromptHistoryPersistencePort historyRepository;
     @Mock SystemPromptPort systemPromptPort;
 
     SystemProjectSeeder seeder;
 
     @BeforeEach
     void setUp() {
-        seeder = new SystemProjectSeeder(projectRepository, promptRepository, systemPromptPort);
+        seeder = new SystemProjectSeeder(projectRepository, promptRepository, historyRepository, systemPromptPort);
     }
 
     @Nested
@@ -69,6 +71,8 @@ class SystemProjectSeederTest {
                 p.setId("prompt-" + p.getName());
                 return Mono.just(p);
             });
+
+            lenient().when(historyRepository.save(anyString(), any())).thenReturn(Mono.empty());
         }
 
         @Test
@@ -148,6 +152,8 @@ class SystemProjectSeederTest {
                 p.setId("prompt-" + p.getName());
                 return Mono.just(p);
             });
+
+            lenient().when(historyRepository.save(anyString(), any())).thenReturn(Mono.empty());
 
             seeder.doSeed().block();
 

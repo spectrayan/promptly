@@ -49,7 +49,14 @@ public class SystemPromptService implements SystemPromptPort {
     void loadDefaults() {
         loadDefault("scanner");
         loadDefault("improver");
+        loadDefault("generator");
         log.info("Loaded {} default system prompts from classpath", defaults.size());
+
+        // Pre-populate the cache with classpath defaults so that
+        // getSystemPrompt() never calls resolve() (which uses .block())
+        // on reactor-http-nio threads.
+        cache.putAll(defaults);
+        log.info("Pre-cached {} system prompts to avoid blocking on NIO threads", cache.size());
     }
 
     // ─── Public API ──────────────────────────────────────────────

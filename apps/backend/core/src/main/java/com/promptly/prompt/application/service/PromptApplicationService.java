@@ -3,7 +3,6 @@ package com.promptly.prompt.application.service;
 import com.promptly.prompt.PromptModuleApi;
 import com.promptly.prompt.PromptProjection;
 import com.promptly.prompt.application.port.in.UpdatePromptUseCase;
-import com.promptly.prompt.application.port.out.PromptHistoryPersistencePort;
 import com.promptly.prompt.application.port.out.PromptPersistencePort;
 import com.promptly.prompt.domain.model.Prompt;
 import lombok.RequiredArgsConstructor;
@@ -34,22 +33,24 @@ import reactor.core.publisher.Mono;
 public class PromptApplicationService implements PromptModuleApi {
 
     private final PromptPersistencePort promptRepository;
-    private final PromptHistoryPersistencePort historyRepository;
     private final UpdatePromptService updatePromptService;
 
     @Override
     public Mono<PromptProjection> findById(String id) {
-        return promptRepository.findById(id).map(this::toProjection);
+        return promptRepository.findById(id)
+                .map(this::toProjection);
     }
 
     @Override
     public Flux<PromptProjection> findByProjectId(String projectId) {
-        return promptRepository.findByProjectId(projectId).map(this::toProjection);
+        return promptRepository.findByProjectId(projectId)
+                .map(this::toProjection);
     }
 
     @Override
     public Flux<PromptProjection> findAll() {
-        return promptRepository.findAll().map(this::toProjection);
+        return promptRepository.findAll()
+                .map(this::toProjection);
     }
 
     @Override
@@ -62,11 +63,6 @@ public class PromptApplicationService implements PromptModuleApi {
     // ── Mapping ──────────────────────────────────────────────────
 
     private PromptProjection toProjection(Prompt p) {
-        // Versions are no longer embedded — latest content fetched on-demand
-        String latestContent = (p.getVersions() != null && !p.getVersions().isEmpty())
-                ? p.getVersions().get(p.getVersions().size() - 1).getContent()
-                : null;
-
         return new PromptProjection(
                 p.getId(),
                 p.getName(),
@@ -74,10 +70,11 @@ public class PromptApplicationService implements PromptModuleApi {
                 p.getProjectId(),
                 p.getStatus() != null ? p.getStatus().name() : null,
                 p.getCurrentVersion(),
-                latestContent,
+                p.getContent(),
                 p.getContentFormat() != null ? p.getContentFormat().name() : null,
                 p.getCreatedAt(),
                 p.getUpdatedAt()
         );
     }
 }
+

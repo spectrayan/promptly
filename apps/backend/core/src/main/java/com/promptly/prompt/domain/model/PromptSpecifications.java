@@ -105,6 +105,14 @@ public final class PromptSpecifications {
         return prompt -> true; // Always allowed
     }
 
+    /**
+     * Prompt is in DRAFT status with an existing version — eligible for in-place update
+     * (no version increment). Non-DRAFT prompts always create a new version.
+     */
+    public static Specification<Prompt> isDraftWithExistingVersion() {
+        return isDraft().and(hasAtLeastOneVersion());
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     // Helper Specifications
     // ═══════════════════════════════════════════════════════════════════

@@ -30,6 +30,9 @@ public class Prompt extends AggregateRoot {
     private PromptMetadata metadata;
     private int currentVersion;
 
+    /** Content of the current version — denormalized for fast reads. */
+    private String content;
+
     @lombok.Builder.Default
     private PromptStatus status = PromptStatus.DRAFT;
 
@@ -42,6 +45,9 @@ public class Prompt extends AggregateRoot {
 
     /**
      * Creates a new version of this prompt with the given content.
+     * <p>
+     * If the prompt is in DRAFT status, the current version is updated in place
+     * (no version increment). Only non-DRAFT prompts create a true new version.
      *
      * @throws IllegalStateException if the prompt is not editable
      *         (currently in review)
@@ -49,6 +55,17 @@ public class Prompt extends AggregateRoot {
     public PromptVersion createNewVersion(String content, String changeMessage, String author) {
         assertSatisfies(PromptSpecifications.isEditable(),
                 "Cannot create new version");
+
+        // DRAFT prompts with existing content: update in place (no version bump)
+        if (PromptSpecifications.isDraftWithExistingVersion().isSatisfiedBy(this)
+                && !versions.isEmpty()) {
+            PromptVersion existing = versions.get(versions.size() - 1);
+            existing.setContent(content);
+            existing.setChangeMessage(changeMessage);
+            existing.setCreatedBy(author);
+            this.content = content;
+            return existing;
+        }
 
         int nextVersion = currentVersion + 1;
         PromptVersion version = PromptVersion.builder()
@@ -59,6 +76,7 @@ public class Prompt extends AggregateRoot {
                 .build();
         versions.add(version);
         currentVersion = nextVersion;
+        this.content = content; // keep denormalized copy in sync
         return version;
     }
 
