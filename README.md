@@ -53,7 +53,7 @@ As organizations adopt multi-agent AI systems, **prompts have become business lo
 |--------|-------------|--------|
 | **Prompt Registry** | Full CRUD with versioning, rollback, and diff viewer | ✅ Stable |
 | **Workflow Engine** | Multi-step approval state machine (Submit → Review → Approve / Reject) | ✅ Stable |
-| **Vulnerability Scanner** | LLM-powered security scanning — auto-triggered on prompt events | ✅ Stable |
+| **[Vulnerability Scanner](docs/scanner.md)** | LLM-powered security scanning with severity-grouped reports, remediation guidance, and Fix-in-Editor workflow | ✅ Stable |
 | **Quality Improver** | AI-assisted prompt rewriting with generate + apply flow | ✅ Stable |
 | **Runtime Delivery** | Low-latency prompt fetch by `appId`, `usecase`, and `agent` | ✅ Stable |
 | **Export / Import** | Bulk export/import for CI/CD-driven cross-environment deployment | ✅ Stable |
@@ -69,10 +69,51 @@ As organizations adopt multi-agent AI systems, **prompts have become business lo
 | **Dashboard** | Personalized greeting, project-aware stats, gradient icons |
 | **Prompt Management** | List, detail, full-page Monaco editor with AI assist, version diff |
 | **Workflow UI** | Workflow list and detail pages |
-| **Vulnerability Scanner** | Scan results viewer with severity breakdown |
+| **Security Scanner** | Scan list with type chips, drill-down report with 2-column findings grid, Fix-in-Editor |
+| **Scan Report** | Severity-grouped findings with remediation, hover animations, one-click editor integration |
 | **Semantic Search** | Natural language search page |
 | **Audit Viewer** | Audit log browser with filters |
 | **App Shell** | Material 3 dark/light toggle, GCP-style project selector, collapsible sidebar |
+
+### 🖼️ Scanner UI Preview
+
+<details>
+<summary><strong>Security Scan Report — 2-column findings with remediation</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/scan-report-detail.png" alt="Scan Report Detail" width="100%" />
+</p>
+
+The scan report groups findings by severity (Critical → High → Medium → Low) in a responsive 2-column grid.
+Each card shows the finding type chip, title, description (clamped), and a **Recommended Fix** block.
+On hover, a **Fix in Editor** button appears — clicking it navigates to the prompt editor with the remediation pre-populated.
+
+</details>
+
+<details>
+<summary><strong>Scanner List — vulnerability types at a glance</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/scanner-list.png" alt="Scanner List" width="100%" />
+</p>
+
+The scanner list shows all scan results across prompts. Each row displays the status (PASS / WARN / FAIL),
+finding count, and up to 3 vulnerability type chips (e.g., `INJECTION_RISK`, `MISSING_GUARDRAIL`).
+Rows are clickable → drill into the full report.
+
+</details>
+
+<details>
+<summary><strong>Prompt Detail — compact Last Scan sidebar</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/prompt-detail-scan.png" alt="Prompt Detail with Scan" width="100%" />
+</p>
+
+The prompt detail sidebar shows a compact summary of the latest scan: status badge, score, finding count,
+and a list of finding titles with severity/type chips. A **View Full Report** link navigates to the detailed scan report.
+
+</details>
 
 ---
 
