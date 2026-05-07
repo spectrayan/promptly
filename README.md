@@ -91,19 +91,6 @@ On hover, a **Fix in Editor** button appears — clicking it navigates to the pr
 </details>
 
 <details>
-<summary><strong>Scanner List — vulnerability types at a glance</strong></summary>
-
-<p align="center">
-  <img src="docs/screenshots/scanner-list.png" alt="Scanner List" width="100%" />
-</p>
-
-The scanner list shows all scan results across prompts. Each row displays the status (PASS / WARN / FAIL),
-finding count, and up to 3 vulnerability type chips (e.g., `INJECTION_RISK`, `MISSING_GUARDRAIL`).
-Rows are clickable → drill into the full report.
-
-</details>
-
-<details>
 <summary><strong>Prompt Detail — compact Last Scan sidebar</strong></summary>
 
 <p align="center">
