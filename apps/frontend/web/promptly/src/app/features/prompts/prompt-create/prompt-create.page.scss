@@ -2,6 +2,13 @@
 // Prompt Create Page
 // ═══════════════════════════════════════════════════════════════════════
 
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .create-layout {
   display: grid;
   grid-template-columns: 1fr 360px;
@@ -19,6 +26,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  min-width: 0;  // Prevent CSS grid overflow
+  overflow: hidden;
 }
 
 // ── Form ──
@@ -61,6 +70,8 @@
 .monaco-editor-wrapper {
   border-radius: var(--radius-md);
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
   margin-top: var(--space-2);
   animation: fadeInUp var(--duration-slow) var(--ease-out);
 
@@ -72,6 +83,33 @@
       border-color: var(--mat-sys-primary);
     }
   }
+}
+
+// ── Split Pane (Editor + Preview side by side) ──────────────────────
+.editor-preview-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  animation: fadeInUp var(--duration-fast) var(--ease-out);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  .split-pane {
+    min-width: 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+}
+
+// ── Preview Only Wrapper ────────────────────────────────────────────
+.preview-only-wrapper {
+  margin-top: var(--space-2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: fadeInUp var(--duration-fast) var(--ease-out);
 }
 
 // ── AI Toggle ──
@@ -126,6 +164,8 @@
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: var(--radius-md);
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
   animation: fadeInUp var(--duration-slow) var(--ease-out);
 }
 
@@ -166,9 +206,11 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  max-height: 250px;
+  max-height: 400px;
   overflow: auto;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   margin: 0;
   background: var(--mat-sys-surface-container-low);
 }
