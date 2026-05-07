@@ -8,10 +8,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * Application service orchestrating AI-assisted prompt improvement.
+ * <p>
+ * All LLM interactions are fully non-blocking via the reactive
+ * {@link LlmImproverPort} — no {@code Schedulers.boundedElastic()}
+ * thread-pool hopping needed.
  */
 @Slf4j
 @Service
@@ -32,8 +35,7 @@ public class ImproverApplicationService implements ImprovePromptUseCase {
                             ? prompt.latestContent()
                             : "";
 
-                    return Mono.fromCallable(() -> llmImproverPort.improveContent(currentContent))
-                            .subscribeOn(Schedulers.boundedElastic())
+                    return llmImproverPort.improveContent(currentContent)
                             .map(result -> new ImprovementResult(
                                     promptId,
                                     currentContent,
@@ -48,6 +50,17 @@ public class ImproverApplicationService implements ImprovePromptUseCase {
         log.info("Applying improvement to prompt: {}", promptId);
         return promptModuleApi.updatePrompt(promptId, improvedContent, "Applied AI-suggested improvement", author)
                 .then();
+    }
+
+    @Override
+    public Mono<GenerateFromIdeaResult> generateFromIdea(String idea) {
+        log.info("Generating prompt from idea: {}", idea.substring(0, Math.min(idea.length(), 100)));
+        return llmImproverPort.generateContent(idea)
+                .map(result -> new GenerateFromIdeaResult(
+                        result.generatedContent(),
+                        result.title(),
+                        result.summary()
+                ));
     }
 
 }

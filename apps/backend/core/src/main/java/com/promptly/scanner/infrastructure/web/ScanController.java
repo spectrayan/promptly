@@ -45,7 +45,8 @@ public class ScanController implements ScannerApi {
             String promptId, ServerWebExchange exchange) {
         return scanPromptUseCase.getLatestScanResult(promptId)
                 .map(this::toResponse)
-                .map(ResponseEntity::ok);
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.noContent().build());
     }
 
     @Override

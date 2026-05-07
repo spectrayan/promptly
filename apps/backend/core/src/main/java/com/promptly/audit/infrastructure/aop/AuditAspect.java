@@ -51,6 +51,7 @@ public class AuditAspect {
                     .action(action)
                     .resourceType(resourceType)
                     .resourceId(event.aggregateId())
+                    .projectId(extractProjectId(details))
                     .actorUserId("system")
                     .details(details)
                     .timestamp(event.occurredAt() != null ? event.occurredAt() : Instant.now())
@@ -113,5 +114,13 @@ public class AuditAspect {
         } catch (Exception e) {
             return Map.of("eventType", event.getClass().getSimpleName());
         }
+    }
+
+    /**
+     * Extracts projectId from event detail fields if present.
+     */
+    private String extractProjectId(Map<String, Object> details) {
+        Object pid = details.get("projectId");
+        return pid != null ? pid.toString() : null;
     }
 }

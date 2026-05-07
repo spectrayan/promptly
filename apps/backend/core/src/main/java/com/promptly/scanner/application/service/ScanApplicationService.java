@@ -44,6 +44,7 @@ public class ScanApplicationService implements ScanPromptUseCase {
                                     llmScannerPort.analyzePrompt(promptId, prompt.currentVersion(), latestContent)
                             )
                             .subscribeOn(Schedulers.boundedElastic())
+                            .doOnNext(result -> result.setProjectId(prompt.projectId()))
                             .flatMap(scanResultRepository::save)
                             .doOnSuccess(saved -> {
                                 log.info("Scan completed: promptId={}, score={}, status={}",
@@ -60,8 +61,7 @@ public class ScanApplicationService implements ScanPromptUseCase {
 
     @Override
     public Mono<ScanResult> getLatestScanResult(String promptId) {
-        return scanResultRepository.findLatestByPromptId(promptId)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("ScanResult", promptId)));
+        return scanResultRepository.findLatestByPromptId(promptId);
     }
 
     @Override
