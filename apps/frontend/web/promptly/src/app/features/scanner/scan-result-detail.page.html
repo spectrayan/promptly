@@ -1,0 +1,152 @@
+@if (scan(); as s) {
+  <div class="page-header">
+    <button mat-button class="back-link" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon> Back to Scans
+    </button>
+    <h1>Scan Report</h1>
+    <p class="subtitle">{{ promptName() }} · v{{ s.promptVersion }}</p>
+  </div>
+
+  <!-- ── Summary banner ─────────────────────────────────────── -->
+  <div class="scan-banner" [class.banner-pass]="s.status === 'PASS'"
+       [class.banner-warn]="s.status === 'WARN'"
+       [class.banner-fail]="s.status === 'FAIL'">
+    <div class="banner-left">
+      <span class="badge banner-badge"
+            [class.badge-success]="s.status === 'PASS'"
+            [class.badge-scan-warn]="s.status === 'WARN'"
+            [class.badge-danger]="s.status === 'FAIL' || !s.status">
+        {{ s.status ?? 'UNKNOWN' }}
+      </span>
+      <span class="banner-score">Score: {{ s.overallScore ?? 0 }}/10</span>
+      <span class="banner-meta">
+        {{ s.findings?.length ?? 0 }} findings ·
+        {{ s.scannedAt | date:'medium' }}
+      </span>
+    </div>
+    <div class="banner-right">
+      <span class="banner-model">
+        <mat-icon>smart_toy</mat-icon>
+        {{ s.llmProvider }}/{{ s.llmModel }}
+      </span>
+      @if (hasFindings()) {
+        <button mat-flat-button color="primary" (click)="fixAllInEditor()"
+                matTooltip="Open prompt editor with all remediation suggestions">
+          <mat-icon>build</mat-icon> Fix All in Editor
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ── Findings list ──────────────────────────────────────── -->
+  @if (hasFindings()) {
+    <!-- CRITICAL -->
+    @if (criticalFindings().length) {
+      <div class="severity-group">
+        <h2 class="severity-heading severity-critical">
+          <mat-icon>dangerous</mat-icon> Critical ({{ criticalFindings().length }})
+        </h2>
+        <div class="findings-grid">
+          @for (f of criticalFindings(); track f.title) {
+            <ng-container *ngTemplateOutlet="findingCard; context: { $implicit: f }" />
+          }
+        </div>
+      </div>
+    }
+
+    <!-- HIGH -->
+    @if (highFindings().length) {
+      <div class="severity-group">
+        <h2 class="severity-heading severity-high">
+          <mat-icon>warning</mat-icon> High ({{ highFindings().length }})
+        </h2>
+        <div class="findings-grid">
+          @for (f of highFindings(); track f.title) {
+            <ng-container *ngTemplateOutlet="findingCard; context: { $implicit: f }" />
+          }
+        </div>
+      </div>
+    }
+
+    <!-- MEDIUM -->
+    @if (mediumFindings().length) {
+      <div class="severity-group">
+        <h2 class="severity-heading severity-medium">
+          <mat-icon>info</mat-icon> Medium ({{ mediumFindings().length }})
+        </h2>
+        <div class="findings-grid">
+          @for (f of mediumFindings(); track f.title) {
+            <ng-container *ngTemplateOutlet="findingCard; context: { $implicit: f }" />
+          }
+        </div>
+      </div>
+    }
+
+    <!-- LOW -->
+    @if (lowFindings().length) {
+      <div class="severity-group">
+        <h2 class="severity-heading severity-low">
+          <mat-icon>check_circle</mat-icon> Low ({{ lowFindings().length }})
+        </h2>
+        <div class="findings-grid">
+          @for (f of lowFindings(); track f.title) {
+            <ng-container *ngTemplateOutlet="findingCard; context: { $implicit: f }" />
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <mat-card class="empty-state-card">
+      <mat-icon>verified</mat-icon>
+      <h3>No findings</h3>
+      <p>This scan did not detect any vulnerabilities.</p>
+    </mat-card>
+  }
+} @else {
+  <div class="page-header">
+    <button mat-button class="back-link" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon> Back to Scans
+    </button>
+    <h1>Scan not found</h1>
+    <p>The scan result may have been removed or the ID is invalid.</p>
+  </div>
+}
+
+<!-- ── Finding card template ────────────────────────────────── -->
+<ng-template #findingCard let-f>
+  <mat-card class="finding-card">
+    <div class="finding-card-header">
+      <div class="finding-badges">
+        <span class="badge finding-severity"
+              [class.badge-danger]="f.severity === 'CRITICAL' || f.severity === 'HIGH'"
+              [class.badge-warning]="f.severity === 'MEDIUM'"
+              [class.badge-neutral]="f.severity === 'LOW'">
+          {{ f.severity }}
+        </span>
+        @if (f.type) {
+          <span class="badge badge-info finding-type-chip">{{ f.type }}</span>
+        }
+      </div>
+      <button mat-stroked-button class="fix-btn" (click)="fixInEditor(f)"
+              matTooltip="Open prompt editor with this fix suggestion">
+        <mat-icon>edit</mat-icon> Fix in Editor
+      </button>
+    </div>
+
+    <h3 class="finding-card-title">{{ f.title }}</h3>
+
+    @if (f.description) {
+      <p class="finding-card-desc">{{ f.description }}</p>
+    }
+
+    @if (f.remediation) {
+      <div class="remediation-block">
+        <div class="remediation-header">
+          <mat-icon>lightbulb</mat-icon>
+          <span>Recommended Fix</span>
+        </div>
+        <p class="remediation-text">{{ f.remediation }}</p>
+      </div>
+    }
+  </mat-card>
+</ng-template>
