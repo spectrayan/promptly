@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -16,6 +16,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { ScannerFacade } from '../../state/scanner/scanner.facade';
+import { FindingResponse, ScanResponse } from '@promptly/client';
 import { PromptsFacade } from '../../state/prompts/prompts.facade';
 
 @Component({
@@ -34,6 +35,7 @@ export class ScanResultsPage {
   readonly facade = inject(ScannerFacade);
   readonly promptsFacade = inject(PromptsFacade);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   displayedColumns = ['prompt', 'status', 'findings', 'scannedAt'];
@@ -81,13 +83,27 @@ export class ScanResultsPage {
 
   getPromptName(promptId: string): string {
     const prompt = this.promptsFacade.prompts().find(p => p.id === promptId);
-    return prompt?.name ?? promptId;
+    if (prompt?.name) return prompt.name;
+    // Truncate long MongoDB ObjectIds for readability
+    return promptId.length > 12 ? promptId.substring(0, 8) + '…' : promptId;
   }
 
   copyId(id: string): void {
     navigator.clipboard.writeText(id).then(() => {
       this.snackBar.open('Prompt ID copied!', 'OK', { duration: 2000 });
     });
+  }
+
+  viewScanDetail(scan: ScanResponse): void {
+    const projectId = this.route.snapshot.paramMap.get('projectId');
+    if (projectId && scan.id) {
+      this.router.navigate(['/projects', projectId, 'scanner', scan.id]);
+    }
+  }
+
+  getUniqueTypes(findings: FindingResponse[]): string[] {
+    const types = new Set(findings.map(f => f.type).filter((t): t is NonNullable<typeof t> => !!t));
+    return [...types].slice(0, 3) as string[];
   }
 
   onStatusFilterChange(values: string[]): void { this.statusFilter.set(values); this.pageIndex.set(0); }
