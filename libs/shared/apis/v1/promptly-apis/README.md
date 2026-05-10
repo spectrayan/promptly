@@ -32,7 +32,7 @@ Add the dependency to your Spring Boot module:
 
 ```xml
 <dependency>
-  <groupId>com.promptly</groupId>
+  <groupId>com.spectrayan.promptly</groupId>
   <artifactId>promptly-apis</artifactId>
   <version>${project.version}</version>
 </dependency>
