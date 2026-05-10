@@ -1,14 +1,14 @@
-package com.promptly.query.api;
+package com.spectrayan.promptly.query.api;
 
-import com.promptly.query.ApiClient;
+import com.spectrayan.promptly.query.ApiClient;
 
-import com.promptly.query.model.DeliveryResponse;
-import com.promptly.query.model.ProblemDetails;
-import com.promptly.query.model.ProjectResponse;
-import com.promptly.query.model.PromptResponse;
-import com.promptly.query.model.PromptSummaryResponse;
-import com.promptly.query.model.SearchResponse;
-import com.promptly.query.model.VersionResponse;
+import com.spectrayan.promptly.query.model.DeliveryResponse;
+import com.spectrayan.promptly.query.model.ProblemDetails;
+import com.spectrayan.promptly.query.model.ProjectResponse;
+import com.spectrayan.promptly.query.model.PromptResponse;
+import com.spectrayan.promptly.query.model.PromptSummaryResponse;
+import com.spectrayan.promptly.query.model.SearchResponse;
+import com.spectrayan.promptly.query.model.VersionResponse;
 
 import java.util.HashMap;
 import java.util.List;

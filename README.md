@@ -397,7 +397,7 @@ Promptly auto-generates client SDKs from the OpenAPI specification. Use these to
 | **Angular** | [`@promptly/client`](libs/shared/sdks/v1/angular/promptly-client) | `npm install @promptly/client` |
 | **TypeScript (Fetch)** | [`@promptly/query`](libs/shared/sdks/v1/query/typescript/promptly-query) | `npm install @promptly/query` |
 | **Python** | [`promptly-query`](libs/shared/sdks/v1/query/python/promptly-query) | `pip install promptly-query` |
-| **Java (Spring WebClient)** | [`com.promptly:promptly-query`](libs/shared/sdks/v1/query/java-spring/promptly-query) | Maven / Gradle (see [README](libs/shared/sdks/v1/query/java-spring/promptly-query/README.md)) |
+| **Java (Spring WebClient)** | [`com.spectrayan.promptly:promptly-query`](libs/shared/sdks/v1/query/java-spring/promptly-query) | Maven / Gradle (see [README](libs/shared/sdks/v1/query/java-spring/promptly-query/README.md)) |
 
 > 💡 See each SDK's README for detailed usage, configuration, and examples.
 
@@ -411,7 +411,7 @@ promptly/                              # Nx monorepo root
 │   ├── backend/
 │   │   └── core/                      # Spring Boot 4 application
 │   │       ├── pom.xml
-│   │       └── src/main/java/com/promptly/
+│   │       └── src/main/java/com/spectrayan/promptly/
 │   │           ├── shared/            # @ApplicationModule(OPEN) — configs, base classes
 │   │           ├── auth/              # JWT auth, user management
 │   │           ├── project/           # Multi-project RBAC

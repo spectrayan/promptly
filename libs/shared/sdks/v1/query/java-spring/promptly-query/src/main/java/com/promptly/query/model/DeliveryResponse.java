@@ -11,7 +11,7 @@
  */
 
 
-package com.promptly.query.model;
+package com.spectrayan.promptly.query.model;
 
 import java.util.Objects;
 import java.util.Arrays;

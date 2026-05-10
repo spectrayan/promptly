@@ -1,7 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-group = 'com.promptly'
+group = 'com.spectrayan.promptly'
 version = '1.0.0'
 
 buildscript {

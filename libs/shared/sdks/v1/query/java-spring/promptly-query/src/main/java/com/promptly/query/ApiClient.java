@@ -11,7 +11,7 @@
  */
 
 
-package com.promptly.query;
+package com.spectrayan.promptly.query;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 
@@ -75,10 +75,10 @@ import jakarta.annotation.Nullable;
 
 import java.time.OffsetDateTime;
 
-import com.promptly.query.auth.Authentication;
-import com.promptly.query.auth.HttpBasicAuth;
-import com.promptly.query.auth.HttpBearerAuth;
-import com.promptly.query.auth.ApiKeyAuth;
+import com.spectrayan.promptly.query.auth.Authentication;
+import com.spectrayan.promptly.query.auth.HttpBasicAuth;
+import com.spectrayan.promptly.query.auth.HttpBearerAuth;
+import com.spectrayan.promptly.query.auth.ApiKeyAuth;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2026-04-29T16:30:36.848011900-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public class ApiClient extends JavaTimeFormatter {

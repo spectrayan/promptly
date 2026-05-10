@@ -24,7 +24,7 @@ A **read-only Java SDK** for querying the Promptly REST API from JVM-based appli
 
 ```xml
 <dependency>
-  <groupId>com.promptly</groupId>
+  <groupId>com.spectrayan.promptly</groupId>
   <artifactId>promptly-query</artifactId>
   <version>1.0.0</version>
 </dependency>
@@ -33,7 +33,7 @@ A **read-only Java SDK** for querying the Promptly REST API from JVM-based appli
 ### Gradle
 
 ```groovy
-implementation "com.promptly:promptly-query:1.0.0"
+implementation "com.spectrayan.promptly:promptly-query:1.0.0"
 ```
 
 > **Note:** The package is published to [GitHub Packages](https://github.com/spectrayan/promptly/packages). Add the repository to your build configuration if needed.
@@ -41,9 +41,9 @@ implementation "com.promptly:promptly-query:1.0.0"
 ## Quick Start
 
 ```java
-import com.promptly.query.*;
-import com.promptly.query.model.*;
-import com.promptly.query.api.PromptlyQueryApi;
+import com.spectrayan.promptly.query.*;
+import com.spectrayan.promptly.query.model.*;
+import com.spectrayan.promptly.query.api.PromptlyQueryApi;
 
 public class Example {
     public static void main(String[] args) {

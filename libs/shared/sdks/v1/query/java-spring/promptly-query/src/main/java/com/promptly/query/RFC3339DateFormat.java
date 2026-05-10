@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-package com.promptly.query;
+package com.spectrayan.promptly.query;
 
 import java.text.DateFormat;
 import java.text.FieldPosition;
