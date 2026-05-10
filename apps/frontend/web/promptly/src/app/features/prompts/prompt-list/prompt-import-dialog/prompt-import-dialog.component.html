@@ -1,0 +1,70 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Import Prompts</h2>
+
+  <mat-dialog-content>
+    @if (!parsedManifest()) {
+      <div 
+        class="drop-zone" 
+        [class.dragging]="isDragging()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+        (click)="fileInput.click()">
+        
+        <mat-icon class="upload-icon">cloud_upload</mat-icon>
+        <h3>Drag and drop JSON manifest here</h3>
+        <p>or click to browse your files</p>
+        <input type="file" #fileInput accept=".json" (change)="onFileSelected($event)" hidden>
+      </div>
+    }
+
+    @if (parsedManifest()) {
+      <div class="preview-section">
+        <div class="preview-header">
+          <h3>Ready to Import</h3>
+          <button mat-icon-button color="warn" (click)="clearFile()" matTooltip="Remove File">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        
+        <div class="prompt-list-preview">
+          @for (prompt of parsedManifest()!.prompts; track prompt.name) {
+            <div class="prompt-item">
+              <mat-icon class="success-icon">check_circle</mat-icon>
+              <div class="prompt-info">
+                <span class="prompt-name">{{ prompt.name }}</span>
+                <span class="prompt-meta">v{{ prompt.version }} • {{ prompt.contentFormat }}</span>
+              </div>
+            </div>
+          }
+        </div>
+        
+        <div class="summary-badge">
+          Total: {{ parsedManifest()!.prompts?.length }} prompts found
+        </div>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div class="loading-overlay">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close [disabled]="isLoading()">Cancel</button>
+    <button mat-flat-button color="primary" 
+            [disabled]="!parsedManifest() || isLoading()" 
+            (click)="confirmImport()">
+      Import
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -23,7 +23,7 @@ import {
   clearAll,
   Notification,
 } from './notifications.actions';
-import { EMPTY, Subject, switchMap, map, tap, takeUntil, catchError, mergeMap, timer, exhaustMap } from 'rxjs';
+import { EMPTY, Subject, switchMap, map, tap, takeUntil, catchError, mergeMap } from 'rxjs';
 
 /** Maps SSE event types to human-readable notification details */
 const EVENT_META: Record<string, { icon: string; title: string }> = {
@@ -131,24 +131,6 @@ export class NotificationsEffects implements OnDestroy {
     ),
   );
 
-  /**
-   * Polling fallback — refreshes notifications every 10s while connected.
-   * Ensures the UI stays current even if the SSE transport silently drops.
-   */
-  readonly pollNotifications$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(connectSse),
-      switchMap(({ projectId }) =>
-        timer(10_000, 10_000).pipe(
-          takeUntil(this.disconnect$),
-          exhaustMap(() => [
-            loadNotifications({ projectId }),
-            loadUnreadCount({ projectId }),
-          ]),
-        ),
-      ),
-    ),
-  );
 
   private currentProjectId = '';
 

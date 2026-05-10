@@ -18,8 +18,17 @@ export interface PromptSummaryResponse {
     status?: PromptStatus;
     currentVersion?: number;
     updatedAt?: string;
+    tags?: Array<string>;
+    scanStatus?: PromptSummaryResponse.ScanStatusEnum;
 }
 export namespace PromptSummaryResponse {
+    export const ScanStatusEnum = {
+        Pass: 'PASS',
+        Warn: 'WARN',
+        Fail: 'FAIL',
+        None: 'NONE'
+    } as const;
+    export type ScanStatusEnum = typeof ScanStatusEnum[keyof typeof ScanStatusEnum];
 }
 
 

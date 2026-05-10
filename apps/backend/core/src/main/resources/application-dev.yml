@@ -13,5 +13,5 @@ spring:
 
 logging:
   level:
-    com.promptly: DEBUG
+    com.spectrayan.promptly: DEBUG
     org.springframework.data.mongodb: INFO

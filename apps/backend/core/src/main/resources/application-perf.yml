@@ -12,7 +12,7 @@ promptly:
   auth:
     provider: local
     jwt:
-      secret: promptly-perf-secret-key-for-performance-testing-32ch
+      secret: ${JWT_SECRET:}  # REQUIRED — set via env var, never hardcode
       expiration-ms: 7200000           # 2 hours — long enough for soak tests
       refresh-expiration-ms: 604800000
 
@@ -41,6 +41,6 @@ management:
 
 logging:
   level:
-    com.promptly: INFO
+    com.spectrayan.promptly: INFO
     org.springframework.data.mongodb: WARN
     org.springframework.security: WARN

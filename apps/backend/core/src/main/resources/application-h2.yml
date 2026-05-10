@@ -1,0 +1,59 @@
+# ── H2 In-Memory (R2DBC) Profile ───────────────────────────────────
+# Activate with: PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=h2
+#
+# This profile configures H2 as the SQL database for local development,
+# demos, and single-instance cloud deployments. Zero external dependencies —
+# no database server needed.
+#
+# Data is stored in-memory by default. For file-based persistence:
+#   R2DBC_URL=r2dbc:h2:file:///./data/promptly
+#   FLYWAY_URL=jdbc:h2:file:./data/promptly
+
+promptly:
+  persistence:
+    type: sql
+
+spring:
+  # Disable MongoDB auto-configuration when running in SQL mode
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration
+
+  r2dbc:
+    url: ${R2DBC_URL:r2dbc:h2:mem:///promptly;DB_CLOSE_DELAY=-1}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+    pool:
+      initial-size: 2
+      max-size: 10
+      max-idle-time: 10m
+
+  # JDBC DataSource for Flyway + Spring Modulith event publication
+  datasource:
+    url: ${FLYWAY_URL:jdbc:h2:mem:promptly;DB_CLOSE_DELAY=-1}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.h2.Driver
+
+  flyway:
+    enabled: true
+    url: ${FLYWAY_URL:jdbc:h2:mem:promptly;DB_CLOSE_DELAY=-1}
+    user: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+    locations: classpath:db/migration/h2
+    baseline-on-migrate: true
+
+  # H2 Console (useful for local debugging)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.h2: DEBUG
+    # Suppress MongoDB logging in SQL mode
+    org.springframework.data.mongodb: OFF

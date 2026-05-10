@@ -64,16 +64,72 @@
         </div>
       </mat-card-header>
       <mat-card-content>
-        <div class="monaco-editor-wrapper">
-          <promptly-monaco-editor
-            [value]="form.content ?? ''"
-            (valueChange)="form.content = $event"
-            [language]="form.contentFormat ?? 'TEXT'"
-            [height]="'400px'"
-            [minimap]="false"
-            id="create-content"
-          />
-        </div>
+        @if (isMarkdownFormat) {
+          @if (viewMode() === 'edit') {
+            <div class="monaco-editor-wrapper">
+              <promptly-monaco-editor
+                [value]="form.content ?? ''"
+                (valueChange)="form.content = $event"
+                [language]="form.contentFormat ?? 'TEXT'"
+                [height]="'400px'"
+                [minimap]="false"
+                (viewModeChange)="viewMode.set($event)"
+                id="create-content"
+              />
+            </div>
+          } @else if (viewMode() === 'split') {
+            <div class="editor-preview-split">
+              <div class="split-pane">
+                <promptly-monaco-editor
+                  [value]="form.content ?? ''"
+                  (valueChange)="form.content = $event"
+                  [language]="form.contentFormat ?? 'TEXT'"
+                  [height]="'400px'"
+                  [minimap]="false"
+                  (viewModeChange)="viewMode.set($event)"
+                  id="create-content"
+                />
+              </div>
+              <div class="split-pane">
+                <promptly-markdown-preview
+                  [content]="form.content ?? ''"
+                  [height]="'400px'"
+                />
+              </div>
+            </div>
+          } @else {
+            <!-- Preview only -->
+            <div class="monaco-editor-wrapper">
+              <promptly-monaco-editor
+                [value]="form.content ?? ''"
+                (valueChange)="form.content = $event"
+                [language]="form.contentFormat ?? 'TEXT'"
+                [height]="'0px'"
+                [minimap]="false"
+                (viewModeChange)="viewMode.set($event)"
+                id="create-content"
+              />
+            </div>
+            <div class="preview-only-wrapper">
+              <promptly-markdown-preview
+                [content]="form.content ?? ''"
+                [height]="'400px'"
+              />
+            </div>
+          }
+        } @else {
+          <div class="monaco-editor-wrapper">
+            <promptly-monaco-editor
+              [value]="form.content ?? ''"
+              (valueChange)="form.content = $event"
+              [language]="form.contentFormat ?? 'TEXT'"
+              [height]="'400px'"
+              [minimap]="false"
+              [showPreviewToggle]="false"
+              id="create-content"
+            />
+          </div>
+        }
       </mat-card-content>
     </mat-card>
   </div>

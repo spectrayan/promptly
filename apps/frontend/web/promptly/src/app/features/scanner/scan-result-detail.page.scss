@@ -1,0 +1,318 @@
+// ═══════════════════════════════════════════════════════════════════════
+// Scan Result Detail Page
+// ═══════════════════════════════════════════════════════════════════════
+
+.page-header {
+  margin-bottom: var(--space-4);
+}
+
+.back-link {
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  margin-top: var(--space-1);
+}
+
+// ── Summary banner ──────────────────────────────────────────────
+.scan-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-5);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+
+  &.banner-pass {
+    border-color: rgba(102, 187, 106, 0.3);
+    background: rgba(102, 187, 106, 0.04);
+  }
+
+  &.banner-warn {
+    border-color: rgba(255, 167, 38, 0.3);
+    background: rgba(255, 167, 38, 0.04);
+  }
+
+  &.banner-fail {
+    border-color: rgba(239, 83, 80, 0.3);
+    background: rgba(239, 83, 80, 0.04);
+  }
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.banner-badge {
+  font-size: var(--text-sm) !important;
+  padding: var(--space-1) var(--space-3) !important;
+}
+
+.banner-score {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+}
+
+.banner-meta {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.banner-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.banner-model {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// ── Severity groups — 2-column grid ─────────────────────────────
+.severity-group {
+  margin-bottom: var(--space-5);
+}
+
+.severity-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &.severity-critical {
+    color: #ef5350;
+    mat-icon { color: #ef5350; }
+  }
+
+  &.severity-high {
+    color: #ff7043;
+    mat-icon { color: #ff7043; }
+  }
+
+  &.severity-medium {
+    color: #ffa726;
+    mat-icon { color: #ffa726; }
+  }
+
+  &.severity-low {
+    color: #66bb6a;
+    mat-icon { color: #66bb6a; }
+  }
+}
+
+// Wrap finding cards in a grid inside each severity group
+:host ::ng-deep .severity-group {
+  .finding-card:first-of-type {
+    // Reset for grid parent — handled by findings-grid below
+  }
+}
+
+.findings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+// ── Finding card — compact with hover animation ──────────────────
+.finding-card {
+  padding: var(--space-3) !important;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.25s ease;
+  border: 1px solid transparent;
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(var(--mat-sys-primary-rgb, 124, 77, 255), 0.15);
+    border-color: rgba(var(--mat-sys-primary-rgb, 124, 77, 255), 0.2);
+  }
+}
+
+.finding-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.finding-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.finding-type-chip {
+  font-size: 10px !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.fix-btn {
+  font-size: var(--text-xs) !important;
+  height: 28px !important;
+  padding: 0 var(--space-2) !important;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.finding-card:hover .fix-btn {
+  opacity: 1;
+}
+
+.finding-card-title {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.finding-card-desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--space-2);
+  // Clamp long descriptions to 4 lines
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ── Remediation block ────────────────────────────────────────────
+.remediation-block {
+  border-radius: var(--radius-md);
+  background: rgba(102, 187, 106, 0.05);
+  border: 1px solid rgba(102, 187, 106, 0.15);
+  border-left: 4px solid rgba(102, 187, 106, 0.5);
+  padding: var(--space-2) var(--space-3);
+}
+
+.remediation-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-semibold);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #66bb6a;
+  margin-bottom: var(--space-1);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #66bb6a;
+  }
+}
+
+.remediation-text {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  // Clamp remediation to 3 lines
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ── Empty state ──────────────────────────────────────────────────
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-8) !important;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #66bb6a;
+    margin-bottom: var(--space-3);
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-1);
+  }
+
+  p {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+  }
+}
+
+// ── Responsive ───────────────────────────────────────────────────
+@media (max-width: 1024px) {
+  .findings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .scan-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .finding-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fix-btn {
+    opacity: 1; // Always visible on mobile
+  }
+}

@@ -1,0 +1,41 @@
+type: object
+properties:
+  manifestVersion:
+    type: string
+  exportedAt:
+    type: string
+    format: date-time
+  exportedBy:
+    type: string
+  filters:
+    type: object
+    properties:
+      projectId:
+        type: string
+      promptIds:
+        type: array
+        items:
+          type: string
+      approvedAfter:
+        type: string
+        format: date-time
+      approvedBefore:
+        type: string
+        format: date-time
+  cursor:
+    type: string
+  prompts:
+    type: array
+    items:
+      $ref: './PromptBundle.yaml'
+  summary:
+    type: object
+    properties:
+      totalPrompts:
+        type: integer
+      projectId:
+        type: string
+      projectName:
+        type: string
+  checksum:
+    type: string

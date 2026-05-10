@@ -55,6 +55,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'projects/:projectId/scanner/:scanId',
+    loadComponent: () => import('./features/scanner/scan-result-detail.page').then(m => m.ScanResultDetailPage),
+    title: 'Scan Report — Promptly',
+    canActivate: [authGuard],
+  },
+  {
     path: 'projects/:projectId/scanner',
     loadComponent: () => import('./features/scanner/scan-results.page').then(m => m.ScanResultsPage),
     title: 'Security Scans — Promptly',

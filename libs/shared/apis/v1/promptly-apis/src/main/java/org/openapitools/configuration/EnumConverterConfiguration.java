@@ -1,15 +1,15 @@
 package org.openapitools.configuration;
 
-import com.promptly.infrastructure.in.web.dto.ContentFormat;
-import com.promptly.infrastructure.in.web.dto.FindingType;
-import com.promptly.infrastructure.in.web.dto.OrgRole;
-import com.promptly.infrastructure.in.web.dto.ProjectRole;
-import com.promptly.infrastructure.in.web.dto.PromptStatus;
-import com.promptly.infrastructure.in.web.dto.ScanStatus;
-import com.promptly.infrastructure.in.web.dto.Severity;
-import com.promptly.infrastructure.in.web.dto.StepAction;
-import com.promptly.infrastructure.in.web.dto.UserStatus;
-import com.promptly.infrastructure.in.web.dto.WorkflowStatus;
+import com.spectrayan.promptly.infrastructure.in.web.dto.ContentFormat;
+import com.spectrayan.promptly.infrastructure.in.web.dto.FindingType;
+import com.spectrayan.promptly.infrastructure.in.web.dto.OrgRole;
+import com.spectrayan.promptly.infrastructure.in.web.dto.ProjectRole;
+import com.spectrayan.promptly.infrastructure.in.web.dto.PromptStatus;
+import com.spectrayan.promptly.infrastructure.in.web.dto.ScanStatus;
+import com.spectrayan.promptly.infrastructure.in.web.dto.Severity;
+import com.spectrayan.promptly.infrastructure.in.web.dto.StepAction;
+import com.spectrayan.promptly.infrastructure.in.web.dto.UserStatus;
+import com.spectrayan.promptly.infrastructure.in.web.dto.WorkflowStatus;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

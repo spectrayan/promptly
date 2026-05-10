@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -12,10 +12,12 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { CreatePromptRequest, ImproverService, ImprovementResponse } from '@promptly/client';
+import { CreatePromptRequest, ImproverService, ImprovementResponse, PromptsService, GenerateFromIdeaResponse } from '@promptly/client';
 import { PromptsFacade } from '../../../state/prompts/prompts.facade';
 import { ProjectsFacade } from '../../../state/projects/projects.facade';
 import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/monaco-editor.component';
+import { MarkdownPreviewComponent } from '../../../shared/components/markdown-preview/markdown-preview.component';
+import { AuthFacade } from '../../../state/auth/auth.facade';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,7 +26,7 @@ import { MonacoEditorComponent } from '../../../shared/components/monaco-editor/
     FormsModule, RouterLink,
     MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule,
-    MatTabsModule, MatChipsModule, MatTooltipModule, MatSnackBarModule, MonacoEditorComponent,
+    MatTabsModule, MatChipsModule, MatTooltipModule, MatSnackBarModule, MonacoEditorComponent, MarkdownPreviewComponent,
   ],
   templateUrl: './prompt-create.page.html',
   styleUrl: './prompt-create.page.scss',
@@ -33,9 +35,12 @@ export class PromptCreatePage {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly improverService = inject(ImproverService);
+  private readonly promptsService = inject(PromptsService);
   readonly facade = inject(PromptsFacade);
   readonly projectsFacade = inject(ProjectsFacade);
+  private readonly auth = inject(AuthFacade);
 
   private projectId: string | null = null;
 
@@ -45,7 +50,7 @@ export class PromptCreatePage {
     projectId: '',
     contentFormat: 'TEXT',
     content: '',
-    author: 'admin',
+    author: '',
   };
 
   tagsInput = '';
@@ -55,11 +60,19 @@ export class PromptCreatePage {
     this.projectId = this.route.snapshot.paramMap.get('projectId');
     if (this.projectId) {
       this.form.projectId = this.projectId;
+      this.form.author = this.auth.user()?.id ?? 'unknown';
     }
   }
 
   // ── AI Assist state ─────────────────────────────────────────────
   showAiPanel = false;
+
+  // ── View mode for markdown preview ─────────────────────────────
+  readonly viewMode = signal<'edit' | 'split' | 'preview'>('edit');
+
+  get isMarkdownFormat(): boolean {
+    return this.form.contentFormat?.toUpperCase() === 'MARKDOWN';
+  }
   readonly aiGenerating = signal(false);
   readonly aiRefining = signal(false);
   readonly aiSuggestion = signal('');
@@ -91,15 +104,13 @@ export class PromptCreatePage {
   /**
    * Generate prompt content from an idea.
    *
-   * Flow: Create a temporary prompt → call improvePrompt API → use the
-   * improved content as the generated output → clean up.
-   *
-   * Since the Improver API requires an existing promptId, we perform
-   * a create-improve-delete cycle to leverage the real backend LLM.
+   * Calls the dedicated generateFromIdea API endpoint which uses a
+   * separate LLM system prompt designed for creating prompts from scratch.
+   * No temporary prompt creation needed.
    */
   generateFromIdea(idea: string): void {
-    if (!idea.trim() || !this.form.projectId) {
-      this.snackBar.open('Please select a project first', 'OK', { duration: 3000 });
+    if (!idea.trim()) {
+      this.snackBar.open('Please enter an idea', 'OK', { duration: 3000 });
       return;
     }
 
@@ -108,56 +119,32 @@ export class PromptCreatePage {
     this.aiSummary.set('');
     this.aiError.set(null);
 
-    // Step 1: Create a temporary prompt with the idea as seed content
-    const tempRequest: CreatePromptRequest = {
-      name: `_temp_generate_${Date.now()}`,
-      description: 'Temporary prompt for AI generation',
-      projectId: this.form.projectId!,
-      contentFormat: this.form.contentFormat ?? 'TEXT',
-      content: `Generate a production-quality prompt for the following use case:\n\n${idea}`,
-      author: 'system',
-    };
-
-    this.facade.createPrompt(tempRequest);
-
-    // Step 2: Listen for the created prompt, then call improve
-    // We use a subscription on the facade's selected signal
-    const checkInterval = setInterval(() => {
-      const created = this.facade.selected();
-      if (created?.id && created.name?.startsWith('_temp_generate_')) {
-        clearInterval(checkInterval);
-
-        this.improverService.improvePrompt({ promptId: created.id }).subscribe({
-          next: (response: ImprovementResponse) => {
-            this.aiSuggestion.set(response.improvedContent ?? '');
-            this.aiSummary.set(response.summary ?? '');
-            this.aiGenerating.set(false);
-
-            // Clean up: delete the temporary prompt
-            this.facade.deletePrompt(created.id!);
-            this.facade.clearSelection();
-          },
-          error: (err) => {
-            this.aiError.set(err?.error?.detail ?? 'AI generation failed');
-            this.aiGenerating.set(false);
-            // Clean up even on error
-            this.facade.deletePrompt(created.id!);
-            this.facade.clearSelection();
-            this.snackBar.open('AI generation failed. Please try again.', 'OK', { duration: 3000 });
-          },
-        });
-      }
-    }, 300);
-
-    // Safety timeout — clear interval after 30s
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      if (this.aiGenerating()) {
+    this.promptsService.generateFromIdea({
+      generateFromIdeaRequest: {
+        idea,
+        projectId: this.form.projectId ?? undefined,
+      },
+    }).subscribe({
+      next: (response: GenerateFromIdeaResponse) => {
+        this.aiSuggestion.set(response.generatedContent ?? '');
+        this.aiSummary.set(response.summary ?? '');
         this.aiGenerating.set(false);
-        this.aiError.set('Generation timed out. Please try again.');
-        this.snackBar.open('AI generation timed out', 'OK', { duration: 3000 });
-      }
-    }, 30000);
+
+        // Auto-fill suggested title if the form name is still empty
+        if (!this.form.name && response.title) {
+          this.form.name = response.title;
+        }
+
+        // AI-generated prompts are always markdown
+        this.form.contentFormat = 'MARKDOWN';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.aiError.set(err?.error?.detail ?? 'AI generation failed');
+        this.aiGenerating.set(false);
+        this.snackBar.open('AI generation failed. Please try again.', 'OK', { duration: 3000 });
+      },
+    });
   }
 
   /**
@@ -185,7 +172,7 @@ export class PromptCreatePage {
       projectId: this.form.projectId!,
       contentFormat: this.form.contentFormat ?? 'TEXT',
       content: this.form.content!,
-      author: 'system',
+      author: this.auth.user()?.id ?? 'system',
     };
 
     this.facade.createPrompt(tempRequest);
@@ -228,8 +215,12 @@ export class PromptCreatePage {
 
   acceptSuggestion(): void {
     this.form.content = this.aiSuggestion();
+    this.form.contentFormat = 'MARKDOWN'; // AI always generates markdown
     this.aiSuggestion.set('');
     this.aiSummary.set('');
+    // Explicit change detection needed so Monaco editor picks up new content
+    // via its @Input() value binding under OnPush strategy
+    this.cdr.markForCheck();
   }
 
   dismissSuggestion(): void {

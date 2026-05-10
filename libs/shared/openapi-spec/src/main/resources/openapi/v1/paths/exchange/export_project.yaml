@@ -1,0 +1,39 @@
+get:
+  tags:
+    - Exchange
+  summary: Export prompts by project
+  description: Export all prompts in a project with optional date filters.
+  operationId: exportByProject
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: approvedAfter
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    - name: approvedBefore
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    - name: X-Exported-By
+      in: header
+      required: false
+      schema:
+        type: string
+        default: 'api'
+  responses:
+    '200':
+      description: Project prompts exported successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/exchange/ExportManifest.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

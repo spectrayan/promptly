@@ -15,3 +15,10 @@ properties:
   updatedAt:
     type: string
     format: date-time
+  tags:
+    type: array
+    items:
+      type: string
+  scanStatus:
+    type: string
+    enum: [PASS, WARN, FAIL, NONE]

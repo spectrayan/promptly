@@ -113,9 +113,11 @@
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
-  max-height: 200px;
+  max-height: 300px;
   overflow: auto;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   margin: 0;
   background: var(--mat-sys-surface-container-low);
 }

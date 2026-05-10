@@ -11,7 +11,7 @@
  */
 
 
-package com.promptly.query.auth;
+package com.spectrayan.promptly.query.auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;

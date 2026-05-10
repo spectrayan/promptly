@@ -1,0 +1,35 @@
+type: object
+properties:
+  promptId:
+    type: string
+  name:
+    type: string
+  version:
+    type: integer
+  content:
+    type: string
+  contentFormat:
+    type: string
+  projectId:
+    type: string
+  metadata:
+    type: object
+    additionalProperties: true
+  approval:
+    type: object
+    properties:
+      workflowId:
+        type: string
+      approvedBy:
+        type: string
+      approvedAt:
+        type: string
+        format: date-time
+  scan:
+    type: object
+    properties:
+      status:
+        type: string
+      score:
+        type: number
+        format: double

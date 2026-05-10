@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Exchange
+  summary: Export a single prompt
+  description: Export a single prompt by its ID into a manifest.
+  operationId: exportPrompt
+  parameters:
+    - $ref: '../../components/parameters/PromptIdPath.yaml'
+    - name: X-Exported-By
+      in: header
+      required: false
+      schema:
+        type: string
+        default: 'api'
+  responses:
+    '200':
+      description: Prompt exported successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/exchange/ExportManifest.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

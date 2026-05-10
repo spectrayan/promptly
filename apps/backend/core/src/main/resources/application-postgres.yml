@@ -1,17 +1,16 @@
 # ── PostgreSQL (R2DBC) Profile ─────────────────────────────────────
-# Activate with: PROMPTLY_PERSISTENCE_TYPE=postgres
-# or: spring.profiles.active=postgres
+# Activate with: PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=postgres
 #
-# This profile replaces MongoDB with PostgreSQL via R2DBC for all
-# persistence operations. Requires the `persistence-postgres` Maven
-# profile to pull in the correct driver and migration dependencies.
+# This profile configures PostgreSQL as the SQL database via R2DBC.
+# Requires the `persistence-sql` Maven profile (or the unified build)
+# to pull in the correct driver and migration dependencies.
 
 promptly:
   persistence:
-    type: postgres
+    type: sql
 
 spring:
-  # Disable MongoDB auto-configuration when running in Postgres mode
+  # Disable MongoDB auto-configuration when running in SQL mode
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
@@ -46,5 +45,5 @@ logging:
   level:
     org.springframework.r2dbc: DEBUG
     io.r2dbc.postgresql: DEBUG
-    # Suppress MongoDB logging in Postgres mode
+    # Suppress MongoDB logging in SQL mode
     org.springframework.data.mongodb: OFF

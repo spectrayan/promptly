@@ -1,0 +1,21 @@
+post:
+  tags:
+    - Exchange
+  summary: Import prompts
+  description: Import prompts from an export manifest. Validates checksum integrity before applying.
+  operationId: importManifest
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/exchange/ExportManifest.yaml'
+  responses:
+    '200':
+      description: Import operation result
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/exchange/ImportResultResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'

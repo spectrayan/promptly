@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,9 +10,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { CreatePromptRequest, ImproverService, ImprovementResponse } from '@promptly/client';
+import { CreatePromptRequest, ImproverService, ImprovementResponse, PromptsService, GenerateFromIdeaResponse } from '@promptly/client';
 import { ProjectsFacade } from '../../../../state/projects/projects.facade';
 import { PromptsFacade } from '../../../../state/prompts/prompts.facade';
+import { AuthFacade } from '../../../../state/auth/auth.facade';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,9 +29,12 @@ import { PromptsFacade } from '../../../../state/prompts/prompts.facade';
 export class PromptCreateDialog {
   private readonly dialogRef = inject(MatDialogRef<PromptCreateDialog>);
   private readonly improverService = inject(ImproverService);
+  private readonly promptsService = inject(PromptsService);
   private readonly promptsFacade = inject(PromptsFacade);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly projectsFacade = inject(ProjectsFacade);
+  private readonly auth = inject(AuthFacade);
 
   form: Partial<CreatePromptRequest> = {
     name: '',
@@ -38,8 +42,13 @@ export class PromptCreateDialog {
     projectId: '',
     contentFormat: 'TEXT',
     content: '',
-    author: 'admin',
+    author: '',
   };
+
+  constructor() {
+    // Set author to authenticated user's ID
+    this.form.author = this.auth.user()?.id ?? 'unknown';
+  }
 
   // ── AI Assist state (signal-based) ──────────────────────────────
   showAiPanel = false;
@@ -62,12 +71,11 @@ export class PromptCreateDialog {
   }
 
   /**
-   * Generate prompt content from an idea using the Improver API.
-   * Creates a temporary prompt, calls improve, and cleans up.
+   * Generate prompt content from an idea using the dedicated generate API.
    */
   generateFromIdea(idea: string): void {
-    if (!idea.trim() || !this.form.projectId) {
-      this.snackBar.open('Please select a project first', 'OK', { duration: 3000 });
+    if (!idea.trim()) {
+      this.snackBar.open('Please enter an idea', 'OK', { duration: 3000 });
       return;
     }
 
@@ -76,52 +84,34 @@ export class PromptCreateDialog {
     this.aiSummary.set('');
     this.aiError.set(null);
 
-    const tempRequest: CreatePromptRequest = {
-      name: `_temp_dialog_gen_${Date.now()}`,
-      description: 'Temporary prompt for AI generation',
-      projectId: this.form.projectId!,
-      contentFormat: this.form.contentFormat ?? 'TEXT',
-      content: `Generate a production-quality prompt for the following use case:\n\n${idea}`,
-      author: 'system',
-    };
-
-    this.promptsFacade.createPrompt(tempRequest);
-
-    const checkInterval = setInterval(() => {
-      const created = this.promptsFacade.selected();
-      if (created?.id && created.name?.startsWith('_temp_dialog_gen_')) {
-        clearInterval(checkInterval);
-
-        this.improverService.improvePrompt({ promptId: created.id }).subscribe({
-          next: (response: ImprovementResponse) => {
-            this.aiSuggestion.set(response.improvedContent ?? '');
-            this.aiSummary.set(response.summary ?? '');
-            this.aiGenerating.set(false);
-            this.promptsFacade.deletePrompt(created.id!);
-            this.promptsFacade.clearSelection();
-          },
-          error: (err) => {
-            this.aiError.set(err?.error?.detail ?? 'AI generation failed');
-            this.aiGenerating.set(false);
-            this.promptsFacade.deletePrompt(created.id!);
-            this.promptsFacade.clearSelection();
-          },
-        });
-      }
-    }, 300);
-
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      if (this.aiGenerating()) {
+    this.promptsService.generateFromIdea({
+      generateFromIdeaRequest: {
+        idea,
+        projectId: this.form.projectId ?? undefined,
+      },
+    }).subscribe({
+      next: (response: GenerateFromIdeaResponse) => {
+        this.aiSuggestion.set(response.generatedContent ?? '');
+        this.aiSummary.set(response.summary ?? '');
         this.aiGenerating.set(false);
-        this.aiError.set('Generation timed out. Please try again.');
-      }
-    }, 30000);
+
+        // Auto-fill suggested title if the form name is still empty
+        if (!this.form.name && response.title) {
+          this.form.name = response.title;
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.aiError.set(err?.error?.detail ?? 'AI generation failed');
+        this.aiGenerating.set(false);
+        this.snackBar.open('AI generation failed. Please try again.', 'OK', { duration: 3000 });
+      },
+    });
   }
 
   /**
    * Refine current content using the Improver API.
-   * Same create-improve-delete cycle.
+   * Creates a temporary prompt, calls improve, and cleans up.
    */
   refineContent(): void {
     if (!this.form.content?.trim() || !this.form.projectId) {
@@ -140,7 +130,7 @@ export class PromptCreateDialog {
       projectId: this.form.projectId!,
       contentFormat: this.form.contentFormat ?? 'TEXT',
       content: this.form.content!,
-      author: 'system',
+      author: this.auth.user()?.id ?? 'system',
     };
 
     this.promptsFacade.createPrompt(tempRequest);
@@ -181,6 +171,8 @@ export class PromptCreateDialog {
     this.form.content = this.aiSuggestion();
     this.aiSuggestion.set('');
     this.aiSummary.set('');
+    // Explicit change detection for OnPush
+    this.cdr.markForCheck();
   }
 
   dismissSuggestion(): void {

@@ -67,6 +67,7 @@ CREATE TABLE prompts (
     metadata_max_tokens      INTEGER,
     metadata_system_context  TEXT,
     current_version          INTEGER      NOT NULL DEFAULT 0,
+    content                  TEXT,
     status                   VARCHAR(20)  NOT NULL DEFAULT 'DRAFT',
     version                  BIGINT       NOT NULL DEFAULT 0,  -- optimistic locking
     created_at               TIMESTAMPTZ  NOT NULL DEFAULT now(),

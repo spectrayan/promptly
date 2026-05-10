@@ -1,0 +1,32 @@
+# ── H2 In-Memory Development Stack ──────────────────────────────────
+# Use this compose file for local development with zero external dependencies.
+# H2 runs embedded inside the application — no separate database container needed.
+#
+# Usage:
+#   docker compose -f docker-compose.h2.yml up -d
+#
+# Backend must be started with the h2 profile:
+#   PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=h2 mvn spring-boot:run -Ppersistence-sql
+#
+# Or for standalone local dev (no Docker needed at all):
+#   PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=h2 mvn spring-boot:run -Ppersistence-sql
+#
+# Note: H2 in-memory mode means data is lost on restart.
+# For persistent storage, set R2DBC_URL=r2dbc:h2:file:///./data/promptly
+
+services:
+  # No database service needed — H2 is embedded!
+  # This compose file exists only for consistency with postgres/mongo compose patterns
+  # and to provide a Redis service if needed for SSE multi-pod sync.
+
+  redis:
+    image: redis:7-alpine
+    container_name: promptly-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s

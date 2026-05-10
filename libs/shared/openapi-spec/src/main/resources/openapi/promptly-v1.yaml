@@ -154,6 +154,14 @@ components:
     NotificationEventTypeInfo:
       $ref: 'v1/components/schemas/notification/NotificationEventTypeInfo.yaml'
 
+    # ── Exchange ──
+    ExportManifest:
+      $ref: 'v1/components/schemas/exchange/ExportManifest.yaml'
+    PromptBundle:
+      $ref: 'v1/components/schemas/exchange/PromptBundle.yaml'
+    ImportResultResponse:
+      $ref: 'v1/components/schemas/exchange/ImportResultResponse.yaml'
+
   responses:
     BadRequest:
       $ref: 'v1/components/responses/BadRequest.yaml'
@@ -199,6 +207,8 @@ tags:
     description: Semantic Search — embedding-based prompt discovery
   - name: Notifications
     description: Notifications — real-time SSE alerts, preferences, and project settings
+  - name: Exchange
+    description: Exchange — Import and export prompt manifests
 
   # ── External SDK ──
   - name: PromptlyQuery
@@ -240,8 +250,6 @@ paths:
     $ref: 'v1/paths/prompt/prompt_versions_by_number.yaml'
   /api/v1/prompts/{id}/rollback/{targetVersion}:
     $ref: 'v1/paths/prompt/prompt_rollback.yaml'
-  /api/v1/prompts/generate:
-    $ref: 'v1/paths/prompt/generate_from_idea.yaml'
 
   # ── Workflow Engine ──
   /api/v1/workflows:
@@ -263,11 +271,13 @@ paths:
   /api/v1/scans:
     $ref: 'v1/paths/scanner/scans.yaml'
 
-  # ── Quality Improver ──
+  # -- Quality Improver --
   /api/v1/prompts/{promptId}/improve:
     $ref: 'v1/paths/improver/prompt_improve.yaml'
   /api/v1/prompts/{promptId}/apply-improvement:
     $ref: 'v1/paths/improver/prompt_apply_improvement.yaml'
+  /api/v1/prompts/generate:
+    $ref: 'v1/paths/improver/generate_from_idea.yaml'
 
   # ── Runtime Delivery ──
   /api/v1/deliver:
@@ -300,3 +310,11 @@ paths:
     $ref: 'v1/paths/notification/notifications_preferences.yaml'
   /api/v1/notifications/project-settings:
     $ref: 'v1/paths/notification/notifications_project_settings.yaml'
+
+  # ── Exchange ──
+  /api/v1/exchange/export/prompts/{promptId}:
+    $ref: 'v1/paths/exchange/export_prompt.yaml'
+  /api/v1/exchange/export/projects/{projectId}:
+    $ref: 'v1/paths/exchange/export_project.yaml'
+  /api/v1/exchange/import:
+    $ref: 'v1/paths/exchange/import.yaml'

@@ -12,6 +12,7 @@ import {
   SimpleChanges,
   NgZone,
   ChangeDetectionStrategy,
+  signal,
 } from '@angular/core';
 
 declare const monaco: any;
@@ -174,6 +175,21 @@ export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   /** Placeholder text shown when editor is empty. */
   @Input() placeholder = '';
+
+  /** Whether to show the preview toggle for markdown content. */
+  @Input() showPreviewToggle = true;
+
+  // ── View Mode (Edit / Split / Preview) ─────────────────────────
+  /** Current view mode for markdown content. */
+  readonly viewMode = signal<'edit' | 'split' | 'preview'>('edit');
+
+  /** Emits when the user toggles the view mode. */
+  @Output() viewModeChange = new EventEmitter<'edit' | 'split' | 'preview'>();
+
+  /** Whether the current language is markdown. */
+  get isMarkdown(): boolean {
+    return this._language === 'markdown';
+  }
 
   private editor: any;
   private _isSettingValue = false;
@@ -385,5 +401,15 @@ export class MonacoEditorComponent implements OnInit, AfterViewInit, OnDestroy, 
   /** Redo the last undo. */
   redo(): void {
     this.editor?.trigger('component', 'redo', null);
+  }
+
+  // ═══════════════════════════════════════════════════════════════════
+  // View Mode Toggle
+  // ═══════════════════════════════════════════════════════════════════
+
+  /** Switch between edit, split, and preview modes. */
+  setViewMode(mode: 'edit' | 'split' | 'preview'): void {
+    this.viewMode.set(mode);
+    this.viewModeChange.emit(mode);
   }
 }

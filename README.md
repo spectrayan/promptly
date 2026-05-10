@@ -53,7 +53,7 @@ As organizations adopt multi-agent AI systems, **prompts have become business lo
 |--------|-------------|--------|
 | **Prompt Registry** | Full CRUD with versioning, rollback, and diff viewer | ✅ Stable |
 | **Workflow Engine** | Multi-step approval state machine (Submit → Review → Approve / Reject) | ✅ Stable |
-| **Vulnerability Scanner** | LLM-powered security scanning — auto-triggered on prompt events | ✅ Stable |
+| **[Vulnerability Scanner](docs/scanner.md)** | LLM-powered security scanning with severity-grouped reports, remediation guidance, and Fix-in-Editor workflow | ✅ Stable |
 | **Quality Improver** | AI-assisted prompt rewriting with generate + apply flow | ✅ Stable |
 | **Runtime Delivery** | Low-latency prompt fetch by `appId`, `usecase`, and `agent` | ✅ Stable |
 | **Export / Import** | Bulk export/import for CI/CD-driven cross-environment deployment | ✅ Stable |
@@ -69,10 +69,38 @@ As organizations adopt multi-agent AI systems, **prompts have become business lo
 | **Dashboard** | Personalized greeting, project-aware stats, gradient icons |
 | **Prompt Management** | List, detail, full-page Monaco editor with AI assist, version diff |
 | **Workflow UI** | Workflow list and detail pages |
-| **Vulnerability Scanner** | Scan results viewer with severity breakdown |
+| **Security Scanner** | Scan list with type chips, drill-down report with 2-column findings grid, Fix-in-Editor |
+| **Scan Report** | Severity-grouped findings with remediation, hover animations, one-click editor integration |
 | **Semantic Search** | Natural language search page |
 | **Audit Viewer** | Audit log browser with filters |
 | **App Shell** | Material 3 dark/light toggle, GCP-style project selector, collapsible sidebar |
+
+### 🖼️ Scanner UI Preview
+
+<details>
+<summary><strong>Security Scan Report — 2-column findings with remediation</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/scan-report-detail.png" alt="Scan Report Detail" width="100%" />
+</p>
+
+The scan report groups findings by severity (Critical → High → Medium → Low) in a responsive 2-column grid.
+Each card shows the finding type chip, title, description (clamped), and a **Recommended Fix** block.
+On hover, a **Fix in Editor** button appears — clicking it navigates to the prompt editor with the remediation pre-populated.
+
+</details>
+
+<details>
+<summary><strong>Prompt Detail — compact Last Scan sidebar</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/prompt-detail-scan.png" alt="Prompt Detail with Scan" width="100%" />
+</p>
+
+The prompt detail sidebar shows a compact summary of the latest scan: status badge, score, finding count,
+and a list of finding titles with severity/type chips. A **View Full Report** link navigates to the detailed scan report.
+
+</details>
 
 ---
 
@@ -108,6 +136,7 @@ graph TB
     subgraph Data["Data Layer (pluggable)"]
         Mongo[("MongoDB 8.2<br/>Atlas Vector Search")]
         Postgres[("PostgreSQL 17<br/>pgvector")]
+        H2[("H2<br/>Embedded")]
     end
 
     subgraph LLMs["LLM Providers"]
@@ -155,7 +184,7 @@ graph TB
 | **Backend** | Java 21 · Spring Boot 4.0 · Spring Framework 7 · WebFlux |
 | **AI / LLM** | Spring AI (multi-provider: OpenAI, Gemini, Anthropic, Ollama) |
 | **Modularity** | Spring Modulith (module boundaries, event-driven, ArchUnit verification) |
-| **Database** | MongoDB 8.2 (default) · PostgreSQL 17 + pgvector (pluggable) |
+| **Database** | MongoDB 8.2 (default) · PostgreSQL 17 + pgvector · H2 (embedded, for local/demo) |
 | **Search** | MongoDB Atlas Vector Search / pgvector (semantic search + duplicate detection) |
 | **Auth** | JWT · Dual-mode (LOCAL / OIDC) · Spring Security Reactive |
 | **API Spec** | OpenAPI 3 · openapi-generator for Java + TypeScript + Python codegen |
@@ -212,6 +241,20 @@ docker compose -f docker-compose.postgres.yml up -d
 
 </details>
 
+<details>
+<summary><strong>Option C: H2 In-Memory (zero dependencies)</strong></summary>
+
+```bash
+# No database server needed! H2 runs embedded inside the app.
+# Just start the backend with the h2 profile:
+PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=h2 mvn spring-boot:run -Ppersistence-sql -f apps/backend/core/pom.xml
+```
+
+> **Note:** Data is stored in memory by default and will be lost on restart.
+> For persistent storage, set `R2DBC_URL=r2dbc:h2:file:///./data/promptly`.
+
+</details>
+
 ### 3. Generate API Code
 
 ```bash
@@ -233,7 +276,10 @@ Or run them individually:
 pnpm run start:backend
 
 # Backend — PostgreSQL
-SPRING_PROFILES_ACTIVE=postgres mvn spring-boot:run -Ppersistence-postgres -f apps/backend/core/pom.xml
+PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=postgres mvn spring-boot:run -Ppersistence-sql -f apps/backend/core/pom.xml
+
+# Backend — H2 (zero dependencies)
+PROMPTLY_PERSISTENCE_TYPE=sql SPRING_PROFILES_ACTIVE=h2 mvn spring-boot:run -Ppersistence-sql -f apps/backend/core/pom.xml
 
 # Frontend (Angular on :4200)
 pnpm run start:frontend
@@ -260,25 +306,26 @@ docker compose -f docker-compose.prod.yml up -d
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PROMPTLY_PERSISTENCE_TYPE` | Database backend (`mongo` or `postgres`) | `mongo` |
+| `PROMPTLY_PERSISTENCE_TYPE` | Database backend (`mongo` or `sql`) | `mongo` |
 | `PROMPTLY_LLM_API_KEY` | API key for the configured LLM provider | — |
 | `PROMPTLY_LLM_PROVIDER` | LLM provider (`openai`, `anthropic`, `gemini`, `ollama`) | `gemini` |
 | `PROMPTLY_LLM_MODEL` | Model name | `gemini-2.5-flash` |
 | `PROMPTLY_DEPLOYMENT_MODE` | `saas` or `self-hosted` | `self-hosted` |
-| `R2DBC_URL` | R2DBC connection URL (PostgreSQL only) | `r2dbc:postgresql://localhost:5432/promptly` |
-| `DB_USER` | Database username (PostgreSQL only) | `promptly` |
-| `DB_PASSWORD` | Database password (PostgreSQL only) | `promptly` |
+| `R2DBC_URL` | R2DBC connection URL (SQL mode) | `r2dbc:postgresql://localhost:5432/promptly` |
+| `DB_USER` | Database username (SQL mode) | `promptly` |
+| `DB_PASSWORD` | Database password (SQL mode) | `promptly` |
 
 ### Database Switching
 
-| Database | Maven Profile | Spring Profile | Docker Compose |
-|----------|--------------|----------------|----------------|
-| MongoDB | `persistence-mongo` (default) | *(none / default)* | `docker-compose.yml` |
-| PostgreSQL | `persistence-postgres` | `postgres` | `docker-compose.postgres.yml` |
+| Database | Maven Profile | Spring Profile | Docker Compose | Notes |
+|----------|--------------|----------------|----------------|-------|
+| MongoDB | `persistence-mongo` (default) | *(none / default)* | `docker-compose.yml` | Production-ready |
+| PostgreSQL | `persistence-sql` | `postgres` | `docker-compose.postgres.yml` | Production-ready |
+| H2 | `persistence-sql` | `h2` | `docker-compose.h2.yml` | Local dev / demos |
 
 ```bash
-# Build & test with PostgreSQL adapters + Testcontainers
-mvn clean verify -Ppersistence-postgres -f apps/backend/core/pom.xml
+# Build & test with SQL adapters + Testcontainers
+mvn clean verify -Ppersistence-sql -f apps/backend/core/pom.xml
 ```
 
 ---
@@ -350,7 +397,7 @@ Promptly auto-generates client SDKs from the OpenAPI specification. Use these to
 | **Angular** | [`@promptly/client`](libs/shared/sdks/v1/angular/promptly-client) | `npm install @promptly/client` |
 | **TypeScript (Fetch)** | [`@promptly/query`](libs/shared/sdks/v1/query/typescript/promptly-query) | `npm install @promptly/query` |
 | **Python** | [`promptly-query`](libs/shared/sdks/v1/query/python/promptly-query) | `pip install promptly-query` |
-| **Java (Spring WebClient)** | [`com.promptly:promptly-query`](libs/shared/sdks/v1/query/java-spring/promptly-query) | Maven / Gradle (see [README](libs/shared/sdks/v1/query/java-spring/promptly-query/README.md)) |
+| **Java (Spring WebClient)** | [`com.spectrayan.promptly:promptly-query`](libs/shared/sdks/v1/query/java-spring/promptly-query) | Maven / Gradle (see [README](libs/shared/sdks/v1/query/java-spring/promptly-query/README.md)) |
 
 > 💡 See each SDK's README for detailed usage, configuration, and examples.
 
@@ -364,7 +411,7 @@ promptly/                              # Nx monorepo root
 │   ├── backend/
 │   │   └── core/                      # Spring Boot 4 application
 │   │       ├── pom.xml
-│   │       └── src/main/java/com/promptly/
+│   │       └── src/main/java/com/spectrayan/promptly/
 │   │           ├── shared/            # @ApplicationModule(OPEN) — configs, base classes
 │   │           ├── auth/              # JWT auth, user management
 │   │           ├── project/           # Multi-project RBAC
@@ -398,6 +445,7 @@ promptly/                              # Nx monorepo root
 ├── package.json                       # Node/pnpm workspace
 ├── docker-compose.yml                 # Dev (MongoDB Atlas Local)
 ├── docker-compose.postgres.yml        # Dev (PostgreSQL + pgvector)
+├── docker-compose.h2.yml              # Dev (H2 embedded — zero external deps)
 └── docker-compose.prod.yml            # Production stack
 ```
 
