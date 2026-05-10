@@ -169,7 +169,7 @@ resilience4j:
 
 logging:
   level:
-    com.promptly: DEBUG
+    com.spectrayan.promptly: DEBUG
     org.springframework.modulith: DEBUG
     org.springframework.data.mongodb: DEBUG
     # Suppress WARN from SSE EmissionService when emitting to topics with no subscribers.

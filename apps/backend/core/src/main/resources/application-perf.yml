@@ -41,6 +41,6 @@ management:
 
 logging:
   level:
-    com.promptly: INFO
+    com.spectrayan.promptly: INFO
     org.springframework.data.mongodb: WARN
     org.springframework.security: WARN

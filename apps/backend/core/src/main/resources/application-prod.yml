@@ -74,7 +74,7 @@ spectrayan:
 logging:
   level:
     root: WARN
-    com.promptly: INFO
+    com.spectrayan.promptly: INFO
     org.springframework.data.mongodb: WARN
     org.springframework.security: WARN
     org.springframework.modulith: WARN
