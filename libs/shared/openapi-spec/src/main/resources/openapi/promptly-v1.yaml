@@ -250,8 +250,6 @@ paths:
     $ref: 'v1/paths/prompt/prompt_versions_by_number.yaml'
   /api/v1/prompts/{id}/rollback/{targetVersion}:
     $ref: 'v1/paths/prompt/prompt_rollback.yaml'
-  /api/v1/prompts/generate:
-    $ref: 'v1/paths/prompt/generate_from_idea.yaml'
 
   # ── Workflow Engine ──
   /api/v1/workflows:
@@ -273,11 +271,13 @@ paths:
   /api/v1/scans:
     $ref: 'v1/paths/scanner/scans.yaml'
 
-  # ── Quality Improver ──
+  # -- Quality Improver --
   /api/v1/prompts/{promptId}/improve:
     $ref: 'v1/paths/improver/prompt_improve.yaml'
   /api/v1/prompts/{promptId}/apply-improvement:
     $ref: 'v1/paths/improver/prompt_apply_improvement.yaml'
+  /api/v1/prompts/generate:
+    $ref: 'v1/paths/improver/generate_from_idea.yaml'
 
   # ── Runtime Delivery ──
   /api/v1/deliver:

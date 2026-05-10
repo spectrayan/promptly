@@ -5,7 +5,7 @@ post:
     Uses a dedicated LLM system prompt to transform a short idea description into a
     fully-structured AI prompt. Unlike the improve endpoint, this does not require an
     existing prompt — it creates content from scratch.
-  tags: [Prompts]
+  tags: [Improver]
   requestBody:
     required: true
     content:
