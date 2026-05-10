@@ -34,6 +34,7 @@ All ADRs follow a consistent format:
 | [007](007-specification-pattern.md) | Specification Pattern for Business Rules | Accepted | Domain validation, rule composition |
 | [008](008-reactive-persistence.md) | Reactive Persistence with WebFlux & MongoDB | Accepted | Non-blocking I/O, document mapping |
 | [009](009-sse-notifications.md) | Real-Time Notifications via SSE | Accepted | Server-Sent Events, NgRx integration |
+| [010](010-virtual-threads-and-reactive.md) | Virtual Threads & Reactive Dispatch | Accepted | Virtual threads, @Async trampoline, scale analysis |
 
 ---
 

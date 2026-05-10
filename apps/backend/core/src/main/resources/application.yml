@@ -42,6 +42,14 @@ spring:
   application:
     name: promptly
 
+  # ── Virtual Threads (Project Loom) ──
+  # Uses lightweight JVM-managed threads for @Async, @Scheduled, and request handling.
+  # Virtual threads are created on-demand and automatically reclaimed on completion —
+  # no fixed pool size or idle timeout configuration is needed.
+  threads:
+    virtual:
+      enabled: true
+
   profiles:
     active: dev
 
