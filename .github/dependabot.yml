@@ -7,7 +7,7 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     ignore:
-      - dependency-name: "com.promptly:*" # Ignore internal modules if published
+      - dependency-name: "com.spectrayan.promptly:*" # Ignore internal modules if published
 
   # Check for updates to Node.js/pnpm dependencies
   - package-ecosystem: "npm"

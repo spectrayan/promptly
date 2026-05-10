@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.promptly</groupId>
+        <groupId>com.spectrayan.promptly</groupId>
         <artifactId>promptly</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
@@ -83,8 +83,8 @@
                                     <generatorName>spring</generatorName>
                                     <output>${apis.output}</output>
 
-                                    <apiPackage>com.promptly.infrastructure.in.web.api</apiPackage>
-                                    <modelPackage>com.promptly.infrastructure.in.web.dto</modelPackage>
+                                    <apiPackage>com.spectrayan.promptly.infrastructure.in.web.api</apiPackage>
+                                    <modelPackage>com.spectrayan.promptly.infrastructure.in.web.dto</modelPackage>
 
                                     <generateApiTests>false</generateApiTests>
                                     <generateModelTests>false</generateModelTests>
@@ -253,9 +253,9 @@
                                     <generatorName>java</generatorName>
                                     <output>${query.sdk.output}/java-spring/promptly-query</output>
 
-                                    <apiPackage>com.promptly.query.api</apiPackage>
-                                    <modelPackage>com.promptly.query.model</modelPackage>
-                                    <invokerPackage>com.promptly.query</invokerPackage>
+                                    <apiPackage>com.spectrayan.promptly.query.api</apiPackage>
+                                    <modelPackage>com.spectrayan.promptly.query.model</modelPackage>
+                                    <invokerPackage>com.spectrayan.promptly.query</invokerPackage>
 
                                     <generateApiTests>false</generateApiTests>
                                     <generateModelTests>false</generateModelTests>
@@ -275,7 +275,7 @@
                                         <useJakartaEe>true</useJakartaEe>
                                         <dateLibrary>java8</dateLibrary>
                                         <openApiNullable>false</openApiNullable>
-                                        <groupId>com.promptly</groupId>
+                                        <groupId>com.spectrayan.promptly</groupId>
                                         <artifactId>promptly-query</artifactId>
                                         <artifactVersion>${query.sdk.version}</artifactVersion>
                                         <artifactDescription>Promptly Query SDK for Java Spring (read-only operations)</artifactDescription>
