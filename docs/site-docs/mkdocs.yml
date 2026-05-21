@@ -94,6 +94,7 @@ nav:
       - Prompt Registry: user-guide/prompt-registry.md
       - Workflows & Approvals: user-guide/workflows.md
       - Security & Guardrails: user-guide/security.md
+      - Security Scanner: user-guide/scanner.md
   - Architecture:
       - Overview: architecture/overview.md
       - Backend Workflows: architecture/backend-workflows.md
@@ -107,6 +108,10 @@ nav:
           - "007: Specification": architecture/adrs/007-specification.md
           - "008: Reactive Persistence": architecture/adrs/008-reactive-persistence.md
           - "009: SSE Notifications": architecture/adrs/009-sse-notifications.md
+          - "010: Virtual Threads": architecture/adrs/010-virtual-threads.md
+  - Deep Dives:
+      - Prompt Scanner: deep-dives/prompt-scanner.md
+      - Workflows Engine: deep-dives/workflows.md
   - Operations:
       - Contributing: operations/contributing.md
       - Security: operations/security.md
