@@ -1,0 +1,113 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/site-docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install MkDocs and dependencies
+        run: |
+          pip install mkdocs-material pymdown-extensions mkdocs-callouts
+
+      - name: Build documentation
+        run: mkdocs build
+        working-directory: docs/site-docs
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/site-docs/site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  sync-wiki:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout main repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+
+      - name: Checkout wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync docs to wiki
+        run: |
+          cd wiki
+          # Remove existing content (except .git and _Sidebar.md)
+          find . -maxdepth 1 -name '*.md' ! -name '_Sidebar.md' -delete
+
+          # Copy and rename docs to wiki-friendly names
+          cp ../main/docs/site-docs/docs/index.md Home.md
+          cp ../main/docs/site-docs/docs/about/why-promptly.md Why-Promptly.md
+          cp ../main/docs/site-docs/docs/about/key-concepts.md Key-Concepts.md
+          cp ../main/docs/site-docs/docs/about/use-cases.md Use-Cases.md
+          cp ../main/docs/site-docs/docs/about/comparison.md Comparison.md
+          cp ../main/docs/site-docs/docs/about/faq.md FAQ.md
+          cp ../main/docs/site-docs/docs/getting-started/for-teams.md Getting-Started-Business.md
+          cp ../main/docs/site-docs/docs/getting-started/platform-overview.md User-Guide-Overview.md
+          cp ../main/docs/site-docs/docs/user-guide/dashboard.md User-Guide-Dashboard.md
+          cp ../main/docs/site-docs/docs/user-guide/prompt-registry.md User-Guide-Registry.md
+          cp ../main/docs/site-docs/docs/user-guide/workflows.md User-Guide-Workflows.md
+          cp ../main/docs/site-docs/docs/user-guide/security.md User-Guide-Security.md
+          cp ../main/docs/site-docs/docs/architecture/overview.md Architecture-Overview.md
+          cp ../main/docs/site-docs/docs/architecture/backend-workflows.md Backend-Workflows.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/001-hybrid-state.md ADR-001-hybrid-state-management.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/002-project-rbac.md ADR-002-project-rbac-model.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/003-hexagonal-naming.md ADR-003-hexagonal-naming-conventions.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/004-spring-modulith.md ADR-004-spring-modulith-boundaries.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/005-system-prompts.md ADR-005-system-prompt-administration.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/006-contract-first.md ADR-006-contract-first-api-design.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/007-specification.md ADR-007-specification-pattern.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/008-reactive-persistence.md ADR-008-reactive-persistence.md
+          cp ../main/docs/site-docs/docs/architecture/adrs/009-sse-notifications.md ADR-009-sse-notifications.md
+          cp ../main/docs/site-docs/docs/operations/contributing.md Contributing.md
+          cp ../main/docs/site-docs/docs/operations/security.md Security.md
+          cp ../main/docs/site-docs/docs/operations/changelog.md Changelog.md
+
+      - name: Push wiki changes
+        run: |
+          cd wiki
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "docs: sync from main repo docs [skip ci]"
+          git push

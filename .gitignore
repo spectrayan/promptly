@@ -260,3 +260,9 @@ reports/
 .lighthouseci/
 
 META-INF/
+
+# Leaked Spring AI dependency sources
+org/
+
+# Documentation build output
+docs/site-docs/site/

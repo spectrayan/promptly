@@ -1,0 +1,116 @@
+site_name: Promptly Documentation
+site_description: Enterprise Prompt Lifecycle Platform — version, govern, and optimize AI prompts at scale
+site_url: https://spectrayan.github.io/promptly/
+repo_url: https://github.com/spectrayan/promptly
+repo_name: spectrayan/promptly
+
+theme:
+  name: material
+  icon:
+    logo: material/robot-outline
+  palette:
+    - scheme: default
+      primary: deep-purple
+      accent: deep-purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep-purple
+      accent: deep-purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.footer
+    - navigation.path
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - toc.follow
+
+plugins:
+  - search
+  - callouts
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - abbr
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+nav:
+  - Home: index.md
+  - About:
+      - Why Promptly: about/why-promptly.md
+      - Key Concepts: about/key-concepts.md
+      - Use Cases: about/use-cases.md
+      - Comparison: about/comparison.md
+      - FAQ: about/faq.md
+  - Getting Started:
+      - For Teams: getting-started/for-teams.md
+      - Platform Overview: getting-started/platform-overview.md
+  - User Guide:
+      - Dashboard: user-guide/dashboard.md
+      - Prompt Registry: user-guide/prompt-registry.md
+      - Workflows & Approvals: user-guide/workflows.md
+      - Security & Guardrails: user-guide/security.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Backend Workflows: architecture/backend-workflows.md
+      - ADRs:
+          - "001: Hybrid State": architecture/adrs/001-hybrid-state.md
+          - "002: Project RBAC": architecture/adrs/002-project-rbac.md
+          - "003: Hexagonal Naming": architecture/adrs/003-hexagonal-naming.md
+          - "004: Spring Modulith": architecture/adrs/004-spring-modulith.md
+          - "005: System Prompts": architecture/adrs/005-system-prompts.md
+          - "006: Contract First": architecture/adrs/006-contract-first.md
+          - "007: Specification": architecture/adrs/007-specification.md
+          - "008: Reactive Persistence": architecture/adrs/008-reactive-persistence.md
+          - "009: SSE Notifications": architecture/adrs/009-sse-notifications.md
+  - Operations:
+      - Contributing: operations/contributing.md
+      - Security: operations/security.md
+      - Changelog: operations/changelog.md
+
+extra_css:
+  - stylesheets/extra.css
