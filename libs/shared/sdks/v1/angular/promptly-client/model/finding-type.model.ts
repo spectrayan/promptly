@@ -17,7 +17,18 @@ export const FindingType = {
     InjectionRisk: 'INJECTION_RISK',
     MissingGuardrail: 'MISSING_GUARDRAIL',
     HallucinationProne: 'HALLUCINATION_PRONE',
-    WeakToolCalling: 'WEAK_TOOL_CALLING'
+    WeakToolCalling: 'WEAK_TOOL_CALLING',
+    JailbreakVulnerable: 'JAILBREAK_VULNERABLE',
+    DataExfiltration: 'DATA_EXFILTRATION',
+    PrivilegeEscalation: 'PRIVILEGE_ESCALATION',
+    SystemPromptLeak: 'SYSTEM_PROMPT_LEAK',
+    OutputManipulation: 'OUTPUT_MANIPULATION',
+    EncodingAttack: 'ENCODING_ATTACK',
+    ContextPoisoning: 'CONTEXT_POISONING',
+    InsecureDefault: 'INSECURE_DEFAULT',
+    HarmfulContent: 'HARMFUL_CONTENT',
+    RegulatoryViolation: 'REGULATORY_VIOLATION',
+    ResourceAbuse: 'RESOURCE_ABUSE'
 } as const;
 export type FindingType = typeof FindingType[keyof typeof FindingType];
 

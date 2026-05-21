@@ -1,8 +1,25 @@
 <div class="monaco-toolbar">
   <span class="lang-badge">{{ languageLabel }}</span>
   <div class="toolbar-spacer"></div>
+  @if (isMarkdown && showPreviewToggle) {
+    <div class="view-mode-toggle">
+      <button class="toolbar-btn" [class.active]="viewMode() === 'edit'"
+              (click)="setViewMode('edit')" title="Editor only">
+        <span class="toolbar-icon">✏️</span> Edit
+      </button>
+      <button class="toolbar-btn" [class.active]="viewMode() === 'split'"
+              (click)="setViewMode('split')" title="Split editor + preview">
+        <span class="toolbar-icon">⫿</span> Split
+      </button>
+      <button class="toolbar-btn" [class.active]="viewMode() === 'preview'"
+              (click)="setViewMode('preview')" title="Preview only">
+        <span class="toolbar-icon">👁</span> Preview
+      </button>
+    </div>
+  }
   <button class="toolbar-btn" (click)="formatDocument()" title="Format (Shift+Alt+F)">
     <span class="toolbar-icon">⌘</span> Format
   </button>
 </div>
-<div #editorContainer class="monaco-host" [style.height]="height"></div>
+<div #editorContainer class="monaco-host" [style.height]="height"
+     [style.display]="viewMode() === 'preview' ? 'none' : 'block'"></div>

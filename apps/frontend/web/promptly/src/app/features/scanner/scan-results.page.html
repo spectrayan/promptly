@@ -12,7 +12,7 @@
 
 <mat-card>
   <table mat-table [dataSource]="paginatedScans()" matSort
-         (matSortChange)="onSortChange($event)" class="filterable-table">
+         (matSortChange)="onSortChange($event)" class="filterable-table clickable-table">
     <ng-container matColumnDef="prompt">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="promptId">Prompt</th>
       <td mat-cell *matCellDef="let s">
@@ -41,13 +41,30 @@
         </div>
       </th>
       <td mat-cell *matCellDef="let s">
-        <span class="badge" [class]="s.status === 'PASS' ? 'badge-success' : 'badge-danger'">{{ s.status }}</span>
+        <span class="badge"
+              [class.badge-success]="s.status === 'PASS'"
+              [class.badge-scan-warn]="s.status === 'WARN'"
+              [class.badge-danger]="s.status === 'FAIL'"
+              [class.badge-neutral]="s.status !== 'PASS' && s.status !== 'WARN' && s.status !== 'FAIL'">
+          {{ s.status ?? '—' }}
+        </span>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="findings">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Findings</th>
-      <td mat-cell *matCellDef="let s">{{ s.findings?.length ?? 0 }}</td>
+      <td mat-cell *matCellDef="let s">
+        <div class="findings-cell">
+          <span class="findings-count">{{ s.findings?.length ?? 0 }}</span>
+          @if (s.findings?.length) {
+            <div class="finding-type-chips">
+              @for (type of getUniqueTypes(s.findings); track type) {
+                <span class="badge badge-info finding-type-chip">{{ type }}</span>
+              }
+            </div>
+          }
+        </div>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="scannedAt">
@@ -56,7 +73,10 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"
+        (click)="viewScanDetail(row)"
+        class="clickable-row"
+        [matTooltip]="'View scan report'"></tr>
   </table>
 
   @if (filteredScans().length === 0) {

@@ -19,13 +19,13 @@ promptly:
   # ── LLM Configuration (platform defaults) ──
   llm:
     provider: gemini                   # default provider
-    model: gemini-2.5-flash            # default model
+    model: gemini-2.5-flash      # default model
     temperature: 0.3
     max-tokens: 4096
     api-key: ${PROMPTLY_LLM_API_KEY:}  # from env var — never commit real keys
     # credential-encryption-key: ${PROMPTLY_LLM_CREDENTIAL_ENCRYPTION_KEY:}  # enable for SaaS mode
     scanner:
-      model: gemini-2.5-flash          # cheaper/faster model for bulk scanning
+      model: gemini-2.5-flash    # cheaper/faster model for bulk scanning
     improver:
       model: gemini-2.5-flash
     embedding:
@@ -41,6 +41,14 @@ promptly:
 spring:
   application:
     name: promptly
+
+  # ── Virtual Threads (Project Loom) ──
+  # Uses lightweight JVM-managed threads for @Async, @Scheduled, and request handling.
+  # Virtual threads are created on-demand and automatically reclaimed on completion —
+  # no fixed pool size or idle timeout configuration is needed.
+  threads:
+    virtual:
+      enabled: true
 
   profiles:
     active: dev
@@ -128,11 +136,19 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         slow-call-duration-threshold: 30s
         slow-call-rate-threshold: 80
+      llm:
+        sliding-window-size: 10
+        minimum-number-of-calls: 3
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 60s
+        permitted-number-of-calls-in-half-open-state: 2
+        slow-call-duration-threshold: 120s
+        slow-call-rate-threshold: 90
     instances:
       llm-scanner:
-        base-config: default
+        base-config: llm
       llm-improver:
-        base-config: default
+        base-config: llm
   retry:
     configs:
       default:
@@ -153,7 +169,7 @@ resilience4j:
 
 logging:
   level:
-    com.promptly: DEBUG
+    com.spectrayan.promptly: DEBUG
     org.springframework.modulith: DEBUG
     org.springframework.data.mongodb: DEBUG
     # Suppress WARN from SSE EmissionService when emitting to topics with no subscribers.

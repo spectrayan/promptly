@@ -1,0 +1,14 @@
+type: object
+properties:
+  status:
+    type: string
+  imported:
+    type: integer
+  failed:
+    type: integer
+  importedPromptIds:
+    type: array
+    items:
+      type: string
+  error:
+    type: string

@@ -1946,6 +1946,17 @@ components:
       - MISSING_GUARDRAIL
       - HALLUCINATION_PRONE
       - WEAK_TOOL_CALLING
+      - JAILBREAK_VULNERABLE
+      - DATA_EXFILTRATION
+      - PRIVILEGE_ESCALATION
+      - SYSTEM_PROMPT_LEAK
+      - OUTPUT_MANIPULATION
+      - ENCODING_ATTACK
+      - CONTEXT_POISONING
+      - INSECURE_DEFAULT
+      - HARMFUL_CONTENT
+      - REGULATORY_VIOLATION
+      - RESOURCE_ABUSE
       type: string
     Severity:
       description: Severity level of a finding

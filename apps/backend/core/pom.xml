@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.promptly</groupId>
+        <groupId>com.spectrayan.promptly</groupId>
         <artifactId>promptly</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
@@ -18,7 +18,7 @@
     <!-- ══════════════════════════════════════════════════════════════
          Persistence Profiles — exactly one must be active at build time.
          Default: persistence-mongo (backward compatible).
-         Switch:  mvn clean install -Ppersistence-postgres
+         Switch:  mvn clean install -Ppersistence-sql
          ══════════════════════════════════════════════════════════════ -->
     <profiles>
         <!-- ── MongoDB (default) ───────────────────────────────────── -->
@@ -60,14 +60,15 @@
             </build>
         </profile>
 
-        <!-- ── PostgreSQL (R2DBC + Flyway + pgvector) ──────────────── -->
+        <!-- ── SQL (R2DBC: PostgreSQL, H2, SQLite) ─────────────────── -->
         <profile>
-            <id>persistence-postgres</id>
+            <id>persistence-sql</id>
             <dependencies>
                 <dependency>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-data-r2dbc</artifactId>
                 </dependency>
+                <!-- PostgreSQL R2DBC driver -->
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>r2dbc-postgresql</artifactId>
@@ -77,6 +78,17 @@
                     <artifactId>postgresql</artifactId>
                     <scope>runtime</scope>
                 </dependency>
+                <!-- H2 R2DBC driver (embedded, zero-config) -->
+                <dependency>
+                    <groupId>io.r2dbc</groupId>
+                    <artifactId>r2dbc-h2</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <!-- Flyway for schema migration -->
                 <dependency>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-flyway</artifactId>
@@ -85,6 +97,7 @@
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-database-postgresql</artifactId>
                 </dependency>
+                <!-- JDBC for Spring Modulith event publication store -->
                 <dependency>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -93,6 +106,7 @@
                     <groupId>org.springframework.modulith</groupId>
                     <artifactId>spring-modulith-starter-jdbc</artifactId>
                 </dependency>
+                <!-- pgvector (PostgreSQL-only, no-op on H2) -->
                 <dependency>
                     <groupId>com.pgvector</groupId>
                     <artifactId>pgvector</artifactId>
@@ -112,7 +126,7 @@
             </dependencies>
             <build>
                 <plugins>
-                    <!-- Exclude MongoDB-specific test sources from compilation -->
+                    <!-- Exclude MongoDB-specific sources from compilation -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
@@ -141,7 +155,7 @@
     <dependencies>
         <!-- ==================== Generated OpenAPI Interfaces ==================== -->
         <dependency>
-            <groupId>com.promptly</groupId>
+            <groupId>com.spectrayan.promptly</groupId>
             <artifactId>promptly-apis</artifactId>
             <version>${project.version}</version>
         </dependency>

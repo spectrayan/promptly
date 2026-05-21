@@ -84,7 +84,9 @@ src/
 │   │   ├── dashboard/       # Personalized landing page
 │   │   ├── prompts/         # Prompt list, detail, editor, version diff
 │   │   ├── workflows/       # Approval workflow management
-│   │   ├── scanner/         # Vulnerability scan results
+│   │   ├── scanner/         # Vulnerability scan list + detail report
+│   │   │   ├── scan-results.page.*      # Scan list with status filters & type chips
+│   │   │   └── scan-result-detail.page.* # Severity-grouped findings, Fix-in-Editor
 │   │   ├── search/          # Semantic search UI
 │   │   └── audit/           # Audit log viewer
 │   └── layout/              # Shell, header, sidebar, notifications

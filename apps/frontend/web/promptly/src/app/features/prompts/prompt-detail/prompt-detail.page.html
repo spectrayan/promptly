@@ -7,13 +7,30 @@
     </a>
     <div class="page-title-row">
       <h1>{{ p.name }}</h1>
-      <span class="badge"
-            [class.badge-success]="p.status === 'APPROVED'"
-            [class.badge-warning]="p.status === 'IN_REVIEW'"
-            [class.badge-danger]="p.status === 'REJECTED'"
-            [class.badge-neutral]="p.status === 'DRAFT' || p.status === 'DEPRECATED' || !p.status">
-        {{ p.status | enumLabel }}
-      </span>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-left: var(--space-4);">
+        <!-- Workflow Status -->
+        <span class="badge"
+              [class.badge-success]="p.status === 'APPROVED'"
+              [class.badge-warning]="p.status === 'IN_REVIEW'"
+              [class.badge-danger]="p.status === 'REJECTED'"
+              [class.badge-neutral]="p.status === 'DRAFT' || p.status === 'DEPRECATED' || !p.status">
+          {{ p.status | enumLabel }}
+        </span>
+        <!-- Security Status -->
+        @if (p.scanStatus && p.scanStatus !== 'NONE') {
+          <span class="badge"
+                [class.badge-scan-pass]="p.scanStatus === 'PASS'"
+                [class.badge-scan-warn]="p.scanStatus === 'WARN'"
+                [class.badge-scan-fail]="p.scanStatus === 'FAIL'">
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px; margin-right: 4px;">security</mat-icon>
+            {{ p.scanStatus }}
+          </span>
+        }
+        <!-- Tags -->
+        @for (tag of p.tags; track tag) {
+          <span class="badge" [class]="tag.toLowerCase() === 'business' || tag.toLowerCase() === 'core' ? 'badge-tag-special' : 'badge-tag-generic'">{{ tag }}</span>
+        }
+      </div>
     </div>
     <p>{{ p.description }}</p>
   </div>
@@ -40,28 +57,132 @@
         <mat-card-content>
           <!-- View mode -->
           @if (!editing()) {
-            <div class="monaco-editor-wrapper view-mode">
-              <promptly-monaco-editor
-                [value]="p.latestContent ?? ''"
-                [language]="p.contentFormat ?? 'TEXT'"
-                [height]="'350px'"
-                [readOnly]="true"
-                [minimap]="false"
-              />
-            </div>
+            @if (isMarkdownFormat()) {
+              <!-- Markdown: respects viewMode from Monaco toggle -->
+              @if (viewMode() === 'edit') {
+                <div class="monaco-editor-wrapper view-mode">
+                  <promptly-monaco-editor
+                    [value]="p.latestContent ?? ''"
+                    [language]="p.contentFormat ?? 'TEXT'"
+                    [height]="'350px'"
+                    [readOnly]="true"
+                    [minimap]="false"
+                    (viewModeChange)="viewMode.set($event)"
+                  />
+                </div>
+              } @else if (viewMode() === 'split') {
+                <div class="editor-preview-split">
+                  <div class="split-pane">
+                    <promptly-monaco-editor
+                      [value]="p.latestContent ?? ''"
+                      [language]="p.contentFormat ?? 'TEXT'"
+                      [height]="'350px'"
+                      [readOnly]="true"
+                      [minimap]="false"
+                      (viewModeChange)="viewMode.set($event)"
+                    />
+                  </div>
+                  <div class="split-pane">
+                    <promptly-markdown-preview
+                      [content]="p.latestContent ?? ''"
+                      [height]="'350px'"
+                    />
+                  </div>
+                </div>
+              } @else {
+                <!-- Preview only: show toolbar via Monaco (hidden editor) + full preview -->
+                <div class="monaco-editor-wrapper view-mode">
+                  <promptly-monaco-editor
+                    [value]="p.latestContent ?? ''"
+                    [language]="p.contentFormat ?? 'TEXT'"
+                    [height]="'0px'"
+                    [readOnly]="true"
+                    [minimap]="false"
+                    (viewModeChange)="viewMode.set($event)"
+                  />
+                </div>
+                <div class="preview-only-wrapper">
+                  <promptly-markdown-preview
+                    [content]="p.latestContent ?? ''"
+                    [height]="'350px'"
+                  />
+                </div>
+              }
+            } @else {
+              <!-- Non-markdown: plain Monaco view -->
+              <div class="monaco-editor-wrapper view-mode">
+                <promptly-monaco-editor
+                  [value]="p.latestContent ?? ''"
+                  [language]="p.contentFormat ?? 'TEXT'"
+                  [height]="'350px'"
+                  [readOnly]="true"
+                  [minimap]="false"
+                  [showPreviewToggle]="false"
+                />
+              </div>
+            }
           }
 
           <!-- Edit mode -->
           @if (editing()) {
             <div class="edit-panel">
-              <div class="monaco-editor-wrapper">
-                <promptly-monaco-editor
-                  [(value)]="editContent"
-                  [language]="p.contentFormat ?? 'TEXT'"
-                  [height]="'350px'"
-                  [minimap]="false"
-                />
-              </div>
+              @if (isMarkdownFormat()) {
+                @if (viewMode() === 'edit') {
+                  <div class="monaco-editor-wrapper">
+                    <promptly-monaco-editor
+                      [(value)]="editContent"
+                      [language]="p.contentFormat ?? 'TEXT'"
+                      [height]="'350px'"
+                      [minimap]="false"
+                      (viewModeChange)="viewMode.set($event)"
+                    />
+                  </div>
+                } @else if (viewMode() === 'split') {
+                  <div class="editor-preview-split">
+                    <div class="split-pane">
+                      <promptly-monaco-editor
+                        [(value)]="editContent"
+                        [language]="p.contentFormat ?? 'TEXT'"
+                        [height]="'350px'"
+                        [minimap]="false"
+                        (viewModeChange)="viewMode.set($event)"
+                      />
+                    </div>
+                    <div class="split-pane">
+                      <promptly-markdown-preview
+                        [content]="editContent"
+                        [height]="'350px'"
+                      />
+                    </div>
+                  </div>
+                } @else {
+                  <div class="monaco-editor-wrapper">
+                    <promptly-monaco-editor
+                      [(value)]="editContent"
+                      [language]="p.contentFormat ?? 'TEXT'"
+                      [height]="'0px'"
+                      [minimap]="false"
+                      (viewModeChange)="viewMode.set($event)"
+                    />
+                  </div>
+                  <div class="preview-only-wrapper">
+                    <promptly-markdown-preview
+                      [content]="editContent"
+                      [height]="'350px'"
+                    />
+                  </div>
+                }
+              } @else {
+                <div class="monaco-editor-wrapper">
+                  <promptly-monaco-editor
+                    [(value)]="editContent"
+                    [language]="p.contentFormat ?? 'TEXT'"
+                    [height]="'350px'"
+                    [minimap]="false"
+                    [showPreviewToggle]="false"
+                  />
+                </div>
+              }
               <mat-form-field appearance="outline" class="edit-message-field">
                 <mat-label>Change message (what did you change?)</mat-label>
                 <input matInput [(ngModel)]="editChangeMessage" placeholder="e.g. Improved safety guardrails" />
@@ -87,7 +208,12 @@
           } @else {
             <button mat-flat-button color="primary" (click)="saveEdit()"
                     [disabled]="!editContent.trim()">
-              <mat-icon>save</mat-icon> Save as v{{ (p.currentVersion ?? 0) + 1 }}
+              <mat-icon>save</mat-icon>
+              @if (p.status === 'DRAFT') {
+                Save Draft
+              } @else {
+                Save as v{{ (p.currentVersion ?? 0) + 1 }}
+              }
             </button>
             <button mat-button (click)="cancelEdit()">
               Cancel
@@ -113,7 +239,7 @@
             </ng-container>
             <ng-container matColumnDef="createdBy">
               <th mat-header-cell *matHeaderCellDef class="hide-mobile">Author</th>
-              <td mat-cell *matCellDef="let v" class="hide-mobile">{{ v.createdBy }}</td>
+              <td mat-cell *matCellDef="let v" class="hide-mobile">{{ userResolver.resolve(v.createdBy) }}</td>
             </ng-container>
             <ng-container matColumnDef="createdAt">
               <th mat-header-cell *matHeaderCellDef class="hide-mobile">Date</th>
@@ -187,6 +313,10 @@
             <dt>Format</dt><dd>{{ p.contentFormat | enumLabel }}</dd>
             <dt>Created</dt><dd class="cell-muted">{{ p.createdAt | date:'medium' }}</dd>
             <dt>Updated</dt><dd class="cell-muted">{{ p.updatedAt | date:'medium' }}</dd>
+            @if (facade.versions().length) {
+              <dt>Last Author</dt>
+              <dd class="cell-muted">{{ userResolver.resolve(facade.versions()[facade.versions().length - 1]?.createdBy) }}</dd>
+            }
           </dl>
         </mat-card-content>
       </mat-card>
@@ -228,8 +358,41 @@
         <mat-card>
           <mat-card-header><mat-card-title>Last Scan</mat-card-title></mat-card-header>
           <mat-card-content>
-            <span class="badge" [class]="scan.status === 'PASS' ? 'badge-success' : 'badge-danger'">{{ scan.status }}</span>
-            <div class="scan-meta">{{ scan.findings?.length ?? 0 }} findings</div>
+            <div class="scan-summary">
+              <span class="badge"
+                    [class.badge-success]="scan.status === 'PASS'"
+                    [class.badge-scan-warn]="scan.status === 'WARN'"
+                    [class.badge-danger]="scan.status === 'FAIL'"
+                    [class.badge-neutral]="scan.status !== 'PASS' && scan.status !== 'WARN' && scan.status !== 'FAIL'">
+                {{ scan.status }}
+              </span>
+              <span class="scan-score">Score: {{ scan.overallScore ?? 0 }}/10</span>
+            </div>
+            <div class="scan-meta">
+              {{ scan.findings?.length ?? 0 }} findings · v{{ scan.promptVersion }} · {{ scan.scannedAt | date:'short' }}
+            </div>
+            <div class="scan-meta">{{ scan.llmProvider }}/{{ scan.llmModel }}</div>
+            @if (scan.findings?.length) {
+              <div class="findings-compact-list">
+                @for (f of scan.findings; track f.title) {
+                  <div class="finding-compact-item">
+                    <span class="badge finding-severity finding-severity-sm"
+                          [class.badge-danger]="f.severity === 'CRITICAL' || f.severity === 'HIGH'"
+                          [class.badge-warning]="f.severity === 'MEDIUM'"
+                          [class.badge-neutral]="f.severity === 'LOW'">
+                      {{ f.severity }}
+                    </span>
+                    @if (f.type) {
+                      <span class="badge badge-info finding-type-sm">{{ f.type }}</span>
+                    }
+                    <span class="finding-compact-title">{{ f.title }}</span>
+                  </div>
+                }
+              </div>
+              <a class="view-report-link" [routerLink]="['/projects', projectId, 'scanner', scan.id]">
+                <mat-icon>open_in_new</mat-icon> View Full Report
+              </a>
+            }
           </mat-card-content>
         </mat-card>
       }

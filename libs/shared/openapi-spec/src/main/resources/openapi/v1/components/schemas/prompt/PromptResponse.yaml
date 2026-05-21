@@ -29,3 +29,6 @@ properties:
   updatedAt:
     type: string
     format: date-time
+  scanStatus:
+    type: string
+    enum: [PASS, WARN, FAIL, NONE]

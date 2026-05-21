@@ -31,3 +31,40 @@
     color: var(--mat-sys-primary);
   }
 }
+
+// ── Clickable rows ──────────────────────────────────────────────
+.clickable-row {
+  cursor: pointer;
+  transition: background var(--transition-base);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+}
+
+// ── Findings cell with type chips ──────────────────────────────
+.findings-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.findings-count {
+  font-weight: var(--weight-semibold);
+  min-width: 20px;
+}
+
+.finding-type-chips {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.finding-type-chip {
+  font-size: 9px !important;
+  letter-spacing: 0.3px;
+  padding: 1px 6px !important;
+  line-height: 1.4;
+  text-transform: uppercase;
+}

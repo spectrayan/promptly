@@ -11,7 +11,7 @@
  */
 
 
-package com.promptly.query;
+package com.spectrayan.promptly.query;
 
 import java.util.Map;
 

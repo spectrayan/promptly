@@ -11,7 +11,7 @@
  */
 
 
-package com.promptly.query.auth;
+package com.spectrayan.promptly.query.auth;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

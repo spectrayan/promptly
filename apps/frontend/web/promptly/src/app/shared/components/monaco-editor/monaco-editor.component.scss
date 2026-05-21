@@ -66,6 +66,41 @@
   opacity: 0.6;
 }
 
+// ── View Mode Toggle (Edit / Split / Preview) ───────────────────────
+.view-mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--mat-sys-outline-variant, #3d3b44);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-right: 4px;
+
+  .toolbar-btn {
+    border: none;
+    border-radius: 0;
+    border-right: 1px solid var(--mat-sys-outline-variant, #3d3b44);
+    padding: 3px 10px;
+    font-size: 11px;
+    transition: all 150ms ease;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+      background: var(--mat-sys-primary, #7c4dff);
+      color: var(--mat-sys-on-primary, #fff);
+
+      .toolbar-icon {
+        opacity: 1;
+      }
+    }
+
+    &:not(.active):hover {
+      background: var(--mat-sys-surface-container-high, #2b2930);
+    }
+  }
+}
+
 .monaco-host {
   width: 100%;
 }

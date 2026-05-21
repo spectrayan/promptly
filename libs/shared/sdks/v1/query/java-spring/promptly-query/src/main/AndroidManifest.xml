@@ -1,3 +1,3 @@
-<manifest package="com.promptly.query" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.spectrayan.promptly.query" xmlns:android="http://schemas.android.com/apk/res/android">
     <application />
 </manifest>
