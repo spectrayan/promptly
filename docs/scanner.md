@@ -72,6 +72,34 @@ Shows all scan results across prompts with:
   <img src="screenshots/scanner-list.png" alt="Scanner List" width="100%" />
 </p>
 
+### Scan Report — PASS (`/projects/:id/scanner/:scanId`)
+
+When a prompt passes with no vulnerabilities detected, the report shows a clean **PASS** status:
+
+<p align="center">
+  <img src="screenshots/scan-report-pass.png" alt="Scan Report PASS" width="100%" />
+</p>
+
+The PASS report displays:
+- **PASS status badge** with the overall score
+- **Finding count** (0 findings)
+- **Scan timestamp** and **LLM model** used
+- A reassuring **"No findings"** message with a green shield icon
+
+### Scan Report — WARN (`/projects/:id/scanner/:scanId`)
+
+When a prompt has non-critical findings, the report shows a **WARN** status with actionable remediation:
+
+<p align="center">
+  <img src="screenshots/scan-report-warn.png" alt="Scan Report WARN" width="100%" />
+</p>
+
+The WARN report displays:
+- **WARN status badge** with the overall score
+- **Finding count** and severity grouping
+- Each finding card shows the severity badge, title, description, and a **Recommended Fix** block
+- **Fix All in Editor** button — navigates to the prompt editor with all remediations combined
+
 ### Scan Report Detail (`/projects/:id/scanner/:scanId`)
 
 Detailed vulnerability report with:
