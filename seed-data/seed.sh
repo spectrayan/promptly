@@ -6,7 +6,7 @@
 #
 # Usage:  ./seed-data/seed.sh
 # ──────────────────────────────────────────────
-set -euo pipefail
+set -eu
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -16,12 +16,15 @@ SEED_DIR="$SCRIPT_DIR"
 CONTAINER="mongo-vector"
 DB="promptly"
 
-# Detect container name (fallback to promptly-mongodb)
+# Detect container name (fallback to promptly-mongodb, then mongo)
 if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
   CONTAINER="promptly-mongodb"
   if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
-    echo "❌ No MongoDB container found (tried mongo-vector, promptly-mongodb)"
-    exit 1
+    CONTAINER="mongo"
+    if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
+      echo "❌ No MongoDB container found (tried mongo-vector, promptly-mongodb, mongo)"
+      exit 1
+    fi
   fi
 fi
 

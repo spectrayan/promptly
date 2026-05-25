@@ -9,21 +9,27 @@
     "llmProvider": "google",
     "llmModel": "gemini-1.5-pro",
     "scannedBy": "system",
-    "scannedAt": { "$date": "2026-04-22T08:00:00Z" },
+    "scannedAt": {
+      "$date": "2026-04-22T08:00:00Z"
+    },
     "findings": [],
-    "createdAt": { "$date": "2026-04-22T08:00:00Z" }
+    "createdAt": {
+      "$date": "2026-04-22T08:00:00Z"
+    }
   },
   {
     "_id": "scan-002",
     "projectId": "proj-002",
     "promptId": "p-002",
     "promptVersion": 5,
-    "overallScore": 0.90,
+    "overallScore": 0.9,
     "status": "PASS",
     "llmProvider": "google",
     "llmModel": "gemini-1.5-pro",
     "scannedBy": "system",
-    "scannedAt": { "$date": "2026-04-20T10:30:00Z" },
+    "scannedAt": {
+      "$date": "2026-04-20T10:30:00Z"
+    },
     "findings": [
       {
         "type": "missing_guardrail",
@@ -33,7 +39,9 @@
         "remediation": "Add a PII redaction layer before output to prevent accidental leakage"
       }
     ],
-    "createdAt": { "$date": "2026-04-20T10:30:00Z" }
+    "createdAt": {
+      "$date": "2026-04-20T10:30:00Z"
+    }
   },
   {
     "_id": "scan-003",
@@ -45,7 +53,9 @@
     "llmProvider": "google",
     "llmModel": "gemini-1.5-pro",
     "scannedBy": "system",
-    "scannedAt": { "$date": "2026-04-19T14:00:00Z" },
+    "scannedAt": {
+      "$date": "2026-04-19T14:00:00Z"
+    },
     "findings": [
       {
         "type": "injection_risk",
@@ -62,7 +72,9 @@
         "remediation": "Add context grounding by requiring references to specific line numbers"
       }
     ],
-    "createdAt": { "$date": "2026-04-19T14:00:00Z" }
+    "createdAt": {
+      "$date": "2026-04-19T14:00:00Z"
+    }
   },
   {
     "_id": "scan-004",
@@ -74,8 +86,100 @@
     "llmProvider": "google",
     "llmModel": "gemini-1.5-pro",
     "scannedBy": "system",
-    "scannedAt": { "$date": "2026-04-18T16:00:00Z" },
+    "scannedAt": {
+      "$date": "2026-04-18T16:00:00Z"
+    },
     "findings": [],
-    "createdAt": { "$date": "2026-04-18T16:00:00Z" }
+    "createdAt": {
+      "$date": "2026-04-18T16:00:00Z"
+    }
+  },
+  {
+    "_id": "scan-health-aba",
+    "projectId": "proj-health",
+    "promptId": "p-health-aba",
+    "promptVersion": 1,
+    "overallScore": 0.75,
+    "status": "WARN",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    },
+    "findings": [
+      {
+        "type": "pii_risk",
+        "severity": "MEDIUM",
+        "title": "Potential PII Exposure Risk",
+        "description": "Healthcare prompts often receive PII (PHI) in user inputs. Ensure adequate redaction guardrails are active.",
+        "remediation": "Enable the PII redaction scanner or integrate a DLP tool in the inference pipeline."
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    }
+  },
+  {
+    "_id": "scan-health-cbt",
+    "projectId": "proj-health",
+    "promptId": "p-health-cbt",
+    "promptVersion": 1,
+    "overallScore": 0.75,
+    "status": "WARN",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    },
+    "findings": [
+      {
+        "type": "pii_risk",
+        "severity": "MEDIUM",
+        "title": "Potential PII Exposure Risk",
+        "description": "Healthcare prompts often receive PII (PHI) in user inputs. Ensure adequate redaction guardrails are active.",
+        "remediation": "Enable the PII redaction scanner or integrate a DLP tool in the inference pipeline."
+      }
+    ],
+    "createdAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    }
+  },
+  {
+    "_id": "scan-health-occupational",
+    "projectId": "proj-health",
+    "promptId": "p-health-occupational",
+    "promptVersion": 1,
+    "overallScore": 0.96,
+    "status": "PASS",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    },
+    "findings": [],
+    "createdAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    }
+  },
+  {
+    "_id": "scan-health-speech",
+    "projectId": "proj-health",
+    "promptId": "p-health-speech",
+    "promptVersion": 1,
+    "overallScore": 0.96,
+    "status": "PASS",
+    "llmProvider": "google",
+    "llmModel": "gemini-1.5-pro",
+    "scannedBy": "system",
+    "scannedAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    },
+    "findings": [],
+    "createdAt": {
+      "$date": "2026-05-20T14:00:00Z"
+    }
   }
 ]

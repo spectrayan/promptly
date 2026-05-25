@@ -21,8 +21,13 @@ if (-not $running) {
     $Container = "mongo-vector"
     $running = docker ps --format "{{.Names}}" 2>$null | Where-Object { $_ -eq $Container }
     if (-not $running) {
-        Err "No MongoDB container found (tried promptly-mongodb, mongo-vector). Start it first."
-        exit 1
+        # Fallback to mongo
+        $Container = "mongo"
+        $running = docker ps --format "{{.Names}}" 2>$null | Where-Object { $_ -eq $Container }
+        if (-not $running) {
+            Err "No MongoDB container found (tried promptly-mongodb, mongo-vector, mongo). Start it first."
+            exit 1
+        }
     }
 }
 
