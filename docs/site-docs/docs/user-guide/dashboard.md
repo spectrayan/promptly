@@ -3,7 +3,7 @@
 The **Dashboard** is the first thing you see when you select a Project in Promptly. It provides a real-time, bird's-eye view of your AI governance posture.
 
 <p align="center">
-  <img src="../screenshots/dashboard.png" alt="Promptly Dashboard" width="100%" />
+  <img src="../../screenshots/dashboard.png" alt="Promptly Dashboard" width="100%" />
 </p>
 
 ## Key Metrics
@@ -42,7 +42,7 @@ This ensures complete transparency and accountability for all AI changes made by
 Click the **?** icon in the application header to open the contextual help panel. The panel provides page-specific documentation right inside the app — no need to leave your workflow.
 
 <p align="center">
-  <img src="../screenshots/dashboard-with-docs.png" alt="Dashboard with Help Docs Panel" width="100%" />
+  <img src="../../screenshots/dashboard-with-docs.png" alt="Dashboard with Help Docs Panel" width="100%" />
 </p>
 
 The help panel displays documentation relevant to the current page. On the Dashboard, it explains:
@@ -54,7 +54,7 @@ The help panel displays documentation relevant to the current page. On the Dashb
 The help content adapts as you navigate — each page in Promptly has its own documentation topic that appears automatically when the panel is open.
 
 <p align="center">
-  <img src="../screenshots/dashboard-with-docs-workflows.png" alt="Workflows Help Docs Panel" width="100%" />
+  <img src="../../screenshots/dashboard-with-docs-workflows.png" alt="Workflows Help Docs Panel" width="100%" />
 </p>
 
 Here the help panel shows the **Workflows & Approvals** documentation with a full state-machine diagram explaining the Draft → Review → Approve lifecycle — useful for understanding how prompts progress through governance stages.

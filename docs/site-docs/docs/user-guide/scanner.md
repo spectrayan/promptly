@@ -235,7 +235,7 @@ Shows all scan results across prompts with:
 - **Clickable rows** → drill into the full scan report
 
 <p align="center">
-  <img src="../screenshots/scanner-list.png" alt="Scanner List" width="100%" />
+  <img src="../../screenshots/scanner-list.png" alt="Scanner List" width="100%" />
 </p>
 
 ### Scan Report — PASS (`/projects/:id/scanner/:scanId`)
@@ -243,7 +243,7 @@ Shows all scan results across prompts with:
 When a prompt passes with no vulnerabilities detected, the report shows a clean **PASS** status:
 
 <p align="center">
-  <img src="../screenshots/scan-report-pass.png" alt="Scan Report PASS" width="100%" />
+  <img src="../../screenshots/scan-report-pass.png" alt="Scan Report PASS" width="100%" />
 </p>
 
 The PASS report displays:
@@ -257,7 +257,7 @@ The PASS report displays:
 When a prompt has non-critical findings, the report shows a **WARN** status with actionable remediation:
 
 <p align="center">
-  <img src="../screenshots/scan-report-warn.png" alt="Scan Report WARN" width="100%" />
+  <img src="../../screenshots/scan-report-warn.png" alt="Scan Report WARN" width="100%" />
 </p>
 
 The WARN report displays:
@@ -280,7 +280,7 @@ Detailed vulnerability report with:
 - **Hover animations** — cards lift with shadow on hover
 
 <p align="center">
-  <img src="../screenshots/scan-report-detail.png" alt="Scan Report Detail" width="100%" />
+  <img src="../../screenshots/scan-report-detail.png" alt="Scan Report Detail" width="100%" />
 </p>
 
 ### Prompt Detail Sidebar
@@ -291,7 +291,7 @@ The prompt detail page shows a compact **Last Scan** card:
 - **View Full Report** link → navigates to the scan report detail
 
 <p align="center">
-  <img src="../screenshots/prompt-detail-scan.png" alt="Prompt Detail Scan Sidebar" width="100%" />
+  <img src="../../screenshots/prompt-detail-scan.png" alt="Prompt Detail Scan Sidebar" width="100%" />
 </p>
 
 ---

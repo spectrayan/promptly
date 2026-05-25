@@ -7,7 +7,7 @@ The **Prompt Registry** is the core of Promptly. It acts as the version control 
 When you navigate to the Registry, you will see a list of all prompt templates available in the current project.
 
 <p align="center">
-  <img src="../screenshots/project-prompts.png" alt="Prompt List" width="100%" />
+  <img src="../../screenshots/project-prompts.png" alt="Prompt List" width="100%" />
 </p>
 
 Each row displays the prompt name, description, tag chips (e.g., `ABA`, `AUTISM`, `BEHAVIOR`), approval status badge, version number, and the last-updated timestamp. Use the grid/list toggle and the **+ New Prompt** button in the top-right corner.
@@ -27,7 +27,7 @@ Every time you make a change to a prompt, a new immutable version is created. Th
 Click any prompt to open the detail page with the full Monaco editor, actions sidebar, and version history.
 
 <p align="center">
-  <img src="../screenshots/prompt-detail.png" alt="Prompt Detail" width="100%" />
+  <img src="../../screenshots/prompt-detail.png" alt="Prompt Detail" width="100%" />
 </p>
 
 The prompt detail page includes:
