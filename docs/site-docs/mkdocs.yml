@@ -110,8 +110,16 @@ nav:
           - "009: SSE Notifications": architecture/adrs/009-sse-notifications.md
           - "010: Virtual Threads": architecture/adrs/010-virtual-threads.md
   - Deep Dives:
+      - Prompt Registry: deep-dives/prompt-registry.md
       - Prompt Scanner: deep-dives/prompt-scanner.md
+      - Quality Improver: deep-dives/quality-improver.md
       - Workflows Engine: deep-dives/workflows.md
+      - Runtime Delivery: deep-dives/runtime-delivery.md
+      - Export / Import: deep-dives/export-import.md
+      - Audit & Compliance: deep-dives/audit.md
+      - Semantic Search: deep-dives/semantic-search.md
+      - Auth & RBAC: deep-dives/auth-rbac.md
+      - Notifications: deep-dives/notifications.md
   - Operations:
       - Contributing: operations/contributing.md
       - Security: operations/security.md
@@ -119,3 +127,6 @@ nav:
 
 extra_css:
   - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mermaid-dark.js
