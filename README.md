@@ -51,16 +51,16 @@ As organizations adopt multi-agent AI systems, **prompts have become business lo
 
 | Module | Description | Status |
 |--------|-------------|--------|
-| **Prompt Registry** | Full CRUD with versioning, rollback, and diff viewer | ✅ Stable |
-| **Workflow Engine** | Multi-step approval state machine (Submit → Review → Approve / Reject) | ✅ Stable |
+| **[Prompt Registry](docs/prompt-registry.md)** | Full CRUD with versioning, rollback, and diff viewer | ✅ Stable |
+| **[Workflow Engine](docs/workflow-engine.md)** | Multi-step approval state machine (Submit → Review → Approve / Reject) | ✅ Stable |
 | **[Vulnerability Scanner](docs/scanner.md)** | LLM-powered security scanning with severity-grouped reports, remediation guidance, and Fix-in-Editor workflow | ✅ Stable |
-| **Quality Improver** | AI-assisted prompt rewriting with generate + apply flow | ✅ Stable |
-| **Runtime Delivery** | Low-latency prompt fetch by `appId`, `usecase`, and `agent` | ✅ Stable |
-| **Export / Import** | Bulk export/import for CI/CD-driven cross-environment deployment | ✅ Stable |
-| **Audit & Compliance** | Central event listener → append-only immutable log | ✅ Stable |
-| **Semantic Search** | Embedding-based vector search with duplicate detection | ✅ Stable |
-| **Auth & RBAC** | JWT auth, login/register, project membership with role-based access | ✅ Stable |
-| **Real-Time Notifications** | SSE-powered notifications with per-user delivery | ✅ Stable |
+| **[Quality Improver](docs/quality-improver.md)** | AI-assisted prompt rewriting with generate + apply flow | ✅ Stable |
+| **[Runtime Delivery](docs/runtime-delivery.md)** | Low-latency prompt fetch by `appId`, `usecase`, and `agent` | ✅ Stable |
+| **[Export / Import](docs/export-import.md)** | Bulk export/import for CI/CD-driven cross-environment deployment | ✅ Stable |
+| **[Audit & Compliance](docs/audit.md)** | Central event listener → append-only immutable log | ✅ Stable |
+| **[Semantic Search](docs/semantic-search.md)** | Embedding-based vector search with duplicate detection | ✅ Stable |
+| **[Auth & RBAC](docs/auth-rbac.md)** | JWT auth, login/register, project membership with role-based access | ✅ Stable |
+| **[Real-Time Notifications](docs/notifications.md)** | SSE-powered notifications with per-user delivery | ✅ Stable |
 
 ### Frontend
 
@@ -75,10 +75,99 @@ As organizations adopt multi-agent AI systems, **prompts have become business lo
 | **Audit Viewer** | Audit log browser with filters |
 | **App Shell** | Material 3 dark/light toggle, GCP-style project selector, collapsible sidebar |
 
-### 🖼️ Scanner UI Preview
+### 🖼️ Platform Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Promptly Dashboard" width="100%" />
+</p>
+
+> The Dashboard provides a real-time overview of your AI governance posture — total prompts, workflows, pending approvals, security scans, audit events, and projects — with quick-action cards for common tasks.
 
 <details>
-<summary><strong>Security Scan Report — 2-column findings with remediation</strong></summary>
+<summary><strong>📖 Built-in Contextual Help Docs</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/dashboard-with-docs.png" alt="Dashboard with Help Docs Panel" width="100%" />
+</p>
+
+Click the **?** icon in the header to open the contextual help panel. Each page in Promptly has its own documentation — explaining key metrics, activity feeds, and how to use the current view — right inside the app.
+
+<p align="center">
+  <img src="docs/screenshots/dashboard-with-docs -2.png" alt="Workflows Help Docs Panel" width="100%" />
+</p>
+
+The help panel adapts to the topic — here showing the **Workflows & Approvals** documentation with a full state-machine diagram explaining the Draft → Review → Approve lifecycle.
+
+</details>
+
+<details>
+<summary><strong>Prompt Registry — Healthcare Projects</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/project-prompts.png" alt="Prompt List" width="100%" />
+</p>
+
+Browse all prompt templates in a project. Each row shows the prompt name, description, tag chips, approval status, version badge, and last-updated timestamp.
+
+</details>
+
+<details>
+<summary><strong>Prompt Detail — Editor, Actions & Last Scan</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/prompt-detail.png" alt="Prompt Detail" width="100%" />
+</p>
+
+The prompt detail page features an integrated Monaco editor with markdown preview, version history, action buttons (Edit, Improve, Scan, Clone, Submit for Review, Delete), and a compact **Last Scan** sidebar showing the latest vulnerability assessment.
+
+</details>
+
+<details>
+<summary><strong>Prompt Editing — Clinical CBT Prompt</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/prompt-editing.png" alt="Prompt Editing" width="100%" />
+</p>
+
+Manage complex clinical prompts such as the CBT Support Assistant, complete with system context, role definition, and formatting rules.
+
+</details>
+
+<details>
+<summary><strong>Security Scans — Healthcare Projects</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/scans-view.png" alt="Scans View" width="100%" />
+</p>
+
+Easily identify potential risks in your prompts such as PII exposure before deploying to production, ensuring HIPAA compliance.
+
+</details>
+
+<details>
+<summary><strong>Scan Report — PASS (No Findings)</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/scan-report-pass.png" alt="Scan Report PASS" width="100%" />
+</p>
+
+When a prompt passes the security scan with no vulnerabilities detected, the report displays a clean **PASS** status with the score and a reassuring "No findings" message.
+
+</details>
+
+<details>
+<summary><strong>Scan Report — WARN (Medium Finding with Remediation)</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/scan-report-warn.png" alt="Scan Report WARN" width="100%" />
+</p>
+
+A **WARN** scan report groups findings by severity. Each finding card includes a severity badge, description, and a **Recommended Fix** block with actionable remediation guidance. The **Fix All in Editor** button navigates to the prompt editor with all fixes pre-populated.
+
+</details>
+
+<details>
+<summary><strong>Scan Report Detail — 2-column findings grid</strong></summary>
 
 <p align="center">
   <img src="docs/screenshots/scan-report-detail.png" alt="Scan Report Detail" width="100%" />
