@@ -38,9 +38,9 @@ flowchart TD
     Layer2 --> Layer3
     Layer3 --> PROD["✅ Production Deployment"]
 
-    style Layer1 fill:#E3F2FD,stroke:#1565C0
-    style Layer2 fill:#FFF3E0,stroke:#E65100
-    style Layer3 fill:#E8F5E9,stroke:#2E7D32
+    style Layer1 fill:#E3F2FD,color:#333,stroke:#1565C0
+    style Layer2 fill:#FFF3E0,color:#333,stroke:#E65100
+    style Layer3 fill:#E8F5E9,color:#333,stroke:#2E7D32
     style PROD fill:#4CAF50,color:#fff,stroke:#388E3C
 ```
 

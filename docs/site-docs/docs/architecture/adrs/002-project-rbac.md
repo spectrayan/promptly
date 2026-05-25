@@ -41,9 +41,9 @@ graph TB
     P1 -.-> Discovery
     P2 -.-> Discovery
 
-    style P1 fill:#E3F2FD,stroke:#1565C0
-    style P2 fill:#E8F5E9,stroke:#2E7D32
-    style Discovery fill:#FFF3E0,stroke:#E65100
+    style P1 fill:#E3F2FD,color:#333,stroke:#1565C0
+    style P2 fill:#E8F5E9,color:#333,stroke:#2E7D32
+    style Discovery fill:#FFF3E0,color:#333,stroke:#E65100
 ```
 
 #### Why Not Sub-groups?
@@ -208,8 +208,8 @@ flowchart LR
     O3 --> R
     R --> ROLE["Project role resolved"]
 
-    style LOCAL fill:#E3F2FD,stroke:#1565C0
-    style OIDC fill:#E8F5E9,stroke:#2E7D32
+    style LOCAL fill:#E3F2FD,color:#333,stroke:#1565C0
+    style OIDC fill:#E8F5E9,color:#333,stroke:#2E7D32
     style ROLE fill:#FF9800,color:#fff,stroke:#E65100
 ```
 

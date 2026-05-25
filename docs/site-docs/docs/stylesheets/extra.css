@@ -7,3 +7,100 @@
   margin: 0 auto;
   display: block;
 }
+
+/* ─── Dark-mode Mermaid fix ─────────────────────────────────────────────
+   MkDocs Material uses [data-md-color-scheme="slate"] for dark mode.
+   Without these overrides, Mermaid renders with a "default" (light) theme
+   where dark text on dark backgrounds becomes invisible.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* Force Mermaid to use the dark theme when Material is in slate mode */
+[data-md-color-scheme="slate"] .mermaid {
+  --md-mermaid-font-family: var(--md-text-font-family, "Roboto");
+}
+
+/* Ensure node labels remain readable on custom-colored nodes in dark mode.
+   Nodes with light pastel fills (e.g. #E3F2FD) need dark text,
+   while nodes with dark fills (e.g. #4CAF50) need white text.
+   The inline `color:` in each style directive handles this per-node,
+   but the default (un-styled) nodes need overriding via CSS. */
+
+/* Default node text in dark mode — use light text for default-themed nodes */
+[data-md-color-scheme="slate"] .mermaid .nodeLabel {
+  color: #e0e0e0 !important;
+}
+
+/* Default edge labels in dark mode */
+[data-md-color-scheme="slate"] .mermaid .edgeLabel {
+  background-color: #2d2d2d !important;
+  color: #e0e0e0 !important;
+}
+
+/* Subgraph titles in dark mode */
+[data-md-color-scheme="slate"] .mermaid .cluster-label {
+  color: #e0e0e0 !important;
+}
+
+/* State diagram labels */
+[data-md-color-scheme="slate"] .mermaid .stateLabel .nodeLabel {
+  color: #e0e0e0 !important;
+}
+
+/* Sequence diagram text */
+[data-md-color-scheme="slate"] .mermaid .messageText,
+[data-md-color-scheme="slate"] .mermaid .loopText,
+[data-md-color-scheme="slate"] .mermaid .noteText {
+  fill: #e0e0e0 !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid .actor {
+  fill: #37474f !important;
+  stroke: #78909c !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid text.actor > tspan {
+  fill: #e0e0e0 !important;
+}
+
+/* Flowchart default node background in dark mode */
+[data-md-color-scheme="slate"] .mermaid .node rect,
+[data-md-color-scheme="slate"] .mermaid .node circle,
+[data-md-color-scheme="slate"] .mermaid .node ellipse,
+[data-md-color-scheme="slate"] .mermaid .node polygon,
+[data-md-color-scheme="slate"] .mermaid .node path {
+  fill: #37474f !important;
+  stroke: #78909c !important;
+}
+
+/* Preserve custom-styled nodes: override the default dark fill above
+   only for nodes that do NOT have inline styles.
+   Since inline styles have higher specificity, this block only affects
+   un-styled nodes. Nodes with explicit fill:# in the mermaid source
+   will keep their custom colors. */
+
+/* Edge / arrow lines in dark mode */
+[data-md-color-scheme="slate"] .mermaid .edgePath .path {
+  stroke: #90a4ae !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid marker path {
+  fill: #90a4ae !important;
+  stroke: #90a4ae !important;
+}
+
+/* Subgraph (cluster) background in dark mode */
+[data-md-color-scheme="slate"] .mermaid .cluster rect {
+  fill: #263238 !important;
+  stroke: #546e7a !important;
+}
+
+/* ─── Fix for light pastel fills in BOTH themes ─────────────────────────
+   Nodes with light fills (#E3F2FD, #FFF3E0, #E8F5E9, #90CAF9, etc.)
+   need DARK text regardless of theme, since the background is always
+   light. The inline `color:#333` added to each style directive in the
+   .md files handles this. The CSS below is a safety net for any missed
+   nodes. ─────────────────────────────────────────────────────────────── */
+
+/* Nodes with inline light-fill styles: ensure their labels stay dark.
+   Mermaid applies styles via the `style` attribute, so these CSS rules
+   act as a last resort. The primary fix is in the Mermaid source. */

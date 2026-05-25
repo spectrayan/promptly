@@ -75,9 +75,9 @@ graph TB
     PP -.->|"implemented by"| MA
     MA --> REPO
 
-    style Domain fill:#FFF3E0,stroke:#E65100
-    style Port fill:#E3F2FD,stroke:#1565C0
-    style Adapter fill:#E8F5E9,stroke:#2E7D32
+    style Domain fill:#FFF3E0,color:#333,stroke:#E65100
+    style Port fill:#E3F2FD,color:#333,stroke:#1565C0
+    style Adapter fill:#E8F5E9,color:#333,stroke:#2E7D32
 ```
 
 ### Persistence Mapping

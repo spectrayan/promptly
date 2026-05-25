@@ -72,6 +72,6 @@ graph TB
     style NGRX fill:#4CAF50,color:#fff,stroke:#388E3C
     style SDK fill:#7B1FA2,color:#fff,stroke:#4A148C
     style WEB fill:#2196F3,color:#fff,stroke:#1565C0
-    style DOM fill:#E3F2FD,stroke:#1565C0
+    style DOM fill:#E3F2FD,color:#333,stroke:#1565C0
     style MONGO fill:#9C27B0,color:#fff,stroke:#6A1B9A
 ```

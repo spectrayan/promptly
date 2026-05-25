@@ -63,12 +63,12 @@ graph TB
     AUDIT --> SHARED & INFRA & PROMPT & WORKFLOW & SCANNER
     EXPORT --> SHARED & INFRA & PROMPT & WORKFLOW & SCANNER
 
-    style SHARED fill:#FFF3E0,stroke:#E65100
-    style INFRA fill:#FFF3E0,stroke:#E65100
-    style PROMPT fill:#E3F2FD,stroke:#1565C0
-    style WORKFLOW fill:#E3F2FD,stroke:#1565C0
-    style AUTH fill:#E8F5E9,stroke:#2E7D32
-    style PROJECT fill:#E8F5E9,stroke:#2E7D32
+    style SHARED fill:#FFF3E0,color:#333,stroke:#E65100
+    style INFRA fill:#FFF3E0,color:#333,stroke:#E65100
+    style PROMPT fill:#E3F2FD,color:#333,stroke:#1565C0
+    style WORKFLOW fill:#E3F2FD,color:#333,stroke:#1565C0
+    style AUTH fill:#E8F5E9,color:#333,stroke:#2E7D32
+    style PROJECT fill:#E8F5E9,color:#333,stroke:#2E7D32
 ```
 
 ### Module Types
@@ -106,8 +106,8 @@ graph LR
     SEARCH["search"] --> DM
     DELIVERY["delivery"] --> DM
 
-    style DM fill:#E3F2FD,stroke:#1565C0
-    style API fill:#90CAF9,stroke:#1565C0
+    style DM fill:#E3F2FD,color:#333,stroke:#1565C0
+    style API fill:#90CAF9,color:#333,stroke:#1565C0
 ```
 
 ### Inter-Module Communication
