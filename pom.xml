@@ -36,7 +36,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Spring Boot 4 -->
-        <spring-boot.version>4.0.0</spring-boot.version>
+        <spring-boot.version>4.0.6</spring-boot.version>
         <spring-modulith.version>2.1.0-M4</spring-modulith.version>
         <spring-ai.version>2.0.0-M4</spring-ai.version>
 
