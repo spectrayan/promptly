@@ -26,7 +26,7 @@ import jakarta.annotation.Generated;
  * WorkflowResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-09-14T20:09:35.901615400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", comments = "Generator version: 7.21.0")
 public class WorkflowResponse {
 
   private @Nullable String id;

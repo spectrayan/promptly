@@ -102,6 +102,7 @@
                                         <jakarta>true</jakarta>
                                         <dateLibrary>java8</dateLibrary>
                                         <openApiNullable>false</openApiNullable>
+                                        <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                         <documentationProvider>springdoc</documentationProvider>
                                         <useTags>true</useTags>
                                         <sourceFolder>src/main/java</sourceFolder>
