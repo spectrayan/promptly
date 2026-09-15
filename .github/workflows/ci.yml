@@ -20,8 +20,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '22'
-  JAVA_VERSION: '21'
+  NODE_VERSION: '26'
+  JAVA_VERSION: '25'
   JAVA_DISTRIBUTION: 'temurin'
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        java: ['21']
+        java: ['25']
 
     services:
       mongodb:
@@ -84,7 +84,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node: ['22']
+        node: ['26']
 
     steps:
       - name: Checkout
@@ -123,9 +123,6 @@ jobs:
         run: npx nx build promptly --configuration=production --skip-nx-cache
 
       - name: Lighthouse CI
-        run: |
-          npx --yes serve -s dist/apps/frontend/web/promptly/browser -p 30042 &
-          sleep 3
-          npx lhci autorun --config=apps/e2e/promptly-perf/lighthouse/lighthouserc.json
+        run: npx lhci autorun --config=apps/e2e/promptly-perf/lighthouse/lighthouserc.json
 
 

@@ -31,14 +31,14 @@
     </profiles>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Spring Boot 4 -->
-        <spring-boot.version>4.0.6</spring-boot.version>
-        <spring-modulith.version>2.1.0-M4</spring-modulith.version>
-        <spring-ai.version>2.0.0-M4</spring-ai.version>
+        <spring-boot.version>4.1.1</spring-boot.version>
+        <spring-modulith.version>2.1.1</spring-modulith.version>
+        <spring-ai.version>2.0.1</spring-ai.version>
 
         <!-- Libraries -->
         <lombok.version>1.18.42</lombok.version>

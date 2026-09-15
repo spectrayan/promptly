@@ -15,20 +15,24 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers
 public abstract class AbstractIntegrationTest {
 
-    @Container
-    static final MongoDBContainer MONGODB = new MongoDBContainer(
-            DockerImageName.parse("mongo:8.0")
-    );
+    static final MongoDBContainer MONGODB;
+
+    static {
+        MONGODB = new MongoDBContainer(
+                DockerImageName.parse("mongo:8.0")
+        );
+        MONGODB.start();
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", MONGODB::getReplicaSetUrl);
+        registry.add("spring.mongodb.uri", MONGODB::getReplicaSetUrl);
         registry.add("spring.data.mongodb.host", MONGODB::getHost);
         registry.add("spring.data.mongodb.port", () -> MONGODB.getMappedPort(27017));
         
-        // Disable Vertex AI for unit/integration tests
-        registry.add("spring.ai.vertex.ai.gemini.project-id", () -> "test-project");
-        registry.add("spring.ai.vertex.ai.gemini.location", () -> "us-central1");
+        // Dummy API key for Google GenAI in tests
+        registry.add("spring.ai.google.genai.api-key", () -> "test-api-key");
     }
 
 }

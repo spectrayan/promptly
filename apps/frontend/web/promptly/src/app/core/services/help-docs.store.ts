@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import mermaid from 'mermaid';
 
 export interface DocArticle {
   id: string;

@@ -69,7 +69,7 @@ class PromptModuleIntegrationTest extends AbstractIntegrationTest {
 
         // Verify history was persisted separately
         StepVerifier.create(
-                promptRepository.findAll().single()
+                promptRepository.findAll().filter(doc -> "Integration Test Prompt".equals(doc.getName())).single()
                         .flatMapMany(doc -> historyPort.findByPromptId(doc.getId()))
                         .collectList()
         )
@@ -103,7 +103,7 @@ class PromptModuleIntegrationTest extends AbstractIntegrationTest {
 
         // Verify both versions exist in history
         StepVerifier.create(
-                promptRepository.findAll().single()
+                promptRepository.findAll().filter(doc -> "Update Test".equals(doc.getName())).single()
                         .flatMapMany(doc -> historyPort.findByPromptId(doc.getId()))
                         .collectList()
         )
