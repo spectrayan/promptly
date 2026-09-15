@@ -10,7 +10,7 @@
 # Run:    docker run -p 8080:8080 -e SPRING_DATA_MONGODB_URI=... promptly-backend
 
 # -- Stage 1: Extract layered JAR -------------------------------------------
-FROM eclipse-temurin:21-jdk-alpine AS extract
+FROM eclipse-temurin:25-jdk-alpine AS extract
 
 WORKDIR /app
 
@@ -18,10 +18,10 @@ WORKDIR /app
 COPY apps/backend/core/target/*.jar app.jar
 
 # Extract Spring Boot layered JAR for optimal Docker caching
-RUN java -Djarmode=layertools -jar app.jar extract --destination /app/layers
+RUN java -Djarmode=tools -jar app.jar extract --layers --destination /app/layers
 
 # -- Stage 2: Runtime --------------------------------------------------------
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 
 # Security: non-root user
 RUN addgroup -S promptly && adduser -S promptly -G promptly

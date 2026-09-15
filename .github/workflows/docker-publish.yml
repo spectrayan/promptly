@@ -36,8 +36,8 @@ concurrency:
 
 env:
   IMAGE: spectrayan/promptly
-  NODE_VERSION: '22'
-  JAVA_VERSION: '21'
+  NODE_VERSION: '26'
+  JAVA_VERSION: '25'
   JAVA_DISTRIBUTION: 'temurin'
 
 jobs:

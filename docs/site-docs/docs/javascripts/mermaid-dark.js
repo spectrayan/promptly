@@ -65,12 +65,15 @@ function reinitMermaid() {
 
   // Re-render all mermaid diagrams
   document.querySelectorAll(".mermaid").forEach(function (el) {
+    if (!el.getAttribute("data-original-code")) {
+      el.setAttribute("data-original-code", el.textContent);
+    }
     // Only re-render if the element has already been processed
     if (el.getAttribute("data-processed")) {
       const code = el.getAttribute("data-original-code");
       if (code) {
         el.removeAttribute("data-processed");
-        el.innerHTML = code;
+        el.textContent = code;
       }
     }
   });

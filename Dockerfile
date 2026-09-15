@@ -16,16 +16,16 @@
 # ===========================================================================
 
 # -- Stage 1: Extract layered Spring Boot JAR --------------------------------
-FROM eclipse-temurin:21-jdk-alpine AS extract
+FROM eclipse-temurin:25-jdk-alpine AS extract
 
 WORKDIR /app
 
 COPY apps/backend/core/target/*.jar app.jar
 
-RUN java -Djarmode=layertools -jar app.jar extract --destination /app/layers
+RUN java -Djarmode=tools -jar app.jar extract --layers --destination /app/layers
 
 # -- Stage 2: Runtime (JRE + Nginx + Supervisor) -----------------------------
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 
 # Install nginx, supervisor, and curl (healthcheck)
 RUN apk add --no-cache nginx supervisor curl

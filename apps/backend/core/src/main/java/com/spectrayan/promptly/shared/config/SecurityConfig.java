@@ -9,12 +9,13 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 
 /**
  * Reactive Spring Security configuration.
  * <p>
- * Dev profile: disables CSRF and permits all requests for local development.
- * Prod profile (future): enables OAuth2 Resource Server with JWT validation.
+ * Dev profile: enables cookie-based CSRF and permits all requests for local development.
+ * Prod profile (future): enables OAuth2 Resource Server with JWT validation and cookie-based CSRF.
  */
 @Configuration
 @EnableWebFluxSecurity
@@ -25,7 +26,7 @@ public class SecurityConfig {
     @ConditionalOnProperty(name = "promptly.auth.provider", havingValue = "oidc", matchIfMissing = false)
     public SecurityWebFilterChain devSecurityFilterChain(ServerHttpSecurity http) {
         return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/webjars/**").permitAll()
@@ -42,7 +43,7 @@ public class SecurityConfig {
     @ConditionalOnProperty(name = "promptly.auth.provider", havingValue = "oidc", matchIfMissing = false)
     public SecurityWebFilterChain prodSecurityFilterChain(ServerHttpSecurity http) {
         return http
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/actuator/health").permitAll()
                         .pathMatchers("/v3/api-docs/**").permitAll()
