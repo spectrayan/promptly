@@ -542,7 +542,7 @@ promptly/                              # Nx monorepo root
 
 ## 🤝 Contributing
 
-We welcome contributions of all kinds — bug reports, feature requests, documentation improvements, and code! Please see our **[Contributing Guide](CONTRIBUTING.md)** for full details.
+We welcome contributions of all kinds — bug reports, feature requests, documentation improvements, and code! Please see our **[Contributing Guide](CONTRIBUTING.md)** and **[Acknowledgments](ACKNOWLEDGMENTS.md)** for recognized contributors.
 
 ```bash
 # Quick start for contributors

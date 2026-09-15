@@ -182,6 +182,10 @@ Use the [Feature Request template](https://github.com/spectrayan/promptly/issues
 - Your proposed solution
 - Any alternatives you've considered
 
+## Recognition & Acknowledgments
+
+We celebrate every contributor! All individuals and organizations contributing to Promptly are recognized in our [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md).
+
 ## Questions?
 
 - **General questions:** Open a [Discussion](https://github.com/spectrayan/promptly/discussions)
