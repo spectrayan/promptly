@@ -18,7 +18,7 @@ WORKDIR /app
 COPY apps/backend/core/target/*.jar app.jar
 
 # Extract Spring Boot layered JAR for optimal Docker caching
-RUN java -Djarmode=layertools -jar app.jar extract --destination /app/layers
+RUN java -Djarmode=tools -jar app.jar extract --layers --destination /app/layers
 
 # -- Stage 2: Runtime --------------------------------------------------------
 FROM eclipse-temurin:25-jre-alpine AS runtime

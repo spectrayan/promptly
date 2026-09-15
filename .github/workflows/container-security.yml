@@ -1,4 +1,4 @@
-﻿name: Container Security Scan
+name: Container Security Scan
 
 on:
   push:
@@ -129,7 +129,7 @@ jobs:
 
       - name: Upload SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'container-docker'
