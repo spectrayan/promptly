@@ -100,6 +100,17 @@ constructor({ accessToken, apiKeys, basePath, credentials, encodeParam, encoder,
                     : this.accessToken;
             };
         }
+
+        // init default ApiKeyAuth credential
+        if (!this.credentials['ApiKeyAuth']) {
+            this.credentials['ApiKeyAuth'] = () => {
+                if (this.apiKeys === null || this.apiKeys === undefined) {
+                    return undefined;
+                } else {
+                    return this.apiKeys['ApiKeyAuth'] || this.apiKeys['X-API-Key'];
+                }
+            };
+        }
     }
 
     /**

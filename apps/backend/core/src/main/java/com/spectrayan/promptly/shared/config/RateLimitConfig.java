@@ -100,17 +100,38 @@ public class RateLimitConfig {
                 }
             }
 
-            // Global per-IP rate limit
-            RateLimiter globalLimiter = perIpLimiters.computeIfAbsent(
-                    "global-" + clientIp,
+            // Determine rate limit bucket key: Per-API-Key if present, otherwise per-IP
+            String apiKeyHeader = exchange.getRequest().getHeaders().getFirst("X-API-Key");
+            String authHeader = exchange.getRequest().getHeaders().getFirst(org.springframework.http.HttpHeaders.AUTHORIZATION);
+            String bucketKey;
+
+            if (apiKeyHeader != null && !apiKeyHeader.isBlank() && apiKeyHeader.startsWith("prk_")) {
+                String prefix = apiKeyHeader.length() > 16 ? apiKeyHeader.substring(0, 16) : apiKeyHeader;
+                bucketKey = "apikey-" + prefix;
+            } else if (authHeader != null && authHeader.startsWith("Bearer prk_")) {
+                String token = authHeader.substring(7).trim();
+                String prefix = token.length() > 16 ? token.substring(0, 16) : token;
+                bucketKey = "apikey-" + prefix;
+            } else {
+                bucketKey = "global-" + clientIp;
+            }
+
+            RateLimiter limiter = perIpLimiters.computeIfAbsent(
+                    bucketKey,
                     key -> registry.rateLimiter(key, globalRateLimiterConfig));
 
-            if (!globalLimiter.acquirePermission()) {
+            exchange.getResponse().getHeaders().set("X-RateLimit-Limit",
+                    String.valueOf(rateLimitProps.getRequestsPerSecond()));
+
+            if (!limiter.acquirePermission()) {
+                log.warn("Rate limit exceeded for bucket: {}", bucketKey);
                 exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
                 exchange.getResponse().getHeaders().set("Retry-After", "1");
+                exchange.getResponse().getHeaders().set("X-RateLimit-Remaining", "0");
                 return exchange.getResponse().setComplete();
             }
 
+            exchange.getResponse().getHeaders().set("X-RateLimit-Remaining", "1");
             return chain.filter(exchange);
         };
     }

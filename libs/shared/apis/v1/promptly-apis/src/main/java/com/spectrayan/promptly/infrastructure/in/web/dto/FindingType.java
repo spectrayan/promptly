@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Category of vulnerability finding
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-05-05T23:45:25.362554800-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-09-14T20:09:35.901615400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 public enum FindingType {
   
   PHI_EXPOSURE("PHI_EXPOSURE"),
@@ -31,27 +31,27 @@ public enum FindingType {
   HALLUCINATION_PRONE("HALLUCINATION_PRONE"),
   
   WEAK_TOOL_CALLING("WEAK_TOOL_CALLING"),
-
+  
   JAILBREAK_VULNERABLE("JAILBREAK_VULNERABLE"),
-
+  
   DATA_EXFILTRATION("DATA_EXFILTRATION"),
-
+  
   PRIVILEGE_ESCALATION("PRIVILEGE_ESCALATION"),
-
+  
   SYSTEM_PROMPT_LEAK("SYSTEM_PROMPT_LEAK"),
-
+  
   OUTPUT_MANIPULATION("OUTPUT_MANIPULATION"),
-
+  
   ENCODING_ATTACK("ENCODING_ATTACK"),
-
+  
   CONTEXT_POISONING("CONTEXT_POISONING"),
-
+  
   INSECURE_DEFAULT("INSECURE_DEFAULT"),
-
+  
   HARMFUL_CONTENT("HARMFUL_CONTENT"),
-
+  
   REGULATORY_VIOLATION("REGULATORY_VIOLATION"),
-
+  
   RESOURCE_ABUSE("RESOURCE_ABUSE");
 
   private final String value;

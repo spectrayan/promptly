@@ -92,6 +92,12 @@ export class DeliveryService extends BaseService implements DeliveryServiceInter
 
         let localVarHeaders = this.defaultHeaders;
 
+        // authentication (ApiKeyAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('ApiKeyAuth', 'X-API-Key', localVarHeaders);
+
+        // authentication (BearerAuth) required
+        localVarHeaders = this.configuration.addCredentialToHeaders('BearerAuth', 'Authorization', localVarHeaders, 'Bearer ');
+
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
             'application/json',
             'application/problem+json'

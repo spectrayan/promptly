@@ -21,7 +21,8 @@ public class LocalAuthSecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http,
-                                                         JwtAuthenticationFilter jwtAuthFilter) {
+                                                         JwtAuthenticationFilter jwtAuthFilter,
+                                                         ApiKeyAuthenticationFilter apiKeyAuthFilter) {
         return http
                 // Enable CORS inside security so 401/403 responses include CORS headers
                 .cors(Customizer.withDefaults())
@@ -44,7 +45,7 @@ public class LocalAuthSecurityConfig {
                         // Everything else requires authentication
                         .anyExchange().authenticated()
                 )
-                .securityContextRepository(new JwtSecurityContextRepository(jwtAuthFilter))
+                .securityContextRepository(new JwtSecurityContextRepository(jwtAuthFilter, apiKeyAuthFilter))
                 .build();
     }
 }

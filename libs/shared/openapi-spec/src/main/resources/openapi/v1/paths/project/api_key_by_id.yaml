@@ -1,0 +1,22 @@
+delete:
+  operationId: revokeProjectApiKey
+  summary: Revoke an API key
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: keyId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '204':
+      description: API key revoked successfully
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

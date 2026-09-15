@@ -84,7 +84,7 @@ export class PromptCreateDialog {
     this.aiSummary.set('');
     this.aiError.set(null);
 
-    this.promptsService.generateFromIdea({
+    this.improverService.generateFromIdea({
       generateFromIdeaRequest: {
         idea,
         projectId: this.form.projectId ?? undefined,

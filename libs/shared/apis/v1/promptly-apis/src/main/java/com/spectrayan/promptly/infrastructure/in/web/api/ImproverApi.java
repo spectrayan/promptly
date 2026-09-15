@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-05-05T23:45:25.362554800-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-09-14T20:09:35.901615400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Improver", description = "Quality Improver — AI-assisted prompt refinement")
 public interface ImproverApi {
@@ -81,18 +81,16 @@ public interface ImproverApi {
     String PATH_GENERATE_FROM_IDEA = "/api/v1/prompts/generate";
     /**
      * POST /api/v1/prompts/generate : Generate a prompt from a natural-language idea
-     * Uses a dedicated LLM system prompt to transform a short idea description into a
-     * fully-structured AI prompt. Unlike the improve endpoint, this does not require an
-     * existing prompt — it creates content from scratch.
+     * Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. 
      *
      * @param generateFromIdeaRequest  (required)
      * @return Generated prompt content (status code 200)
-     *         or The request was invalid or malformed (status code 400)
+     *         or The request was invalid or malformed (validation errors, missing required fields, etc.) (status code 400)
      */
     @Operation(
         operationId = "generateFromIdea",
         summary = "Generate a prompt from a natural-language idea",
-        description = "Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch.",
+        description = "Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. ",
         tags = { "Improver" },
         responses = {
             @ApiResponse(responseCode = "200", description = "Generated prompt content", content = {

@@ -7,6 +7,8 @@ import com.spectrayan.promptly.project.application.port.in.GetProjectUseCase;
 import com.spectrayan.promptly.project.application.port.in.ManageProjectMembersUseCase;
 import com.spectrayan.promptly.project.domain.model.Project;
 import com.spectrayan.promptly.project.domain.model.ProjectMember;
+import com.spectrayan.promptly.auth.application.port.in.ManageApiKeysUseCase;
+import com.spectrayan.promptly.auth.domain.model.ApiKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +27,8 @@ import java.util.ArrayList;
  * Implements the contract-first {@link ProjectsApi} interface generated from the OpenAPI specification.
  * <p>
  * Projects are the top-level security boundary — every prompt, workflow, and scan
- * is scoped to a project. This controller handles project CRUD and member management
- * (add/update/remove members with role assignments).
+ * is scoped to a project. This controller handles project CRUD, member management,
+ * and project API keys for Runtime Delivery.
  *
  * @see com.spectrayan.promptly.project.domain.model.Project
  * @see com.spectrayan.promptly.project.domain.model.ProjectRole
@@ -38,6 +40,7 @@ public class ProjectController implements ProjectsApi {
     private final CreateProjectUseCase createProjectUseCase;
     private final GetProjectUseCase getProjectUseCase;
     private final ManageProjectMembersUseCase manageMembersUseCase;
+    private final ManageApiKeysUseCase manageApiKeysUseCase;
     private final com.spectrayan.promptly.auth.application.port.in.UserQueryUseCase userQueryUseCase;
 
     @Override
@@ -113,6 +116,68 @@ public class ProjectController implements ProjectsApi {
             String projectId, String userId, ServerWebExchange exchange) {
         return manageMembersUseCase.removeMember(projectId, userId)
                 .thenReturn(ResponseEntity.noContent().build());
+    }
+
+    @Override
+    public Mono<ResponseEntity<ApiKeyCreatedResponse>> createProjectApiKey(
+            String projectId, Mono<CreateApiKeyRequest> request, ServerWebExchange exchange) {
+        return getCurrentUserId()
+                .flatMap(userId -> request.flatMap(req ->
+                        manageApiKeysUseCase.createApiKey(projectId, req.getName(), req.getExpiresInDays(), userId)))
+                .map(gen -> {
+                    var k = gen.apiKey();
+                    var resp = new ApiKeyCreatedResponse(
+                            k.getId(),
+                            k.getProjectId(),
+                            k.getName(),
+                            k.getKeyPrefix(),
+                            gen.rawKey(),
+                            k.isRevoked(),
+                            k.getCreatedAt() != null ? OffsetDateTime.ofInstant(k.getCreatedAt(), ZoneOffset.UTC) : OffsetDateTime.now()
+                    );
+                    if (k.getExpiresAt() != null) {
+                        resp.setExpiresAt(OffsetDateTime.ofInstant(k.getExpiresAt(), ZoneOffset.UTC));
+                    }
+                    resp.setCreatedBy(k.getCreatedBy());
+                    return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+                });
+    }
+
+    @Override
+    public Mono<ResponseEntity<Flux<ApiKeyResponse>>> listProjectApiKeys(
+            String projectId, ServerWebExchange exchange) {
+        Flux<ApiKeyResponse> flux = manageApiKeysUseCase.listApiKeys(projectId)
+                .map(this::toApiKeyResponse);
+        return Mono.just(ResponseEntity.ok(flux));
+    }
+
+    @Override
+    public Mono<ResponseEntity<Void>> revokeProjectApiKey(
+            String projectId, String keyId, ServerWebExchange exchange) {
+        return manageApiKeysUseCase.revokeApiKey(projectId, keyId)
+                .thenReturn(ResponseEntity.noContent().build());
+    }
+
+    private ApiKeyResponse toApiKeyResponse(ApiKey k) {
+        var resp = new ApiKeyResponse(
+                k.getId(),
+                k.getProjectId(),
+                k.getName(),
+                k.getKeyPrefix(),
+                k.isRevoked(),
+                k.getCreatedAt() != null ? OffsetDateTime.ofInstant(k.getCreatedAt(), ZoneOffset.UTC) : OffsetDateTime.now()
+        );
+        if (k.getExpiresAt() != null) {
+            resp.setExpiresAt(OffsetDateTime.ofInstant(k.getExpiresAt(), ZoneOffset.UTC));
+        }
+        if (k.getLastUsedAt() != null) {
+            resp.setLastUsedAt(OffsetDateTime.ofInstant(k.getLastUsedAt(), ZoneOffset.UTC));
+        }
+        if (k.getRevokedAt() != null) {
+            resp.setRevokedAt(OffsetDateTime.ofInstant(k.getRevokedAt(), ZoneOffset.UTC));
+        }
+        resp.setCreatedBy(k.getCreatedBy());
+        return resp;
     }
 
     private Mono<String> getCurrentUserId() {

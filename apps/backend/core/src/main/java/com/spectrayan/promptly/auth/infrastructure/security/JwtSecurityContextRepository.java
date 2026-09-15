@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 public class JwtSecurityContextRepository implements ServerSecurityContextRepository {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final ApiKeyAuthenticationFilter apiKeyAuthFilter;
 
     @Override
     public Mono<Void> save(ServerWebExchange exchange, SecurityContext context) {
@@ -23,7 +24,8 @@ public class JwtSecurityContextRepository implements ServerSecurityContextReposi
 
     @Override
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
-        return jwtAuthFilter.authenticate(exchange.getRequest())
+        return apiKeyAuthFilter.authenticate(exchange.getRequest())
+                .switchIfEmpty(jwtAuthFilter.authenticate(exchange.getRequest()))
                 .map(SecurityContextImpl::new);
     }
 }
