@@ -45,8 +45,9 @@ ENV JAVA_OPTS="-XX:+UseContainerSupport \
                -XX:InitialRAMPercentage=50.0 \
                -Djava.security.egd=file:/dev/./urandom"
 
-# Install curl for healthcheck (wget is not available in JRE Alpine)
-RUN apk add --no-cache curl
+# Install curl for healthcheck (wget is not available in JRE Alpine), and upgrade all OS packages to patch vulnerabilities
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache curl
 
 EXPOSE 8080
 

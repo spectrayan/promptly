@@ -27,8 +27,9 @@ RUN java -Djarmode=tools -jar app.jar extract --layers --destination /app/layers
 # -- Stage 2: Runtime (JRE + Nginx + Supervisor) -----------------------------
 FROM eclipse-temurin:25-jre-alpine AS runtime
 
-# Install nginx, supervisor, and curl (healthcheck)
-RUN apk add --no-cache nginx supervisor curl
+# Install nginx, supervisor, and curl (healthcheck), and upgrade all OS packages to patch vulnerabilities
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache nginx supervisor curl
 
 # Security: non-root user for the backend process
 RUN addgroup -S promptly && adduser -S promptly -G promptly
