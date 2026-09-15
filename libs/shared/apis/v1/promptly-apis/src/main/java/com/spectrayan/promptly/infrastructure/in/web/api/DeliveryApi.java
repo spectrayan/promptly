@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-05-05T23:45:25.362554800-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-09-14T20:09:35.901615400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Delivery", description = "Runtime Delivery — low-latency prompt serving for AI agents")
 public interface DeliveryApi {
@@ -66,6 +66,10 @@ public interface DeliveryApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
                 @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
             })
+        },
+        security = {
+            @SecurityRequirement(name = "ApiKeyAuth"),
+            @SecurityRequirement(name = "BearerAuth")
         }
     )
     @RequestMapping(

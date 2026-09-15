@@ -6,6 +6,9 @@
 package com.spectrayan.promptly.infrastructure.in.web.api;
 
 import com.spectrayan.promptly.infrastructure.in.web.dto.AddMemberRequest;
+import com.spectrayan.promptly.infrastructure.in.web.dto.ApiKeyCreatedResponse;
+import com.spectrayan.promptly.infrastructure.in.web.dto.ApiKeyResponse;
+import com.spectrayan.promptly.infrastructure.in.web.dto.CreateApiKeyRequest;
 import com.spectrayan.promptly.infrastructure.in.web.dto.CreateProjectRequest;
 import org.jspecify.annotations.Nullable;
 import com.spectrayan.promptly.infrastructure.in.web.dto.ProblemDetails;
@@ -40,7 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-05-05T23:45:25.362554800-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-09-14T20:09:35.901615400-05:00[America/Chicago]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Projects", description = "Projects — RBAC boundaries, team management")
 public interface ProjectsApi {
@@ -135,6 +138,51 @@ public interface ProjectsApi {
     );
 
 
+    String PATH_CREATE_PROJECT_API_KEY = "/api/v1/projects/{projectId}/api-keys";
+    /**
+     * POST /api/v1/projects/{projectId}/api-keys : Generate a new project API key
+     *
+     * @param projectId  (required)
+     * @param createApiKeyRequest  (required)
+     * @return API key generated successfully. Plaintext key is returned only once. (status code 201)
+     *         or The request was invalid or malformed (validation errors, missing required fields, etc.) (status code 400)
+     *         or The requested resource was not found (status code 404)
+     */
+    @Operation(
+        operationId = "createProjectApiKey",
+        summary = "Generate a new project API key",
+        tags = { "Projects" },
+        responses = {
+            @ApiResponse(responseCode = "201", description = "API key generated successfully. Plaintext key is returned only once.", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ApiKeyCreatedResponse.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ApiKeyCreatedResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "The request was invalid or malformed (validation errors, missing required fields, etc.)", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "The requested resource was not found", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = ProjectsApi.PATH_CREATE_PROJECT_API_KEY,
+        produces = { "application/json", "application/problem+json" },
+        consumes = { "application/json" }
+    )
+    Mono<ResponseEntity<ApiKeyCreatedResponse>> createProjectApiKey(
+        @Parameter(name = "projectId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("projectId") String projectId,
+        @Parameter(name = "CreateApiKeyRequest", description = "", required = true) @Valid @RequestBody Mono<CreateApiKeyRequest> createApiKeyRequest,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
     String PATH_GET_PROJECT = "/api/v1/projects/{id}";
     /**
      * GET /api/v1/projects/{id} : Get project by ID
@@ -168,6 +216,37 @@ public interface ProjectsApi {
     )
     Mono<ResponseEntity<ProjectResponse>> getProject(
         @Parameter(name = "id", description = "", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_LIST_PROJECT_API_KEYS = "/api/v1/projects/{projectId}/api-keys";
+    /**
+     * GET /api/v1/projects/{projectId}/api-keys : List project API keys
+     *
+     * @param projectId  (required)
+     * @return List of API keys for the project (status code 200)
+     */
+    @Operation(
+        operationId = "listProjectApiKeys",
+        summary = "List project API keys",
+        tags = { "Projects" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "List of API keys for the project", content = {
+                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ApiKeyResponse.class)))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.GET,
+        value = ProjectsApi.PATH_LIST_PROJECT_API_KEYS,
+        produces = { "application/json" }
+    )
+    Mono<ResponseEntity<Flux<ApiKeyResponse>>> listProjectApiKeys(
+        @Parameter(name = "projectId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("projectId") String projectId,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 
@@ -271,6 +350,41 @@ public interface ProjectsApi {
     Mono<ResponseEntity<Void>> removeProjectMember(
         @Parameter(name = "projectId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("projectId") String projectId,
         @Parameter(name = "userId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("userId") String userId,
+        @Parameter(hidden = true) final ServerWebExchange exchange
+    );
+
+
+    String PATH_REVOKE_PROJECT_API_KEY = "/api/v1/projects/{projectId}/api-keys/{keyId}";
+    /**
+     * DELETE /api/v1/projects/{projectId}/api-keys/{keyId} : Revoke an API key
+     *
+     * @param projectId  (required)
+     * @param keyId  (required)
+     * @return API key revoked successfully (status code 204)
+     *         or The requested resource was not found (status code 404)
+     */
+    @Operation(
+        operationId = "revokeProjectApiKey",
+        summary = "Revoke an API key",
+        tags = { "Projects" },
+        responses = {
+            @ApiResponse(responseCode = "204", description = "API key revoked successfully"),
+            @ApiResponse(responseCode = "404", description = "The requested resource was not found", content = {
+                @Content(mediaType = "application/problem+json", schema = @Schema(implementation = ProblemDetails.class))
+            })
+        },
+        security = {
+            @SecurityRequirement(name = "BearerAuth")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.DELETE,
+        value = ProjectsApi.PATH_REVOKE_PROJECT_API_KEY,
+        produces = { "application/problem+json" }
+    )
+    Mono<ResponseEntity<Void>> revokeProjectApiKey(
+        @Parameter(name = "projectId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("projectId") String projectId,
+        @Parameter(name = "keyId", description = "", required = true, in = ParameterIn.PATH) @PathVariable("keyId") String keyId,
         @Parameter(hidden = true) final ServerWebExchange exchange
     );
 

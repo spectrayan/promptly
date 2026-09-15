@@ -26,6 +26,11 @@ components:
   securitySchemes:
     BearerAuth:
       $ref: 'v1/components/securitySchemes/securitySchemes.yaml'
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API Key authentication for machine-to-machine integrations (X-API-Key or Authorization Bearer prk_live_...)
 
   parameters:
     PromptId:
@@ -83,6 +88,12 @@ components:
       $ref: 'v1/components/schemas/project/UpdateMemberRequest.yaml'
     ProjectMemberResponse:
       $ref: 'v1/components/schemas/project/ProjectMemberResponse.yaml'
+    CreateApiKeyRequest:
+      $ref: 'v1/components/schemas/project/CreateApiKeyRequest.yaml'
+    ApiKeyResponse:
+      $ref: 'v1/components/schemas/project/ApiKeyResponse.yaml'
+    ApiKeyCreatedResponse:
+      $ref: 'v1/components/schemas/project/ApiKeyCreatedResponse.yaml'
 
     # ── Prompt Registry ──
     CreatePromptRequest:
@@ -213,6 +224,8 @@ tags:
   # ── External SDK ──
   - name: PromptlyQuery
     description: External read-only API — query projects, prompts, delivery, and search for external consumers
+  - name: ApiKeys
+    description: API Keys — Machine-to-machine authentication management for projects
 
 paths:
   # ── Authentication ──
@@ -238,6 +251,10 @@ paths:
     $ref: 'v1/paths/project/project_members.yaml'
   /api/v1/projects/{projectId}/members/{userId}:
     $ref: 'v1/paths/project/project_member_by_id.yaml'
+  /api/v1/projects/{projectId}/api-keys:
+    $ref: 'v1/paths/project/api_keys.yaml'
+  /api/v1/projects/{projectId}/api-keys/{keyId}:
+    $ref: 'v1/paths/project/api_key_by_id.yaml'
 
   # ── Prompt Registry ──
   /api/v1/prompts:

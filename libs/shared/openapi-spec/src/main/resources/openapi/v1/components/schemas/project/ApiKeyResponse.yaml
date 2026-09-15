@@ -1,0 +1,38 @@
+type: object
+required: [id, projectId, name, prefix, revoked, createdAt]
+properties:
+  id:
+    type: string
+    example: "08D2X0PKM6C00"
+  projectId:
+    type: string
+    example: "proj-001"
+  name:
+    type: string
+    example: "production-agent"
+  prefix:
+    type: string
+    description: Public prefix used for identifying the key
+    example: "prk_live_a1b2c3"
+  revoked:
+    type: boolean
+    example: false
+  revokedAt:
+    type: string
+    format: date-time
+    nullable: true
+  expiresAt:
+    type: string
+    format: date-time
+    nullable: true
+  lastUsedAt:
+    type: string
+    format: date-time
+    nullable: true
+  createdBy:
+    type: string
+    example: "usr-001"
+  createdAt:
+    type: string
+    format: date-time
+    example: "2026-09-15T00:00:00Z"

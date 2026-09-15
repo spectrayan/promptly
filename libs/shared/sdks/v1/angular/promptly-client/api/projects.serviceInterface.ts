@@ -12,6 +12,9 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { AddMemberRequest } from '../model/models';
+import { ApiKeyCreatedResponse } from '../model/models';
+import { ApiKeyResponse } from '../model/models';
+import { CreateApiKeyRequest } from '../model/models';
 import { CreateProjectRequest } from '../model/models';
 import { ProblemDetails } from '../model/models';
 import { ProjectMemberResponse } from '../model/models';
@@ -31,8 +34,17 @@ export interface CreateProjectRequestParams {
     createProjectRequest: CreateProjectRequest;
 }
 
+export interface CreateProjectApiKeyRequestParams {
+    projectId: string;
+    createApiKeyRequest: CreateApiKeyRequest;
+}
+
 export interface GetProjectRequestParams {
     id: string;
+}
+
+export interface ListProjectApiKeysRequestParams {
+    projectId: string;
 }
 
 export interface ListProjectMembersRequestParams {
@@ -48,6 +60,11 @@ export interface ListProjectsRequestParams {
 export interface RemoveProjectMemberRequestParams {
     projectId: string;
     userId: string;
+}
+
+export interface RevokeProjectApiKeyRequestParams {
+    projectId: string;
+    keyId: string;
 }
 
 export interface UpdateProjectMemberRequestParams {
@@ -78,12 +95,28 @@ export interface ProjectsServiceInterface {
     createProject(requestParameters: CreateProjectRequestParams, extraHttpRequestParams?: any): Observable<ProjectResponse>;
 
     /**
+     * Generate a new project API key
+     * 
+     * @endpoint post /api/v1/projects/{projectId}/api-keys
+* @param requestParameters
+     */
+    createProjectApiKey(requestParameters: CreateProjectApiKeyRequestParams, extraHttpRequestParams?: any): Observable<ApiKeyCreatedResponse>;
+
+    /**
      * Get project by ID
      * 
      * @endpoint get /api/v1/projects/{id}
 * @param requestParameters
      */
     getProject(requestParameters: GetProjectRequestParams, extraHttpRequestParams?: any): Observable<ProjectResponse>;
+
+    /**
+     * List project API keys
+     * 
+     * @endpoint get /api/v1/projects/{projectId}/api-keys
+* @param requestParameters
+     */
+    listProjectApiKeys(requestParameters: ListProjectApiKeysRequestParams, extraHttpRequestParams?: any): Observable<Array<ApiKeyResponse>>;
 
     /**
      * List project members
@@ -108,6 +141,14 @@ export interface ProjectsServiceInterface {
 * @param requestParameters
      */
     removeProjectMember(requestParameters: RemoveProjectMemberRequestParams, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Revoke an API key
+     * 
+     * @endpoint delete /api/v1/projects/{projectId}/api-keys/{keyId}
+* @param requestParameters
+     */
+    revokeProjectApiKey(requestParameters: RevokeProjectApiKeyRequestParams, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * Update a project member\&#39;s role

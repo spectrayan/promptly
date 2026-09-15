@@ -1,0 +1,15 @@
+type: object
+required: [name]
+properties:
+  name:
+    type: string
+    description: Human-readable name/label for the API key
+    minLength: 1
+    maxLength: 100
+    example: production-agent
+  expiresInDays:
+    type: integer
+    description: Optional duration in days until expiration. Omit for a non-expiring key.
+    minimum: 1
+    maximum: 365
+    example: 90

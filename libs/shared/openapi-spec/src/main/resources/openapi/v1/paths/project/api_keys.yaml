@@ -1,0 +1,51 @@
+get:
+  operationId: listProjectApiKeys
+  summary: List project API keys
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: List of API keys for the project
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../components/schemas/project/ApiKeyResponse.yaml'
+
+post:
+  operationId: createProjectApiKey
+  summary: Generate a new project API key
+  tags: [Projects]
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/project/CreateApiKeyRequest.yaml'
+  responses:
+    '201':
+      description: API key generated successfully. Plaintext key is returned only once.
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/project/ApiKeyCreatedResponse.yaml'
+    '400':
+      $ref: '../../components/responses/BadRequest.yaml'
+    '404':
+      $ref: '../../components/responses/NotFound.yaml'

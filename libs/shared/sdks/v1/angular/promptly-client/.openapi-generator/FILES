@@ -28,11 +28,14 @@ encoder.ts
 git_push.sh
 index.ts
 model/add-member-request.model.ts
+model/api-key-created-response.model.ts
+model/api-key-response.model.ts
 model/apply-improvement-request.model.ts
 model/approve-reject-request.model.ts
 model/audit-response.model.ts
 model/auth-response.model.ts
 model/content-format.model.ts
+model/create-api-key-request.model.ts
 model/create-project-request.model.ts
 model/create-prompt-request.model.ts
 model/delivery-response.model.ts

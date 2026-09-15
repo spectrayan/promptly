@@ -12,6 +12,8 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { ApplyImprovementRequest } from '../model/models';
+import { GenerateFromIdeaRequest } from '../model/models';
+import { GenerateFromIdeaResponse } from '../model/models';
 import { ImprovementResponse } from '../model/models';
 import { ProblemDetails } from '../model/models';
 
@@ -22,6 +24,10 @@ import { Configuration }                                     from '../configurat
 export interface ApplyImprovementRequestParams {
     promptId: string;
     applyImprovementRequest: ApplyImprovementRequest;
+}
+
+export interface GenerateFromIdeaRequestParams {
+    generateFromIdeaRequest: GenerateFromIdeaRequest;
 }
 
 export interface ImprovePromptRequestParams {
@@ -40,6 +46,14 @@ export interface ImproverServiceInterface {
 * @param requestParameters
      */
     applyImprovement(requestParameters: ApplyImprovementRequestParams, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Generate a prompt from a natural-language idea
+     * Uses a dedicated LLM system prompt to transform a short idea description into a fully-structured AI prompt. Unlike the improve endpoint, this does not require an existing prompt — it creates content from scratch. 
+     * @endpoint post /api/v1/prompts/generate
+* @param requestParameters
+     */
+    generateFromIdea(requestParameters: GenerateFromIdeaRequestParams, extraHttpRequestParams?: any): Observable<GenerateFromIdeaResponse>;
 
     /**
      * Generate AI improvement suggestions
