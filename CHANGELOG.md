@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Contributor recognition and open-source foundation in `ACKNOWLEDGMENTS.md` (#48).
+- Lighthouse CI performance budgets and CI workflow validation (#47).
 - Notification system with unread counts and real-time SSE delivery.
 - Java Spring (WebClient) query SDK generation for downstream consumers.
 - Contributor Covenant Code of Conduct and Security Policy.
 
 ### Changed
+- Upgraded Spring Boot from 4.0.0 to 4.0.6 (#44).
 - Refactored backend configuration to use hierarchical `@ConfigurationProperties` (`PromptlyProperties`).
 - Open-sourced the repository under the Apache 2.0 License.
 

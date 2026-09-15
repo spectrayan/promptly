@@ -12,7 +12,7 @@
   <a href="https://github.com/spectrayan/promptly/actions"><img src="https://img.shields.io/github/actions/workflow/status/spectrayan/promptly/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI" alt="CI Status" /></a>
   <a href="https://github.com/spectrayan/promptly/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue?style=for-the-badge" alt="License" /></a>
   <a href="https://github.com/spectrayan/promptly/releases"><img src="https://img.shields.io/github/v/release/spectrayan/promptly?style=for-the-badge&color=brightgreen" alt="Release" /></a>
-  <a href="https://github.com/spectrayan/promptly/stargazers"><img src="https://img.shields.io/github/stars/spectrayan/promptly?style=for-the-badge&logo=github&color=gold" alt="Stars" /></a>
+  <a href="https://github.com/spectrayan/promptly/blob/main/apps/e2e/promptly-perf/lighthouse/lighthouserc.json"><img src="https://img.shields.io/badge/Lighthouse-Performance%20%3E%2080-brightgreen?style=for-the-badge&logo=lighthouse" alt="Lighthouse CI" /></a>
 </p>
 
 <p align="center">

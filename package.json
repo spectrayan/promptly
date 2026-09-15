@@ -16,6 +16,7 @@
     "docker:publish": "./scripts/docker-publish.sh",
     "docker:prod": "docker compose -f docker-compose.prod.yml up -d",
     "seed:db": "docker exec -i promptly-mongodb mongosh promptly",
+    "lighthouse": "lhci autorun --config=apps/e2e/promptly-perf/lighthouse/lighthouserc.json",
     "graph": "nx graph"
   },
   "devDependencies": {

@@ -122,3 +122,10 @@ jobs:
       - name: Build
         run: npx nx build promptly --configuration=production --skip-nx-cache
 
+      - name: Lighthouse CI
+        run: |
+          npx --yes serve -s dist/apps/frontend/web/promptly/browser -p 30042 &
+          sleep 3
+          npx lhci autorun --config=apps/e2e/promptly-perf/lighthouse/lighthouserc.json
+
+
