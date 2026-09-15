@@ -62,8 +62,7 @@ public abstract class AbstractR2dbcIntegrationTest {
         // Persistence type
         registry.add("promptly.persistence.type", () -> "postgres");
 
-        // Disable Vertex AI for tests
-        registry.add("spring.ai.vertex.ai.gemini.project-id", () -> "test-project");
-        registry.add("spring.ai.vertex.ai.gemini.location", () -> "us-central1");
+        // Dummy API key for Google GenAI in tests
+        registry.add("spring.ai.google.genai.api-key", () -> "test-api-key");
     }
 }

@@ -13,10 +13,10 @@ import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatOptions;
-import org.springframework.ai.vertexai.gemini.common.VertexAiGeminiSafetySetting;
-import org.springframework.ai.vertexai.gemini.common.VertexAiGeminiSafetySetting.HarmBlockThreshold;
-import org.springframework.ai.vertexai.gemini.common.VertexAiGeminiSafetySetting.HarmCategory;
+import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
+import org.springframework.ai.google.genai.common.GoogleGenAiSafetySetting;
+import org.springframework.ai.google.genai.common.GoogleGenAiSafetySetting.HarmBlockThreshold;
+import org.springframework.ai.google.genai.common.GoogleGenAiSafetySetting.HarmCategory;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -56,29 +56,28 @@ public class SpringAiScannerAdapter implements LlmScannerPort {
 
         // Disable safety filters — the scanner intentionally analyzes dangerous content
         var safetySettings = java.util.List.of(
-                VertexAiGeminiSafetySetting.builder()
+                new GoogleGenAiSafetySetting.Builder()
                         .withCategory(HarmCategory.HARM_CATEGORY_HARASSMENT)
                         .withThreshold(HarmBlockThreshold.BLOCK_NONE).build(),
-                VertexAiGeminiSafetySetting.builder()
+                new GoogleGenAiSafetySetting.Builder()
                         .withCategory(HarmCategory.HARM_CATEGORY_HATE_SPEECH)
                         .withThreshold(HarmBlockThreshold.BLOCK_NONE).build(),
-                VertexAiGeminiSafetySetting.builder()
+                new GoogleGenAiSafetySetting.Builder()
                         .withCategory(HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT)
                         .withThreshold(HarmBlockThreshold.BLOCK_NONE).build(),
-                VertexAiGeminiSafetySetting.builder()
+                new GoogleGenAiSafetySetting.Builder()
                         .withCategory(HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT)
                         .withThreshold(HarmBlockThreshold.BLOCK_NONE).build()
         );
 
-        var chatOptions = VertexAiGeminiChatOptions.builder()
-                .safetySettings(safetySettings)
-                .build();
+        var chatOptionsBuilder = GoogleGenAiChatOptions.builder()
+                .safetySettings(safetySettings);
 
         String response = chatClientBuilder.build()
                 .prompt()
                 .system(systemPrompt)
                 .user("Analyze this prompt for vulnerabilities:\n\n" + content)
-                .options(chatOptions)
+                .options(chatOptionsBuilder)
                 .call()
                 .content();
 

@@ -43,7 +43,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/promptly
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=perf
-      - SPRING_AI_VERTEX_AI_GEMINI_ENABLED=false
+      - SPRING_AI_GOOGLE_GENAI_API_KEY=mock-perf-key
     depends_on:
       mongodb:
         condition: service_healthy
@@ -64,7 +64,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/promptly
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=perf
-      - SPRING_AI_VERTEX_AI_GEMINI_ENABLED=false
+      - SPRING_AI_GOOGLE_GENAI_API_KEY=mock-perf-key
     depends_on:
       mongodb:
         condition: service_healthy

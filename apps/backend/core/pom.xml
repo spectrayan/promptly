@@ -33,6 +33,10 @@
                     <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
                 </dependency>
                 <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                </dependency>
+                <dependency>
                     <groupId>org.springframework.modulith</groupId>
                     <artifactId>spring-modulith-starter-mongodb</artifactId>
                 </dependency>
@@ -222,10 +226,10 @@
         <!-- Note: spring-modulith-starter-mongodb and spring-modulith-starter-jdbc
              are in their respective persistence profiles (persistence-mongo / persistence-postgres) -->
 
-        <!-- ==================== Spring AI (Vertex AI Gemini) ==================== -->
+        <!-- ==================== Spring AI (Google GenAI Gemini) ==================== -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-model-vertex-ai-gemini</artifactId>
+            <artifactId>spring-ai-starter-model-google-genai</artifactId>
         </dependency>
 
         <!-- ==================== API Documentation ==================== -->

@@ -16,7 +16,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "preserveSymlinks": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@promptly/client": ["../../../../libs/shared/sdks/v1/angular/promptly-client"],

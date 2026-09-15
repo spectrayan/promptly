@@ -32,8 +32,8 @@ spec:
               value: "8080"
             - name: SPRING_PROFILES_ACTIVE
               value: perf
-            - name: SPRING_AI_VERTEX_AI_GEMINI_ENABLED
-              value: "false"
+            - name: SPRING_AI_GOOGLE_GENAI_API_KEY
+              value: "mock-perf-key"
             # JVM heap tuning — adjust for perf testing
             - name: JAVA_TOOL_OPTIONS
               value: >-
