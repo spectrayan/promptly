@@ -68,7 +68,7 @@
     "@angular/material": "22.1.6",
     "@angular/platform-browser": "22.1.6",
     "@angular/platform-browser-dynamic": "22.1.6",
-    "@angular/router": "22.1.6",
+    "@angular/router": "22.2.0",
     "@esbuild/linux-x64": "^0.28.0",
     "@ngrx/effects": "^22.0.1",
     "@ngrx/entity": "^22.0.1",
