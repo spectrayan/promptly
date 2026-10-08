@@ -33,7 +33,7 @@
     "@nx/eslint": "22.7.7",
     "@nx/eslint-plugin": "22.7.7",
     "@nx/jest": "22.7.7",
-    "@nx/js": "22.7.7",
+    "@nx/js": "23.2.1",
     "@nx/webpack": "22.7.7",
     "@nx/workspace": "22.7.7",
     "@playwright/test": "^1.59.1",
