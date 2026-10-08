@@ -29,7 +29,7 @@
     "@eslint/js": "^9.8.0",
     "@lhci/cli": "^0.15.1",
     "@nx/angular": "22.7.7",
-    "@nx/devkit": "22.7.7",
+    "@nx/devkit": "23.2.1",
     "@nx/eslint": "22.7.7",
     "@nx/eslint-plugin": "22.7.7",
     "@nx/jest": "22.7.7",
